@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Ch1_S4_Filosofi
+  m_EditorClassIdentifier: Assembly-CSharp:Karinding.Dialogue:DialogueSequence
+  sequenceId: ch1_s4_filosofi
+  lines:
+  - speakerName: Abah
+    isNarration: 0
+    portrait: {fileID: 0}
+    portraitSide: 1
+    text: Jadi orang Sunda teh percanten lamun alam semesta ieu teh ka bentuk tina
+      dentuman tarik, nyaeta Big Bang. Getaran jeung dengung teh dianggap awal tina
+      kahirupan, Ba.
+    translation: Orang Sunda percaya alam semesta ini terbentuk dari dentuman besar,
+      yaitu Big Bang. Getaran dan dengung dianggap awal dari kehidupan, Ba.
+    eventId: CODEX_GETARAN_KEHIDUPAN
+    choices: []
+  - speakerName: Abah
+    isNarration: 0
+    portrait: {fileID: 0}
+    portraitSide: 1
+    text: Jadi sateuacan aya na kahirupan teh aya nu nami na Alam Kosong, awang uwung
+      tong enong margana enong, kosong suwung eweuh nanaon didinya.
+    translation: Sebelum adanya kehidupan itu ada yang namanya Alam Kosong, awang
+      uwung tong enong margana enong, kosong melompong tidak ada apa-apa di sana.
+    eventId: 
+    choices: []
+  - speakerName: Abah
+    isNarration: 0
+    portrait: {fileID: 0}
+    portraitSide: 1
+    text: "Alam ieu ngadadak endeur jeung ngalahirkeun sora dengung, laksaketi mangrewu
+      sora tawon... <i>Ngung\u2026</i> bledag!"
+    translation: "Tiba-tiba alam bergetar dan melahirkan suara dengung, laksaketi
+      mangrewu suara tawon... Ngung\u2026 meledak!"
+    eventId: 
+    choices: []
+  - speakerName: Abah
+    isNarration: 0
+    portrait: {fileID: 0}
+    portraitSide: 1
+    text: Tah tina getaran jeung dengung eta lah lahir kahirupan.
+    translation: Nah, dari getaran dan dengung itu lah lahir kehidupan.
+    eventId: 
+    choices: []

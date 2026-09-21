@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05572fb219f964447961d5316d451ff7, type: 3}
+  m_Name: Codex_GetaranKehidupan
+  m_EditorClassIdentifier: Assembly-CSharp::Karinding.Codex.CodexEntry
+  entryId: CODEX_GETARAN_KEHIDUPAN
+  title: Getaran dan Awal Kehidupan
+  content: Getaran dan dengung dianggap awal kehidupan. Dari Alam Kosong yang awang-awang,
+    tiba-tiba bergetar dan melahirkan suara dengung Ngung... hingga lahir kehidupan
+    (Big Bang versi Sunda).
+  unlocked: 0

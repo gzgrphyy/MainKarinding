@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Ch1_S7_Selesai
+  m_EditorClassIdentifier: Assembly-CSharp:Karinding.Dialogue:DialogueSequence
+  sequenceId: ch1_s7_selesai
+  lines:
+  - speakerName: Abah
+    isNarration: 0
+    portrait: {fileID: 0}
+    portraitSide: 1
+    text: Ayeuna Rimba tos gaduh jeung tiasa maenkeun Karinding. Tapi Rimba ge kudu
+      emut eta lain ngan saukur sora ti Rimba
+    translation: Sekarang Rimba udah punya Karinding sendiri dan bisa memainkannya.
+      Tapi Rimba juga harus sadar itu bukan cuma suara dari Rimba.
+    eventId: 
+    choices: []

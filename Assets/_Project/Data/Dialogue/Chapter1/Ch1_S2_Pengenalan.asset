@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: Ch1_S2_Pengenalan
+  m_EditorClassIdentifier: Assembly-CSharp:Karinding.Dialogue:DialogueSequence
+  sequenceId: ch1_s2_pengenalan
+  lines:
+  - speakerName: Rimba
+    isNarration: 0
+    portrait: {fileID: 0}
+    portraitSide: 0
+    text: Eta naon, bah? naha kitu sora na?
+    translation: Abah itu apa? kenapa suaranya begitu?
+    eventId: 
+    choices: []
+  - speakerName: Abah
+    isNarration: 0
+    portrait: {fileID: 0}
+    portraitSide: 1
+    text: Ieu teh nami na Karinding, lain ngan saukur alat bebunyian
+    translation: Ini namanya Karinding, bukan cuma alat bebunyian biasa
+    eventId: 
+    choices:
+    - label: Rimba nembe ningal, naha jarang aya nu maenkeun bah?
+      labelTranslation: Rimba baru liat, kenapa jarang ada yang mainin bah?
+      npcId: abah
+      affinityDelta: 0
+      responseLines:
+      - speakerName: Abah
+        isNarration: 0
+        portrait: {fileID: 0}
+        portraitSide: 1
+        text: Tos lami teu diwariskeun, Ba. Kapungkur mah unggal jalmi teh aya. ayeuna
+          mah ngan sakedik nu terang
+        translation: Sudah lama tidak diwariskan, Ba. Dulu setiap orang punya. Sekarang
+          hanya sedikit yang tahu
+        eventId: 
+    - label: Kumaha cara maenna bah?
+      labelTranslation: Gimana cara mainin nya bah?
+      npcId: abah
+      affinityDelta: 0
+      responseLines:
+      - speakerName: Abah
+        isNarration: 0
+        portrait: {fileID: 0}
+        portraitSide: 1
+        text: Teu hese, tapi teu gampang oge. Kudu cepeung sing yakin, tabeuh sing
+          sabar
+        translation: Ga susah, tapi ga gampang juga. Harus pegang dengan yakin, pukul
+          dengan sabar
+        eventId: 
+    - label: Naha abah tiasa gaduh?
+      labelTranslation: Kenapa abah bisa punya?
+      npcId: abah
+      affinityDelta: 0
+      responseLines:
+      - speakerName: Abah
+        isNarration: 0
+        portrait: {fileID: 0}
+        portraitSide: 1
+        text: Ieu teh Uyut didinya kapungkur, di wariskeun ka Abah. Ayeuna abah nu
+          nyepeung.
+        translation: Ini punya Uyut kamu dulu, diwariskan ke Abah. Sekarang Abah
+          yang memegang.
+        eventId: 
+  - speakerName: Abah
+    isNarration: 0
+    portrait: {fileID: 0}
+    portraitSide: 1
+    text: Pancepengan. Cepeung sing yakin.
+    translation: 'Pancepengan: pegang dengan yakin. Bagian pegangan, mengajarkan
+      keyakinan dalam memegang dan menjalankan sesuatu.'
+    eventId: CODEX_PANCEPENGAN
+    choices: []
+  - speakerName: Abah
+    isNarration: 0
+    portrait: {fileID: 0}
+    portraitSide: 1
+    text: Panabeuh. Tabeuh sing sabar.
+    translation: 'Panabeuh: pukul dengan sabar. Bagian yang dipukul/digetarkan, mengajarkan
+      kesabaran dalam menghasilkan getaran.'
+    eventId: CODEX_PANABEUH
+    choices: []
+  - speakerName: Abah
+    isNarration: 0
+    portrait: {fileID: 0}
+    portraitSide: 1
+    text: Cecet Ucing. Kudu sadar lamun eta lain sora urang.
+    translation: 'Cecet Ucing: harus sadar bahwa itu bukan suara kita. Bagian kecil
+      yang membantu resonansi hingga suara benar-benar terdengar.'
+    eventId: CODEX_CECET_UCING
+    choices: []
+  - speakerName: Abah
+    isNarration: 0
+    portrait: {fileID: 0}
+    portraitSide: 1
+    text: Unggal bagian aya harti na, Baba. Sami oge sareng kahirupan, kudu percaya,
+      kudu sabar, jeung kudu sadar lamun arurang tos menang hasil tina naon nu ku
+      arurang lakonan
+    translation: Setiap bagian ada artinya, Baba. Sama juga dengan kehidupan, harus
+      percaya, harus sabar dan sadar jika kita sudah dapat hasil dari yang dijalani.
+    eventId: 
+    choices: []
