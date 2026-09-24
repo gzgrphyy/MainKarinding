@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using MainKarinding.Exploration;
 
 namespace MainKarinding.Cutscenes
 {
@@ -51,6 +52,15 @@ namespace MainKarinding.Cutscenes
 
         [Header("Exploration Handoff")]
         [SerializeField] private GameObject explorationRoot;
+        [Tooltip("Diisi otomatis saat setup scene Beat 8 (boleh kosong).")]
+        [SerializeField] private RimbaWalker rimbaWalker;
+        [SerializeField] private AbahAutoWalker abahWalker;
+        [SerializeField] private WalkOffTrigger walkTrigger;
+        [SerializeField] private AnalogStickController analogStick;
+
+        private Vector3 spawnRimbaPos;
+        private Vector3 spawnAbahPos;
+        private bool spawnCaptured;
 
         [Header("Settings")]
         [SerializeField] private float blackscreenDuration = 0.7f;
@@ -312,17 +322,14 @@ namespace MainKarinding.Cutscenes
         }
 
         /// <summary>
-        /// Beat 8 - Graceful ending (loop for testing sampai exploration siap).
+        /// Beat 8 - Walk off ke kebun: Abah auto-jalan kanan, Rimba via analog.
+        /// Sampai pojok kanan → blackscreen → loop (testing).
         /// </summary>
         private void ExecuteBeat8()
         {
-            Debug.Log("[Scene1Cutscene] Beat 8 - Ending (loop testing)");
+            Debug.Log("[Scene1Cutscene] Beat 8 - Walk Off ke kebun");
 
             currentBeat = 8;
-
-            // Fade out ambient audio
-            if (audioManager != null)
-                audioManager.FadeOutAmbient(1.5f);
 
             // Hide cutscene UI
             if (dialogueDisplay != null)
@@ -334,7 +341,99 @@ namespace MainKarinding.Cutscenes
             if (shot1Root != null) shot1Root.SetActive(false);
             if (shot2Root != null) shot2Root.SetActive(false);
 
-            StartCoroutine(ShowEndingAndLoop());
+            // Kalau exploration belum di-setup, fallback loop lama
+            if (explorationRoot == null || rimbaWalker == null || abahWalker == null || walkTrigger == null)
+            {
+                Debug.LogWarning("[Scene1Cutscene] Exploration belum setup, pakai loop lama.");
+                StartCoroutine(ShowEndingAndLoop());
+                return;
+            }
+
+            StartWalkOff();
+        }
+
+        private void StartWalkOff()
+        {
+            explorationRoot.SetActive(true);
+
+            if (!spawnCaptured && rimbaWalker != null && abahWalker != null)
+            {
+                spawnRimbaPos = rimbaWalker.transform.position;
+                spawnAbahPos = abahWalker.transform.position;
+                spawnCaptured = true;
+            }
+            if (rimbaWalker != null)
+                rimbaWalker.transform.position = spawnRimbaPos;
+            if (abahWalker != null)
+                abahWalker.transform.position = spawnAbahPos;
+
+            if (rimbaSpriteSet != null && rimbaWalker != null)
+                rimbaWalker.Configure(analogStick, rimbaSpriteSet.walkRight, rimbaSpriteSet.idleRight);
+            if (abahSpriteSet != null && abahWalker != null)
+                abahWalker.Configure(abahSpriteSet.walkRight, abahSpriteSet.idleRight);
+            if (walkTrigger != null && rimbaWalker != null)
+                walkTrigger.Configure(rimbaWalker.transform, OnWalkOffArrived);
+
+            if (rimbaWalker != null)
+                rimbaWalker.Locked = false;
+
+            Debug.Log("[Scene1Cutscene] Walk off mulai - gerakkan Rimba dengan analog, ikuti Abah ke kanan");
+        }
+
+        private void OnWalkOffArrived()
+        {
+            if (rimbaWalker != null)
+                rimbaWalker.Locked = true;
+
+            if (audioManager != null)
+                audioManager.FadeOutAmbient(1.5f);
+
+            StartCoroutine(FinishWalkOff());
+        }
+
+        /// <summary>
+        /// Blackscreen akhir Scene 1, lalu loop ke Beat 1 (testing).
+        /// </summary>
+        private IEnumerator FinishWalkOff()
+        {
+            if (blackscreenOverlay != null)
+            {
+                Image blackImage = blackscreenOverlay.GetComponent<Image>();
+                if (blackscreenOverlay.GetComponent<Canvas>() == null)
+                    blackscreenOverlay.AddComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
+                blackscreenOverlay.SetActive(true);
+                if (blackImage != null)
+                    yield return StartCoroutine(FadeImage(blackImage, 0f, 1f, 1.0f));
+                else
+                    yield return new WaitForSeconds(1.0f);
+            }
+            else
+            {
+                yield return new WaitForSeconds(1.0f);
+            }
+
+            if (!loopForTesting)
+            {
+                cutsceneActive = false;
+                Debug.Log("[Scene1Cutscene] Scene 1 selesai - freeze di black (tunggu Scene 2)");
+                yield break;
+            }
+
+            Debug.Log("[Scene1Cutscene] Loop testing - balik ke Beat 1");
+            yield return new WaitForSeconds(1.0f);
+
+            if (explorationRoot != null)
+                explorationRoot.SetActive(false);
+
+            if (blackscreenOverlay != null)
+            {
+                Image blackImage = blackscreenOverlay.GetComponent<Image>();
+                if (blackImage != null)
+                    yield return StartCoroutine(FadeImage(blackImage, 1f, 0f, 0.5f));
+                blackscreenOverlay.SetActive(false);
+            }
+
+            StartCutscene();
         }
 
         /// <summary>

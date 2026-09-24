@@ -8,5 +8,11 @@ namespace MainKarinding.Cutscenes
         [Header("Scene 1 - Teras Rumah")]
         public Sprite idleTerasTalking;
         public Sprite lookoutFacingMountain;
+
+        [Header("Scene 1 - Walk Off (ending jalan ke kebun)")]
+        [Tooltip("Frame jalan hadap kanan, urut 1..N. Pivot center bawaan file.")]
+        public Sprite[] walkRight = new Sprite[4];
+        [Tooltip("Idle hadap kanan. Kosong = pakai walkRight[0].")]
+        public Sprite idleRight;
     }
 }

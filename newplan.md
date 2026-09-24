@@ -53,9 +53,10 @@ Rimba, anak kecil di sebuah desa, dibesarkan oleh kakeknya, Abah Harja, yang men
 - Beat 8 untuk sekarang: loop balik ke Beat 1 buat testing (`loopForTesting=true`). Handoff exploration nanti setelah movement siap.
 
 ## B.2 Scope
-Bikin **Scene1CutsceneController** yang menjalankan Beat 1-8 di bawah pakai `FloatingDialogueController` (reusable Scene 1-8), lalu loop untuk testing.
+Bikin **Scene1CutsceneController** yang menjalankan Beat 1-8 di bawah:
+Beat 1-7 cutscene floating bubble (reusable Scene 1-8), Beat 8 walk-off analog.
 
-**Target selesai:** Scene 1 bisa dimainkan penuh dari spawn sampai Beat 8 loop balik (playable buat testing layout bubble).
+**Target selesai:** Scene 1 bisa dimainkan penuh: spawn → dialog → blackscreen → dialog Shot2 → tombol Lihat → Rimba noleh → 6 dialog → jalan bareng ke kebun (Abah auto-kanan, Rimba analog 4 arah) → Rimba sampai pojok kanan → blackscreen → loop testing.
 
 ## B.3 Referensi Visual
 - **Shot 1** (Beat 1-2): komposisi wide, full-body, karakter berdiri di ground level dengan environment luas di belakang (rumah, jalan) — skala mirip shot exploration side-scroll, BUKAN close-up sempit
@@ -173,9 +174,10 @@ Bikin **Scene1CutsceneController** yang menjalankan Beat 1-8 di bawah pakai `Flo
 | 5 | Abah | "Tos tong di pikiran teuing. Ayeuna mah urang ka kebon we hayu, bisi kaburu panas" | "Udah jangan terlalu dipikirin. Sekarang kita ke kebon aja, takutnya keburu panas" |
 | 6 | Rimba | "Muhun bah, Hayu" | "Iya bah, Ayo" |
 
-### Beat 8 — Ending Loop (testing)
-- `Scene1CutsceneController` fade to black 0.5s, hold 1s, fade back, lalu `StartCutscene()` lagi (loop) kalau `loopForTesting=true`
-- Kalau `loopForTesting=false`: freeze di black (tunggu exploration system)
+### Beat 8 — Walk Off ke kebun (analog)
+- Shot1/Shot2 + UI cutscene mati → `ExplorationRoot` nyala (3 parallax `explore_path_*`, Rimba spawn kiri, Abah di depan, analog kiri-bawah)
+- Abah **auto-jalan kanan** konstan (`AbahAutoWalker`, berhenti di x=5), Rimba via **analog 4 arah** + keyboard WASD/panah (`AnalogStickController` → `RimbaWalker`, clamp area, flip + frame jalan)
+- Begitu **x Rimba ≥ 7 (pojok kanan)** → `WalkOffTrigger` → analog dikunci → fade blackscreen 1 detik → loop ke Beat 1 kalau `loopForTesting=true` (testing), freeze kalau false
 - Player jalan ke kebun + transisi Scene 2 di luar scope task ini
 
 ## B.7 Behavior Rules (Ringkasan)
@@ -187,9 +189,8 @@ Bikin **Scene1CutsceneController** yang menjalankan Beat 1-8 di bawah pakai `Flo
 
 ## B.8 Definisi Selesai
 Task ini SELESAI ketika:
-1. Scene `Ch1_TerasRumahKebun.unity` bisa dijalankan dari Beat 1 sampai Beat 8 tanpa error (0 error, 1 warning CS0414 yang harmless)
-2. Beat 5 tap wajib diterima sebelum lanjut ke Beat 6-7
-3. Semua 6 baris dialog Beat 7 tampil berurutan sebagai floating bubble (Abah↔Rimba pindah anchor + BoxPointer flip) sesuai tabel B.6
-4. Setelah Beat 8, loop balik ke Beat 1 buat testing layout (sampai exploration siap)
-5. Scene 2 dan seterusnya BELUM diimplementasikan
-6. Layout bubble + BoxPointer bisa kamu atur sendiri: `HeadAnchor_*` di Scene View, offset di `FloatingDialogueController` Inspector
+1. Scene `Ch1_TerasRumahKebun.unity` bisa dijalankan dari Beat 1 sampai Beat 8 tanpa error (0 error)
+2. Beat 5 tap Lihat diterima → Beat 6 noleh → Beat 7: 6 dialog floating (Abah↔Rimba pindah anchor + BoxPointer flip) sesuai tabel B.6
+3. Beat 8: Abah auto-jalan kanan, Rimba gerak analog 4 arah (flip + animasi jalan), sampai pojok kanan → blackscreen → loop Beat 1
+4. Scene 2 dan seterusnya BELUM diimplementasikan
+5. Layout bubble + BoxPointer + analog + bounds jalan bisa kamu atur sendiri di Inspector

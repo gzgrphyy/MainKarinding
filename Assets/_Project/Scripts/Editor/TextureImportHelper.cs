@@ -82,7 +82,8 @@ namespace MainKarinding.Editor
             string[] folders = new string[]
             {
                 "Assets/_Project/Art/UI/Dialogue",
-                "Assets/_Project/Art/UI/ActionButtons"
+                "Assets/_Project/Art/UI/ActionButtons",
+                "Assets/_Project/Art/UI/Analog"
             };
 
             int count = 0;

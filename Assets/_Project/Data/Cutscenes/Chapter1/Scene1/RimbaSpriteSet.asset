@@ -17,3 +17,9 @@ MonoBehaviour:
   lookoutNoleh1: {fileID: 21300000, guid: 6846010986de3c04f8ec6cbe3c2fc8a4, type: 3}
   lookoutNoleh2: {fileID: 21300000, guid: 1ace57579bc52fe49a6510e8bd86f646, type: 3}
   lookoutFacingMountain: {fileID: 21300000, guid: e9e3b45bb02a24b48b3150616a1cf3eb, type: 3}
+  walkRight:
+  - {fileID: 21300000, guid: 874470f19769dc34f9084807d2f97c22, type: 3}
+  - {fileID: 21300000, guid: 17b451d09efbec549924d66dd55a2142, type: 3}
+  - {fileID: 21300000, guid: 2a68f2c22e332474485d65767fe2a1c4, type: 3}
+  - {fileID: 21300000, guid: b849f48155a7891469febea71525f718, type: 3}
+  idleRight: {fileID: 21300000, guid: 874470f19769dc34f9084807d2f97c22, type: 3}
