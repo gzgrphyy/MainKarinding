@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51e9190ed9d24513955532435143d29f, type: 3}
+  m_Name: TestChart_01
+  m_EditorClassIdentifier: Assembly-CSharp::RhythmChartConfig
+  chartId: test_chart_01
+  backgroundMusic: {fileID: 0}
+  noteTravelDuration: 1.2
+  notes:
+  - spawnTime: 1.5
+    lane: 0
+  - spawnTime: 2.2
+    lane: 1
+  - spawnTime: 3
+    lane: 2
+  - spawnTime: 3.4
+    lane: 3
+  - spawnTime: 4.2
+    lane: 1
+  - spawnTime: 5
+    lane: 2
+  - spawnTime: 5.7
+    lane: 0
+  - spawnTime: 6.5
+    lane: 3
+  - spawnTime: 7.1
+    lane: 1
+  - spawnTime: 8
+    lane: 2
+  perfectWindow: 0.08
+  goodWindow: 0.18
+  scorePerPerfect: 100
+  scorePerGood: 50
+  maxMisses: 5

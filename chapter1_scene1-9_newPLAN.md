@@ -1,4 +1,4 @@
-## PLAN.MD — KARINDING GAME: CHAPTER 1 FULL (SCENE 1–9) — v2 RECONCILED
+w## PLAN.MD — KARINDING GAME: CHAPTER 1 FULL (SCENE 1–9) — v2 RECONCILED
 
 > **Sumber:** Direkonsiliasi langsung terhadap isi repo via Unity MCP scan pada 25 Sep 2026. Semua path di bawah ini adalah path **asli** yang ada di project, kecuali bagian yang ditandai `[BARU — PERLU DIBUAT]`.
 
@@ -118,7 +118,7 @@ Scene       : Ch1_{Lokasi}.unity / {NamaMinigame}.unity (sudah sesuai draft lama
 |---|---|---|
 | `Art/Characters/Rimba/Scene3/s3_rimba_pegang_canggung.png` | S3 | sebelum minigame |
 | `Art/Characters/Rimba/Scene3/s3_rimba_bangga.png` | S3 | setelah minigame sukses |
-| `Art/Characters/Abah/Scene3/s3_abah_serahkan.png` | S3 | menyerahkan karinding |
+| ~~`Art/Characters/Abah/Scene3/s3_abah_serahkan.png`~~ **TIDAK JADI DIBUAT** | S3 | ~~menyerahkan karinding~~ — handoff diubah jadi dialogue/narasi only (keputusan user: tanpa animasi, sprite statis terasa kaku). Beat 1 reuse sprite existing (`s2_abah_duduk.png` / `s2_rimba_duduk.png`) |
 | `Art/Characters/Abah/Scene3/s3_abah_senyum_tipis.png` | S3 | closing line |
 | `Art/Characters/Abah/Scene4/s4_abah_bercerita.png` | S4 | **cek dulu** — coba reuse `abah_idle_teras_talking.png` (S1) atau `s2_abah_duduk.png` sebelum bikin baru |
 | `Art/Characters/Abah/Scene5/s5_abah_ajak_teras.png` | S5 | dialog ajak ke hutan |
@@ -275,11 +275,18 @@ Behavior: highlight per-bagian di Beat 4 pakai overlay child-object (bukan subme
 
 | Beat | Isi | StoryState | Aset |
 |---|---|---|---|
-| 1 | Abah serahkan karinding, handoff singkat | `S3_Handoff` | `s3_abah_serahkan.png` |
+| 1 | Abah serahkan karinding — **dialogue/narasi only**, tidak ada sprite handoff khusus (keputusan user: tanpa animasi, sprite statis terasa kaku) | `S3_Handoff` | reuse `s2_abah_duduk.png` + `s2_rimba_duduk.png` — **tidak perlu aset baru** |
 | 2 | Load additive tutorial rhythm, jalankan `KarindingTutorialController` | `S3_TutorialRhythm` | `s3_rimba_pegang_canggung.png`, `sfx_karinding_dengung_low/mid/high.wav` |
 | 3 | Unload minigame, dialog closing | `S3_ClosingDialog` | `s3_rimba_bangga.png`, `s3_abah_senyum_tipis.png` |
 
-**Dialog Tabel (Beat 3, closing):**
+**Dialog Tabel (Beat 1 — handoff):** dikonfirmasi user: naskah asli cuma punya **2 baris Abah**, ditambah **1 baris baru di awalan** soal Abah menyerahkan karinding ke tangan Rimba (= total 3 baris Abah di Scene 3).
+
+| Karakter | Teks (Sunda) | Terjemahan |
+|---|---|---|
+| Abah | *(handoff — wording belum ditentukan, isi: Abah menyerahkan karinding ke tangan Rimba)* | *(TBD)* |
+| *(narasi: Abah menyodorkan karinding ke arah Rimba)* | | |
+
+**Dialog Tabel (Beat 2 & 3 — dari naskah asli, 2 baris):**
 
 | Karakter | Teks (Sunda) | Terjemahan |
 |---|---|---|
@@ -287,7 +294,7 @@ Behavior: highlight per-bagian di Beat 4 pakai overlay child-object (bukan subme
 | *(narasi: Rimba tersenyum lebar, bangga dengan pencapaiannya sendiri)* | | |
 | Abah *(tersenyum tipis)* | "Omat eta lain sora Rimba, tapi hasil tina getaran nu di barengan ku resonansi." | Ingat, itu bukan suara Rimba, tapi hasil dari getaran yang dibarengi dengan resonansi. |
 
-Behavior: baris "Ulah maksa" tampil SEBELUM minigame mulai (sebagai encouragement, bukan interupsi mid-gameplay — sistem minigame tidak mendukung pause-for-dialogue di tengah main); forced-fail-then-succeed tetap no-game-over; handoff balik ke teras tidak mengubah posisi karakter.
+Behavior: total **3 baris Abah** di Scene 3 — 1 handoff baru (Beat 1, dialogue-only) + 2 dari naskah. Baris "Ulah maksa" tampil SEBELUM minigame mulai (sebagai encouragement, bukan interupsi mid-gameplay — sistem minigame tidak mendukung pause-for-dialogue di tengah main), baris "Omat eta..." setelah minigame (pakai `s3_abah_senyum_tipis.png`); forced-fail-then-succeed tetap no-game-over; handoff balik ke teras tidak mengubah posisi karakter. `s3_rimba_bangga.png` dipakai tepat di narasi "Rimba tersenyum lebar".
 
 #### E4. Scene 4 — Filosofi Getaran dan Kehidupan
 **Scene file:** `Ch1_TerasRumahKebun.unity` — dialogue-only, tidak ada scene tambahan

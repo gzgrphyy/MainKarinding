@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51e9190ed9d24513955532435143d29f, type: 3}
+  m_Name: TutorialChart_HariPertama_S3
+  m_EditorClassIdentifier: Assembly-CSharp::RhythmChartConfig
+  chartId: tutorial_hari1_s3_belajar_karinding
+  backgroundMusic: {fileID: 0}
+  noteTravelDuration: 1.8
+  notes:
+  - spawnTime: 2.0
+    lane: 1
+  - spawnTime: 4.2
+    lane: 2
+  - spawnTime: 6.5
+    lane: 1
+  - spawnTime: 8.8
+    lane: 2
+  - spawnTime: 10.2
+    lane: 1
+  - spawnTime: 11.8
+    lane: 2
+  - spawnTime: 13.4
+    lane: 0
+  - spawnTime: 15.0
+    lane: 3
+  - spawnTime: 16.5
+    lane: 1
+  - spawnTime: 18.0
+    lane: 2
+  perfectWindow: 0.12
+  goodWindow: 0.22
+  scorePerPerfect: 100
+  scorePerGood: 50
+  comboStep: 10
+  comboMultiplier: 0.5
+  maxMisses: 5
