@@ -17,5 +17,9 @@ namespace MainKarinding.Cutscenes
         public Sprite[] walkRight = new Sprite[4];
         [Tooltip("Idle hadap kanan. Kosong = pakai walkRight[0].")]
         public Sprite idleRight;
+
+        [Header("Scene 2 - Teras Siang (duduk)")]
+        [Tooltip("Pose duduk Rimba di teras siang. File: s2_rimba_duduk.png")]
+        public Sprite duduk;
     }
 }

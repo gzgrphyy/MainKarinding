@@ -20,3 +20,4 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 94f96e13555016b4f9a88db99f0d2ee9, type: 3}
   - {fileID: 21300000, guid: fce874954fb13d14782038d297ded217, type: 3}
   idleRight: {fileID: 21300000, guid: 937817172338a2447920bb7f41bc8132, type: 3}
+  duduk: {fileID: 21300000, guid: df359cf5f8e8fdd4ca2ee65cac006837, type: 3}
