@@ -65,6 +65,45 @@ namespace MainKarinding.Cutscenes
             sfxSource.PlayOneShot(clip, volume);
         }
 
+        private Coroutine duckCoroutine;
+
+        /// <summary>
+        /// Duck ambient sesaat (pengganti AudioMixer snapshot Dropout — project tidak pakai mixer).
+        /// Turun cepat ke dipVolume, tahan, lalu kembali pelan ke volume semula. Aman dipanggil saat fade lain jalan.
+        /// </summary>
+        public void DuckAmbient(float dipVolume = 0.08f, float dipSeconds = 0.08f, float holdSeconds = 0.4f, float returnSeconds = 1.2f)
+        {
+            if (ambientSource == null || !ambientSource.isPlaying) return;
+            if (duckCoroutine != null) StopCoroutine(duckCoroutine);
+            if (fadeCoroutine != null) { StopCoroutine(fadeCoroutine); fadeCoroutine = null; }
+            duckCoroutine = StartCoroutine(DuckCoroutine(ambientSource.volume, dipVolume, dipSeconds, holdSeconds, returnSeconds));
+        }
+
+        private IEnumerator DuckCoroutine(float startVolume, float dipVolume, float dipSeconds, float holdSeconds, float returnSeconds)
+        {
+            float t = 0f;
+            while (t < dipSeconds)
+            {
+                t += Time.deltaTime;
+                if (ambientSource == null) break;
+                ambientSource.volume = Mathf.Lerp(startVolume, dipVolume, Mathf.Clamp01(t / Mathf.Max(0.01f, dipSeconds)));
+                yield return null;
+            }
+            if (ambientSource != null) ambientSource.volume = dipVolume;
+            yield return new WaitForSeconds(holdSeconds);
+            t = 0f;
+            while (t < returnSeconds)
+            {
+                t += Time.deltaTime;
+                if (ambientSource == null) break;
+                float k = Mathf.Clamp01(t / Mathf.Max(0.01f, returnSeconds));
+                ambientSource.volume = Mathf.Lerp(dipVolume, startVolume, fadeCurve.Evaluate(k));
+                yield return null;
+            }
+            if (ambientSource != null) ambientSource.volume = startVolume;
+            duckCoroutine = null;
+        }
+
     private IEnumerator FadeOutCoroutine(AudioSource source, float duration)
     {
         float startVolume = source.volume;

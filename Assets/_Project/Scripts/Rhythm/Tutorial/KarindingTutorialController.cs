@@ -39,6 +39,14 @@ public class KarindingTutorialController : MonoBehaviour
     [SerializeField] private int requiredStreakFase2 = 2;
     [SerializeField] private int maxRushBeforeHint = 2;
 
+    [Header("Fase 3 Forced-Fail-then-Succeed (PLAN E3)")]
+    [Tooltip("Attempt 1 selalu di-staging gagal (scripted, bukan vonis), attempt 2 lenient dijamin lolos. No game-over, tanpa klik ULANG.")]
+    [SerializeField] private bool forceFailFirstAttempt = true;
+    [SerializeField] private float lenientTravelDuration = 1.8f;
+    [SerializeField] private float lenientPerfectWindow = 0.15f;
+    [SerializeField] private float lenientGoodWindow = 0.30f;
+    [SerializeField] private int lenientMaxMisses = 99;
+
     [Header("Debug")]
     [SerializeField] private bool autoStart = true;
     [SerializeField] private bool logVerbose = true;
@@ -365,33 +373,45 @@ public class KarindingTutorialController : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        // Fase 3 single-run: langsung selesai tanpa ngulang (sesuai request: jangan ngulang tiba-tiba)
+        // Fase 3 scripted 2-pass (PLAN E3: forced-fail-then-succeed, no game-over).
+        // Attempt 1 selalu di-staging "gagal" (dengung pecah) apa pun skor player,
+        // lalu attempt 2 lenient yang dijamin sampai Epilog. Otomatis, tanpa klik ULANG.
         CurrentPhase = TutorialPhase.Resonansi;
-        Log("Phase: Resonansi - single run");
+        Log("Phase: Resonansi - forced-fail-then-succeed (2 pass)");
         overlay?.ShowInstruction("Fase 3 — Coba rangkaian lengkap!", 1.4f);
         yield return new WaitForSeconds(1.6f);
         overlay?.HideInstruction(0.15f);
         RhythmMinigameResult fase3Result = null;
+        if (forceFailFirstAttempt)
         {
             var chart3 = resonansiChart != null ? resonansiChart : CreateRuntimeResonansiChart();
-            bool done3 = false;
-            RhythmMinigameResult res3 = null;
-            System.Action<RhythmMinigameResult> onC3 = (r) => { res3 = r; fase3Result = r; done3 = true; };
-            rhythmController.OnMinigameComplete += onC3;
-            rhythmController.StartMinigame(chart3, true); // start ter-script (bukan auto-loop)
-            yield return new WaitUntil(() => done3);
-            rhythmController.OnMinigameComplete -= onC3;
+            yield return StartCoroutine(PlayChartOnce(chart3, (r) => fase3Result = r));
+            Log($"Fase3 attempt1 passed={fase3Result?.passed} miss={fase3Result?.missCount} accuracy={fase3Result?.accuracy}");
 
-            Log($"Fase3 result passed={res3?.passed} miss={res3?.missCount} accuracy={res3?.accuracy}");
+            // Scripted fail staging — narasi "gagal dulu", bukan vonis ke player.
             var karindingImg = GameObject.Find("Karinding") ?? GameObject.Find("karinding2d");
-            if (karindingImg != null) karindingImg.transform.DOPunchScale(Vector3.one * 0.35f, 0.6f, 8, 0.9f);
+            if (karindingImg != null) karindingImg.transform.DOPunchScale(Vector3.one * 0.45f, 0.7f, 8, 0.9f);
             else
             {
                 var hitRing = GameObject.Find("HitRing");
-                if (hitRing != null) hitRing.transform.DOPunchScale(Vector3.one * 0.4f, 0.5f, 6, 1f);
+                if (hitRing != null) hitRing.transform.DOPunchScale(Vector3.one * 0.5f, 0.6f, 6, 1f);
             }
-            if (res3 != null && res3.passed) overlay?.ShowToast("Dengung jelas! Mantap", new Color(0.4f, 1f, 0.5f, 1f), 1.3f);
-            else overlay?.ShowToast("Selesai — bagus dicoba!", new Color(1f, 0.85f, 0.2f, 1f), 1.1f);
+            overlay?.ShowToast("Dengungna pecah... deui, Ba, sing sabar.", new Color(1f, 0.85f, 0.2f, 1f), 1.6f);
+            yield return new WaitForSeconds(1.8f);
+        }
+        {
+            // Attempt final — lenient: window besar + miss longgar, dijamin sampai Epilog.
+            var chartLenient = PrepareLenientResonansiChart();
+            yield return StartCoroutine(PlayChartOnce(chartLenient, (r) => fase3Result = r));
+            Log($"Fase3 attempt-final passed={fase3Result?.passed} miss={fase3Result?.missCount} accuracy={fase3Result?.accuracy}");
+            var karindingImg2 = GameObject.Find("Karinding") ?? GameObject.Find("karinding2d");
+            if (karindingImg2 != null) karindingImg2.transform.DOPunchScale(Vector3.one * 0.35f, 0.6f, 8, 0.9f);
+            else
+            {
+                var hitRing2 = GameObject.Find("HitRing");
+                if (hitRing2 != null) hitRing2.transform.DOPunchScale(Vector3.one * 0.4f, 0.5f, 6, 1f);
+            }
+            overlay?.ShowToast("Dengung jelas! Mantap", new Color(0.4f, 1f, 0.5f, 1f), 1.3f);
             yield return new WaitForSeconds(1.2f);
         }
 
@@ -453,6 +473,32 @@ public class KarindingTutorialController : MonoBehaviour
         sabarChart.perfectWindow = 0.15f;
         sabarChart.goodWindow = 0.28f;
         return sabarChart;
+    }
+
+    /// <summary>Mainkan 1 chart sampai OnMinigameComplete, hasil via callback. Dipakai Fase 3 2-pass.</summary>
+    private IEnumerator PlayChartOnce(RhythmChartConfig chart, System.Action<RhythmMinigameResult> onDone)
+    {
+        bool done = false;
+        RhythmMinigameResult res = null;
+        System.Action<RhythmMinigameResult> handler = (r) => { res = r; done = true; };
+        rhythmController.OnMinigameComplete += handler;
+        rhythmController.StartMinigame(chart, true); // start ter-script (bukan auto-loop)
+        yield return new WaitUntil(() => done);
+        rhythmController.OnMinigameComplete -= handler;
+        onDone?.Invoke(res);
+    }
+
+    /// <summary>Clone chart Resonansi dengan tuning lenient (attempt final dijamin sampai Epilog).</summary>
+    private RhythmChartConfig PrepareLenientResonansiChart()
+    {
+        var src = resonansiChart != null ? resonansiChart : CreateRuntimeResonansiChart();
+        var clone = Instantiate(src);
+        clone.name = src.name + "_RuntimeLenient";
+        clone.noteTravelDuration = Mathf.Max(src.noteTravelDuration, lenientTravelDuration);
+        clone.perfectWindow = Mathf.Max(src.perfectWindow, lenientPerfectWindow);
+        clone.goodWindow = Mathf.Max(src.goodWindow, lenientGoodWindow);
+        clone.maxMisses = Mathf.Max(src.maxMisses, lenientMaxMisses);
+        return clone;
     }
 
     private RhythmChartConfig CreateRuntimeSabarChart()

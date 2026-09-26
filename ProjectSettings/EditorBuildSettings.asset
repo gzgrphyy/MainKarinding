@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_Project/Scenes/Game/Ch1_TerasRumahKebun.unity
+    guid: 9878806fccae0ab489d007db017f2a09
+  - enabled: 1
+    path: Assets/_Project/Scenes/Game/TutorialMinigameRhythm.unity
+    guid: d47a3fc42534fd14c84e2721c19f3c38
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:

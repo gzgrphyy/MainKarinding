@@ -120,7 +120,7 @@ Scene       : Ch1_{Lokasi}.unity / {NamaMinigame}.unity (sudah sesuai draft lama
 | `Art/Characters/Rimba/Scene3/s3_rimba_bangga.png` | S3 | setelah minigame sukses |
 | ~~`Art/Characters/Abah/Scene3/s3_abah_serahkan.png`~~ **TIDAK JADI DIBUAT** | S3 | ~~menyerahkan karinding~~ — handoff diubah jadi dialogue/narasi only (keputusan user: tanpa animasi, sprite statis terasa kaku). Beat 1 reuse sprite existing (`s2_abah_duduk.png` / `s2_rimba_duduk.png`) |
 | `Art/Characters/Abah/Scene3/s3_abah_senyum_tipis.png` | S3 | closing line |
-| `Art/Characters/Abah/Scene4/s4_abah_bercerita.png` | S4 | **cek dulu** — coba reuse `abah_idle_teras_talking.png` (S1) atau `s2_abah_duduk.png` sebelum bikin baru |
+| `Art/Characters/Abah/Scene4/s4_abah_bercerita.png` | S4 | **TIDAK JADI DIBUAT (keputusan 26 Sep 2026, sesuai "cek reuse dulu" di plan)** — reuse `s2_abah_duduk.png` + `s2_rimba_duduk.png`, framing identik S3 |
 | `Art/Characters/Abah/Scene5/s5_abah_ajak_teras.png` | S5 | dialog ajak ke hutan |
 | `Art/Characters/Rimba/Scene5/s5_rimba_mencari_hutan.png` | S5 | idle/searching pose di hutan |
 | `Art/Characters/Abah/Scene5/s5_abah_reaksi_muda.png` / `_tipis.png` / `_pas.png` | S5 | 3 reaksi terima bambu |
@@ -162,9 +162,9 @@ Scene       : Ch1_{Lokasi}.unity / {NamaMinigame}.unity (sudah sesuai draft lama
 | File | Scene | Catatan |
 |---|---|---|
 | `Audio/Music/Ambience/ambience_siang.wav`, `ambience_sore.wav` | S2-S8 | pelengkap `s1_ambience_morning.wav` yang sudah ada (preset Pagi) |
-| `Audio/SFX/Karinding/sfx_karinding_dengung_low.wav` / `_mid.wav` / `_high.wav` | S2, S3, S6, S7 | belum ada di repo — cek dulu apakah tim audio sudah punya sebelum bikin baru |
-| `Audio/SFX/Karinding/sfx_bigbang_boom.wav` | S4 | trigger tepat di kata "...bledag!" |
-| AudioMixer snapshot `Dropout_S4` (bukan file, dibuat di dalam AudioMixer asset) | S4 | duck ambient sepersekian detik, auto-return |
+| `Audio/SFX/Karinding/sfx_karinding_dengung_low.wav` (satu clip saja — keputusan final 25 Sep 2026, vary volume/pitch; varian `_mid`/`_high` tidak jadi dibuat) | S2, S3, S6, S7 | dipakai sebagai loop pelan Beat 1 (vol 0.35) & Beat 3 (vol 0.22) |
+| `Audio/SFX/Transitions/sfx_bigbang_boom.wav` | S4 | ✅ ada (26 Sep 2026; header WAV rusak `0xFFFFFFFF` diperbaiki) — trigger tepat di kata "...bledag!" |
+| AudioMixer snapshot `Dropout_S4` (bukan file, dibuat di dalam AudioMixer asset) | S4 | **DIGANTI `CutsceneAudioManager.DuckAmbient()` (26 Sep 2026)** — project tidak pakai mixer sama sekali; duck via kode (0.08 → hold 0.4 dtk → return 1.2 dtk), efek dengar setara |
 | `Audio/SFX/Bambu/sfx_gesek_bambu.wav`, `sfx_potong_bambu.wav` | S5, S6 | search + cut-phase |
 | `Audio/SFX/Rimba/sfx_lari_rimba.wav` | S8 | footstep cepat selama chase |
 | `Audio/SFX/UI/sfx_whoosh_raih.wav` | S8 | konsisten folder dengan `s1_sfx_tap_confirm.wav` yang sudah ada |
@@ -270,7 +270,7 @@ Behavior: highlight per-bagian di Beat 4 pakai overlay child-object (bukan subme
 ---
 
 #### E3. Scene 3 — Belajar Memainkan Karinding
-**Scene file:** `Ch1_TerasRumahKebun.unity` + additive `TutorialMinigameRhythm.unity` `[keduanya perlu dibangun]`
+**Scene file:** `Ch1_TerasRumahKebun.unity` + `TutorialMinigameRhythm.unity` via **LoadScene replace penuh** (bukan additive — keputusan final 25 Sep 2026; `StoryState` DontDestroyOnLoad membawa beat + EntryPoint, controller resume langsung ke Beat 3)
 **Lokasi:** Teras (reuse `s2_bg_teras_siang.png`, dummy)
 
 | Beat | Isi | StoryState | Aset |
@@ -279,11 +279,11 @@ Behavior: highlight per-bagian di Beat 4 pakai overlay child-object (bukan subme
 | 2 | Load additive tutorial rhythm, jalankan `KarindingTutorialController` | `S3_TutorialRhythm` | `s3_rimba_pegang_canggung.png`, `sfx_karinding_dengung_low/mid/high.wav` |
 | 3 | Unload minigame, dialog closing | `S3_ClosingDialog` | `s3_rimba_bangga.png`, `s3_abah_senyum_tipis.png` |
 
-**Dialog Tabel (Beat 1 — handoff):** dikonfirmasi user: naskah asli cuma punya **2 baris Abah**, ditambah **1 baris baru di awalan** soal Abah menyerahkan karinding ke tangan Rimba (= total 3 baris Abah di Scene 3).
+**Dialog Tabel (Beat 1 — handoff):** final 25 Sep 2026 — naskah asli cuma punya **2 baris Abah**, ditambah **1 baris baru di awalan** ("Sok cepeung, Ba. Ieu karinding Abah, ayeuna giliran Rimba nyobaan." — callback ke "cepeung sing yakin" Scene 2) soal Abah menyerahkan karinding ke tangan Rimba (= total 3 baris Abah di Scene 3).
 
 | Karakter | Teks (Sunda) | Terjemahan |
 |---|---|---|
-| Abah | *(handoff — wording belum ditentukan, isi: Abah menyerahkan karinding ke tangan Rimba)* | *(TBD)* |
+| Abah | "Sok cepeung, Ba. Ieu karinding Abah, ayeuna giliran Rimba nyobaan." | Peganglah. Ini karinding Abah, sekarang giliran Rimba mencoba. |
 | *(narasi: Abah menyodorkan karinding ke arah Rimba)* | | |
 
 **Dialog Tabel (Beat 2 & 3 — dari naskah asli, 2 baris):**
@@ -294,7 +294,7 @@ Behavior: highlight per-bagian di Beat 4 pakai overlay child-object (bukan subme
 | *(narasi: Rimba tersenyum lebar, bangga dengan pencapaiannya sendiri)* | | |
 | Abah *(tersenyum tipis)* | "Omat eta lain sora Rimba, tapi hasil tina getaran nu di barengan ku resonansi." | Ingat, itu bukan suara Rimba, tapi hasil dari getaran yang dibarengi dengan resonansi. |
 
-Behavior: total **3 baris Abah** di Scene 3 — 1 handoff baru (Beat 1, dialogue-only) + 2 dari naskah. Baris "Ulah maksa" tampil SEBELUM minigame mulai (sebagai encouragement, bukan interupsi mid-gameplay — sistem minigame tidak mendukung pause-for-dialogue di tengah main), baris "Omat eta..." setelah minigame (pakai `s3_abah_senyum_tipis.png`); forced-fail-then-succeed tetap no-game-over; handoff balik ke teras tidak mengubah posisi karakter. `s3_rimba_bangga.png` dipakai tepat di narasi "Rimba tersenyum lebar".
+Behavior: total **3 baris Abah** di Scene 3 — 1 handoff baru (Beat 1, dialogue-only: "Sok cepeung, Ba. Ieu karinding Abah, ayeuna giliran Rimba nyobaan." — final 25 Sep 2026) + 2 dari naskah. Baris "Ulah maksa" tampil SEBELUM minigame mulai (sebagai encouragement, bukan interupsi mid-gameplay — sistem minigame tidak mendukung pause-for-dialogue di tengah main), baris "Omat eta..." setelah minigame (pakai `s3_abah_senyum_tipis.png`); Resonansi = **scripted 2-pass** (attempt 1 selalu staging "dengung pecah" + toast "Dengungna pecah... deui, Ba, sing sabar.", attempt 2 lenient dijamin lolos — no-game-over, otomatis tanpa klik ULANG); handoff balik ke teras tidak mengubah posisi karakter. `s3_rimba_bangga.png` dipakai tepat di narasi "Rimba tersenyum lebar".
 
 #### E4. Scene 4 — Filosofi Getaran dan Kehidupan
 **Scene file:** `Ch1_TerasRumahKebun.unity` — dialogue-only, tidak ada scene tambahan
@@ -305,7 +305,7 @@ Behavior: total **3 baris Abah** di Scene 3 — 1 handoff baru (Beat 1, dialogue
 | 1 | Dialog panjang Abah soal Big Bang & Alam Kosong | `s4_abah_bercerita.png` (cek reuse dulu) |
 | 2 | Tepat di "...bledag!": VFX flash + SFX + audio dropout | `sfx_bigbang_boom.wav`, AudioMixer snapshot `Dropout_S4` |
 
-**Dialog Tabel:**
+**Dialog Tabel:** 1 paragraf Abah, ditampilkan sebagai **3 bubble berurutan** (~150 karakter/bubble, muat di box 600x150 font 24 — keputusan 26 Sep 2026), **Sunda saja tanpa terjemahan** (keputusan 26 Sep 2026). Teks verbatim, trigger "bledag!" di segmen 3.
 
 | Karakter | Teks (Sunda) | Terjemahan |
 |---|---|---|

@@ -58,6 +58,9 @@ namespace MainKarinding.Cutscenes
         private bool waitingForInput;
         private string currentFullSunda = "";
         private string currentFullIndo = "";
+        private string currentTriggerWord;
+        private Action triggerCallback;
+        private bool triggerFired;
 
         public bool IsActive => dialogueBoxRoot != null && dialogueBoxRoot.activeSelf;
         public bool IsWaitingForInput => waitingForInput;
@@ -132,13 +135,18 @@ namespace MainKarinding.Cutscenes
         /// <summary>
         /// Show bubble untuk speaker tertentu. Anchor = HeadAnchor_* di atas kepala.
         /// Indo boleh kosong (misal reaksi visual).
+        /// triggerWord opsional: kalau teks terketik berakhiran kata itu (case-insensitive),
+        /// onTrigger dipanggil sekali — dipakai Scene 4 ("bledag!").
         /// </summary>
-        public void Show(string speaker, string sunda, string indo, Transform anchor, Action onComplete = null)
+        public void Show(string speaker, string sunda, string indo, Transform anchor, Action onComplete = null, string triggerWord = null, Action onTrigger = null)
         {
             currentSpeaker = speaker ?? "";
             currentAnchor = anchor;
             currentFullSunda = sunda ?? "";
             currentFullIndo = indo ?? "";
+            currentTriggerWord = triggerWord;
+            triggerCallback = onTrigger;
+            triggerFired = false;
 
             bool isRimba = currentSpeaker.ToLower().Contains("rimba");
             currentOffset = isRimba ? offsetRimba : offsetAbah;
@@ -192,6 +200,10 @@ namespace MainKarinding.Cutscenes
                 StopCoroutine(followCoroutine);
                 followCoroutine = null;
             }
+            // Cegah trigger basi fire setelah Hide.
+            triggerFired = true;
+            triggerCallback = null;
+            currentTriggerWord = null;
             HideContinueIndicator();
             isTyping = false;
             waitingForInput = false;
@@ -213,6 +225,7 @@ namespace MainKarinding.Cutscenes
                     translationText.text = currentFullIndo;
                 isTyping = false;
                 waitingForInput = true;
+                CheckTrigger(); // trigger tetap fire walau typing di-skip
                 ShowContinueIndicator();
             }
             else if (waitingForInput)
@@ -289,6 +302,7 @@ namespace MainKarinding.Cutscenes
             {
                 if (dialogueText != null)
                     dialogueText.text += c;
+                CheckTrigger();
                 yield return new WaitForSeconds(typingSpeed);
             }
 
@@ -304,6 +318,21 @@ namespace MainKarinding.Cutscenes
             HideContinueIndicator();
             onComplete?.Invoke();
             typingCoroutine = null;
+        }
+
+        /// <summary>
+        /// Cek trigger keyword setiap karakter diketik (atau saat skip). Fire sekali saja.
+        /// </summary>
+        private void CheckTrigger()
+        {
+            if (triggerFired || string.IsNullOrEmpty(currentTriggerWord)) return;
+            string typed = dialogueText != null ? dialogueText.text : currentFullSunda;
+            if (!string.IsNullOrEmpty(typed) && typed.EndsWith(currentTriggerWord, StringComparison.OrdinalIgnoreCase))
+            {
+                triggerFired = true;
+                try { if (triggerCallback != null) triggerCallback(); }
+                catch (Exception e) { Debug.LogException(e); }
+            }
         }
 
         private void ShowContinueIndicator()

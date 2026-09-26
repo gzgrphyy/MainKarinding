@@ -18,5 +18,9 @@ namespace MainKarinding.Cutscenes
         [Header("Scene 2 - Teras Siang (duduk)")]
         [Tooltip("Pose duduk Abah di teras siang. File: s2_abah_duduk.png")]
         public Sprite duduk;
+
+        [Header("Scene 3 - Belajar Memainkan Karinding")]
+        [Tooltip("Abah tersenyum tipis di closing Scene 3. File: s3_abah_senyum_tipis.png")]
+        public Sprite senyumTipis;
     }
 }

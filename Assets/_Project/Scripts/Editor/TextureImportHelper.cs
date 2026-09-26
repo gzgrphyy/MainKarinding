@@ -76,6 +76,44 @@ namespace MainKarinding.Editor
             Debug.Log($"[TextureImportHelper] Configured {count} background sprites as Sprite (2D and UI)");
         }
 
+        [MenuItem("Main Karinding/Setup/Configure Scene 2 & 3 Character Sprites")]
+        public static void ConfigureScene2And3CharacterSprites()
+        {
+            string[] folders = new string[]
+            {
+                "Assets/_Project/Art/Characters/Rimba/Scene2",
+                "Assets/_Project/Art/Characters/Rimba/Scene3",
+                "Assets/_Project/Art/Characters/Abah/Scene2",
+                "Assets/_Project/Art/Characters/Abah/Scene3",
+                "Assets/_Project/Art/Models/Karinding/Scene2"
+            };
+
+            int count = 0;
+            foreach (string folder in folders)
+            {
+                string[] guids = AssetDatabase.FindAssets("t:Texture2D", new[] { folder });
+                foreach (string guid in guids)
+                {
+                    string path = AssetDatabase.GUIDToAssetPath(guid);
+
+                    TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                    if (importer != null)
+                    {
+                        importer.textureType = TextureImporterType.Sprite;
+                        importer.spriteImportMode = SpriteImportMode.Single;
+                        importer.spritePixelsPerUnit = 100;
+                        importer.filterMode = FilterMode.Point;
+                        importer.textureCompression = TextureImporterCompression.Uncompressed;
+                        importer.SaveAndReimport();
+                        count++;
+                    }
+                }
+            }
+
+            AssetDatabase.Refresh();
+            Debug.Log($"[TextureImportHelper] Configured {count} Scene 2/3 sprites as Sprite");
+        }
+
         [MenuItem("Main Karinding/Setup/Configure All UI Sprites")]
         public static void ConfigureAllUISprites()
         {

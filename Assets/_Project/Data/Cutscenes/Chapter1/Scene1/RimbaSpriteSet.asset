@@ -24,3 +24,5 @@ MonoBehaviour:
   - {fileID: 21300000, guid: b849f48155a7891469febea71525f718, type: 3}
   idleRight: {fileID: 21300000, guid: 874470f19769dc34f9084807d2f97c22, type: 3}
   duduk: {fileID: 21300000, guid: cdee679445f5d114eae8fd60e313b7a4, type: 3}
+  pegangCanggung: {fileID: 21300000, guid: 07998aa284f340241a49cea3f2fb37ca, type: 3}
+  bangga: {fileID: 21300000, guid: dbe51d51427a1bf41ae5b1ba0b15b82a, type: 3}

@@ -43,6 +43,20 @@ namespace MainKarinding.Core
     }
 
     /// <summary>
+    /// Scene mana yang harus dijalankan saat Ch1_TerasRumahKebun di-load.
+    /// Ch1_TerasRumahKebun menampung Scene 1/2/3 sekaligus, jadi butuh penentu masuk.
+    /// Utamakan set lewat Inspector untuk testing langsung satu scene.
+    /// </summary>
+    public enum Ch1EntryPoint
+    {
+        Scene1 = 0,
+        Scene2 = 1,
+        Scene3 = 2,
+        Scene4 = 3,
+        Scene5 = 4, // Menunggu Ch1_Hutan dibangun (Scene 5)
+    }
+
+    /// <summary>
     /// Singleton DontDestroyOnLoad — progres chapter. Baru (PLAN A.2).
     /// </summary>
     public class StoryState : MonoBehaviour
@@ -52,8 +66,24 @@ namespace MainKarinding.Core
         [Header("State")]
         [SerializeField] private Ch1Beat currentBeat = Ch1Beat.None;
 
+        [Header("Entry Point (testing)")]
+        [Tooltip("Scene yang aktif saat Ch1_TerasRumahKebun di-load. Di luar play mode, isi ini untuk test satu scene tanpa main dari awal.")]
+        [SerializeField] private Ch1EntryPoint entryPoint = Ch1EntryPoint.Scene1;
+
         public Ch1Beat CurrentBeat => currentBeat;
+        public Ch1EntryPoint EntryPoint => entryPoint;
         public event System.Action<Ch1Beat> beatChanged;
+
+        /// <summary>
+        /// Tandai scene masuk berikutnya. Dipanggil controller aktif sebelum LoadScene
+        /// supaya nilai ini ikut terbawa ke scene berikutnya (DontDestroyOnLoad).
+        /// </summary>
+        public void SetEntryPoint(Ch1EntryPoint point)
+        {
+            if (entryPoint == point) return;
+            entryPoint = point;
+            Debug.Log($"[StoryState] EntryPoint -> {point}");
+        }
 
         private void Awake()
         {
@@ -77,6 +107,11 @@ namespace MainKarinding.Core
 
         public static void EnsureExists()
         {
+            if (Instance != null) return;
+            // Scene instance menang — Awake gate bisa jalan lebih dulu dari Awake
+            // StoryState (urutan Awake antar-root tidak dijamin), jadi cari dulu di
+            // scene sebelum bikin default (default = Scene1, bikin gate salah tutup).
+            Instance = Object.FindFirstObjectByType<StoryState>();
             if (Instance != null) return;
             var go = new GameObject("StoryState");
             go.AddComponent<StoryState>();
