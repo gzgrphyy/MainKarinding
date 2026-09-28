@@ -114,6 +114,42 @@ namespace MainKarinding.Editor
             Debug.Log($"[TextureImportHelper] Configured {count} Scene 2/3 sprites as Sprite");
         }
 
+        [MenuItem("Main Karinding/Setup/Configure Scene 5 Sprites")]
+        public static void ConfigureScene5Sprites()
+        {
+            string[] folders = new string[]
+            {
+                "Assets/_Project/Art/Characters/Abah/Scene5",
+                "Assets/_Project/Art/Environment/Chapter1/Scene5",
+                "Assets/_Project/Art/Items"
+            };
+
+            int count = 0;
+            foreach (string folder in folders)
+            {
+                string[] guids = AssetDatabase.FindAssets("t:Texture2D", new[] { folder });
+                foreach (string guid in guids)
+                {
+                    string path = AssetDatabase.GUIDToAssetPath(guid);
+
+                    TextureImporter importer = AssetImporter.GetAtPath(path) as TextureImporter;
+                    if (importer != null)
+                    {
+                        importer.textureType = TextureImporterType.Sprite;
+                        importer.spriteImportMode = SpriteImportMode.Single;
+                        importer.spritePixelsPerUnit = 100;
+                        importer.filterMode = FilterMode.Point;
+                        importer.textureCompression = TextureImporterCompression.Uncompressed;
+                        importer.SaveAndReimport();
+                        count++;
+                    }
+                }
+            }
+
+            AssetDatabase.Refresh();
+            Debug.Log($"[TextureImportHelper] Configured {count} Scene 5 sprites as Sprite");
+        }
+
         [MenuItem("Main Karinding/Setup/Configure All UI Sprites")]
         public static void ConfigureAllUISprites()
         {

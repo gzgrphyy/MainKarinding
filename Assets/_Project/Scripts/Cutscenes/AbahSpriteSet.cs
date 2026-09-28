@@ -22,5 +22,15 @@ namespace MainKarinding.Cutscenes
         [Header("Scene 3 - Belajar Memainkan Karinding")]
         [Tooltip("Abah tersenyum tipis di closing Scene 3. File: s3_abah_senyum_tipis.png")]
         public Sprite senyumTipis;
+
+        [Header("Scene 5 - Ajak ke Hutan + Reaksi Bambu")]
+        [Tooltip("Abah mengajak ke hutan di teras. File: s5_abah_ajak_teras.png")]
+        public Sprite ajakTeras;
+        [Tooltip("Reaksi bambu tua/kolot. File: s5_abah_reaksi_tua.png")]
+        public Sprite reaksiTua;
+        [Tooltip("Reaksi bambu tipis/kopong. File: s5_abah_reaksi_tipis.png")]
+        public Sprite reaksiTipis;
+        [Tooltip("Reaksi bambu pas. File: s5_abah_reaksi_pas.png")]
+        public Sprite reaksiPas;
     }
 }
