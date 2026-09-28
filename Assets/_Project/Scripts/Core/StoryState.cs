@@ -54,6 +54,7 @@ namespace MainKarinding.Core
         Scene3 = 2,
         Scene4 = 3,
         Scene5 = 4, // Menunggu Ch1_Hutan dibangun (Scene 5)
+        Scene6 = 5, // Assembly crafting (Scene 6, Teras + MinigameCrafting)
     }
 
     /// <summary>

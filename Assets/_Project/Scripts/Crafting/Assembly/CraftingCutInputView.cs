@@ -282,8 +282,16 @@ public class CraftingCutInputView : MonoBehaviour, IPointerDownHandler, IDragHan
         Debug.Log($"[CutInput] Up start={start} end={end} dir={dir} disp={totalDisplacement:F1} path={totalPathLength:F1} ratio={straightnessRatio:F2} top2bottom={isTopToBottom} minDist={minDistance:F1} minStraight={minStraightness:F2} valid={(totalDisplacement>=minDistance && straightnessRatio>=minStraightness && isTopToBottom)} points={pathPoints.Count}");
 
         if (totalDisplacement < minDistance) return;
-        if (straightnessRatio < minStraightness) return;
-        if (!isTopToBottom) return;
+        if (straightnessRatio < minStraightness)
+        {
+            if (controller != null) controller.NotifyWrongInput();
+            return;
+        }
+        if (!isTopToBottom)
+        {
+            if (controller != null) controller.NotifyWrongInput();
+            return;
+        }
 
         controller.AddCutProgress(straightnessRatio);
         PlayFeedback();

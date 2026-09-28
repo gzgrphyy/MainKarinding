@@ -28,6 +28,7 @@ public class CraftingAssemblyController : MonoBehaviour
     public event Action OnAssemblyComplete;
     public event Action OnAssemblyFailed;
     public event Action<int> OnTapFallCountChanged;
+    public event Action OnFirstWrong;
 
     public float Progress => progress;
     public AssemblyPhase CurrentPhase => currentPhase;
@@ -43,6 +44,7 @@ public class CraftingAssemblyController : MonoBehaviour
     private bool isAssemblyActive;
     private int tapFallCount;
     private bool wasAtFloor;
+    private bool wrongFired;
 
     private void Awake()
     {
@@ -111,6 +113,7 @@ public class CraftingAssemblyController : MonoBehaviour
                 wasAtFloor = true;
                 tapFallCount++;
                 Debug.Log($"[CraftingAssemblyController] Fall {tapFallCount}/{GetMaxFalls()} -> balik ke 50%");
+                NotifyWrongInput();
                 OnTapFallCountChanged?.Invoke(tapFallCount);
                 if (progressView != null) progressView.ShowToast($"Jatuh {tapFallCount}/{GetMaxFalls()}", 1f);
                 if (progressView != null) progressView.PlayFallFeedback();
@@ -146,6 +149,13 @@ public class CraftingAssemblyController : MonoBehaviour
         return 2;
     }
 
+    public void NotifyWrongInput()
+    {
+        if (wrongFired || hasCompletedFired) return;
+        wrongFired = true;
+        OnFirstWrong?.Invoke();
+    }
+
     public void StartAssembly()
     {
         progress = 0f;
@@ -155,6 +165,7 @@ public class CraftingAssemblyController : MonoBehaviour
         isAssemblyActive = true;
         tapFallCount = 0;
         wasAtFloor = false;
+        wrongFired = false;
 
         Debug.Log("[CraftingAssemblyController] StartAssembly - phase Cutting, progress 0");
 
@@ -335,6 +346,7 @@ public class CraftingAssemblyController : MonoBehaviour
         timeSinceLastTap = 0f;
         tapFallCount = 0;
         wasAtFloor = false;
+        wrongFired = false;
         UpdateUIVisibility();
         OnProgressChanged?.Invoke(progress, currentPhase);
         OnPhaseChanged?.Invoke(currentPhase);
@@ -360,6 +372,7 @@ public class CraftingAssemblyController : MonoBehaviour
         isAssemblyActive = false;
         tapFallCount = 0;
         wasAtFloor = false;
+        wrongFired = false;
 
         if (assemblyRootGroup != null)
             assemblyRootGroup.gameObject.SetActive(false);

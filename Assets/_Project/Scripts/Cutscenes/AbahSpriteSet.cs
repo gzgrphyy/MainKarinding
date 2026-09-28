@@ -32,5 +32,11 @@ namespace MainKarinding.Cutscenes
         public Sprite reaksiTipis;
         [Tooltip("Reaksi bambu pas. File: s5_abah_reaksi_pas.png")]
         public Sprite reaksiPas;
+
+        [Header("Scene 6 - Assembly Bark (tanpa bubble)")]
+        [Tooltip("Bark lancar saat crossing Cut->Tap. File: s6_abah_encourage.png")]
+        public Sprite encourage;
+        [Tooltip("Bark salah pertama. File: s6_abah_koreksi.png")]
+        public Sprite koreksi;
     }
 }
