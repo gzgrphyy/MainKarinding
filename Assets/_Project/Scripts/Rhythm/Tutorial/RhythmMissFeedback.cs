@@ -54,6 +54,17 @@ public class RhythmMissFeedback : MonoBehaviour
         set { suppressResultOverlay = value; }
     }
 
+    [Header("Suppress Success Only (dipakai alur standar Scene 7)")]
+    [Tooltip("True = sembunyikan overlay Success saja (ronde standar langsung chain ke free-play), overlay Fail tetap tampil. Dipakai StandardRhythmLauncher.")]
+    [SerializeField] private bool suppressSuccessOverlay = false;
+
+    /// <summary>Set true untuk sembunyikan overlay Success saja (Fail tetap tampil).</summary>
+    public bool SuppressSuccessOverlay
+    {
+        get { return suppressSuccessOverlay; }
+        set { suppressSuccessOverlay = value; }
+    }
+
     private RhythmMinigameController _controller;
     private readonly Dictionary<LaneSide, RectTransform> _laneButtons = new Dictionary<LaneSide, RectTransform>();
     private RectTransform _hitLineRect;
@@ -153,7 +164,11 @@ public class RhythmMissFeedback : MonoBehaviour
             Debug.Log("[RhythmMissFeedback] overlay hasil di-suppress (alur scripted, mis. tutorial)");
             return;
         }
-        if (result.passed) ShowSuccessOverlay(result);
+        if (result.passed)
+        {
+            if (!suppressSuccessOverlay) ShowSuccessOverlay(result);
+            else Debug.Log("[RhythmMissFeedback] overlay Success di-suppress (chain ke ronde berikutnya)");
+        }
         else ShowFailOverlay();
     }
 

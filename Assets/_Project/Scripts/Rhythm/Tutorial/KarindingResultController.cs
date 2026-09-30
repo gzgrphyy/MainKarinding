@@ -20,6 +20,9 @@ public class KarindingResultController : MonoBehaviour
     [Tooltip("Nama scene tujuan untuk Lanjut. Kosong = placeholder, hanya log (biar bisa diisi scene lanjutan nanti).")]
     [SerializeField] private string nextSceneName = "";
 
+    /// <summary>Di-set StandardRhythmLauncher saat runtime (scene file masih kosong).</summary>
+    public void SetNextScene(string sceneName) { nextSceneName = sceneName; }
+
     [Header("Wiring - SuccessOverlay 2 Buttons")]
     [Tooltip("Tombol Ulang (kiri, merah). Kosong = cari BtnContainer/Btn_UlangLagi atau Btn_Ulang atau Btn_Retry.")]
     [SerializeField] private Button ulangButton;

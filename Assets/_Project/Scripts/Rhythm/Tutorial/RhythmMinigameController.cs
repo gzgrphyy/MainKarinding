@@ -51,6 +51,13 @@ public class RhythmMinigameController : MonoBehaviour
     [Tooltip("Durasi countdown detik sebelum mulai (3 = 3,2,1,GO). 0 = tanpa countdown.")]
     [SerializeField] private int countdownSeconds = 3;
 
+    [Header("Free Play (Scene 7)")]
+    [Tooltip("True = tap bebas tanpa skor/miss: note yang lewat despawn diam-diam, judgement hanya visual+suara, ronde selalu passed. Di-set StandardRhythmLauncher.")]
+    [SerializeField] private bool freePlayMode = false;
+
+    /// <summary>Mode tap bebas Scene 7. Persistent — tidak di-reset oleh StartMinigame, jadi RetryLast ikut mode yang sama.</summary>
+    public bool FreePlayMode { get { return freePlayMode; } set { freePlayMode = value; } }
+
     private RhythmChartConfig _activeConfig;
     private float _songTime;
     private bool _isPlaying;
@@ -273,6 +280,17 @@ public class RhythmMinigameController : MonoBehaviour
         {
             if (_activeNotes[i].view == view)
             {
+                if (freePlayMode)
+                {
+                    // Free-play: note lewat tanpa penalti — despawn diam-diam, tetap hitung selesai.
+                    var silent = _activeNotes[i];
+                    if (silent.view != null) silent.view.MarkJudged();
+                    _activeNotes.Remove(silent);
+                    _judgedCount++;
+                    if (silent.view != null) Destroy(silent.view.gameObject);
+                    TryCompleteMinigame();
+                    return;
+                }
                 RegisterJudgement(_activeNotes[i], HitGrade.Miss);
                 return;
             }
@@ -284,6 +302,20 @@ public class RhythmMinigameController : MonoBehaviour
         if (an.view != null) an.view.MarkJudged();
         _activeNotes.Remove(an);
         _judgedCount++;
+
+        if (freePlayMode)
+        {
+            // PLAN E7: tap bebas — hanya visual + suara, tanpa skor/kombo/miss.
+            OnNoteJudged?.Invoke(an.data, grade);
+            if (an.view != null)
+            {
+                if (grade == HitGrade.Perfect) an.view.PlayPerfectFeedback();
+                else if (grade == HitGrade.Good) an.view.PlayGoodFeedback();
+                else Destroy(an.view.gameObject);
+            }
+            TryCompleteMinigame();
+            return;
+        }
 
         if (grade == HitGrade.Perfect) _result.perfectCount++;
         else if (grade == HitGrade.Good) _result.goodCount++;
@@ -409,7 +441,7 @@ public class RhythmMinigameController : MonoBehaviour
         int total = _pendingSpawns.Count;
         _result.accuracy = _result.GetAccuracy(total);
         _result.rank = RhythmMinigameResult.GetRank(_result.accuracy);
-        _result.passed = _result.missCount < _activeConfig.maxMisses;
+        _result.passed = freePlayMode ? true : _result.missCount < _activeConfig.maxMisses;
         // Ronde selesai -> kunci start otomatis. Ronde baru hanya via klik ULANG (RetryLast)
         // atau start ter-script (tutorial Fase 3).
         _awaitingManualRestart = true;

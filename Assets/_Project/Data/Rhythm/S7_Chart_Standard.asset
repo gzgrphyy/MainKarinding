@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51e9190ed9d24513955532435143d29f, type: 3}
+  m_Name: S7_Chart_Standard
+  m_EditorClassIdentifier: Assembly-CSharp::RhythmChartConfig
+  chartId: s7_standard
+  backgroundMusic: {fileID: 0}
+  noteTravelDuration: 1.2
+  notes:
+  - spawnTime: 2
+    lane: 0
+  - spawnTime: 2.8
+    lane: 1
+  - spawnTime: 3.6
+    lane: 2
+  - spawnTime: 4.4
+    lane: 3
+  - spawnTime: 5.2
+    lane: 1
+  - spawnTime: 6
+    lane: 2
+  - spawnTime: 6.8
+    lane: 0
+  - spawnTime: 7.6
+    lane: 3
+  - spawnTime: 8.4
+    lane: 1
+  - spawnTime: 9.19999981
+    lane: 2
+  perfectWindow: 0.08
+  goodWindow: 0.18
+  scorePerPerfect: 100
+  scorePerGood: 50
+  comboStep: 10
+  comboMultiplier: 0.5
+  maxMisses: 5

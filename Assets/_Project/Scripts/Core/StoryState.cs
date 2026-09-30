@@ -55,6 +55,9 @@ namespace MainKarinding.Core
         Scene4 = 3,
         Scene5 = 4, // Menunggu Ch1_Hutan dibangun (Scene 5)
         Scene6 = 5, // Assembly crafting (Scene 6, Teras + MinigameCrafting)
+        Scene7 = 6, // Main karinding buatan sendiri (Scene 7, Teras + MinigameRhythm)
+        Scene8 = 7, // Sore hari sebelum Abah pergi (Scene 8, Teras)
+        Scene9 = 8, // Rimba terbangun (Scene 9, Hutan nyata)
     }
 
     /// <summary>

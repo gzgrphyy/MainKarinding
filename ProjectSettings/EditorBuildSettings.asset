@@ -20,6 +20,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/Game/MinigameCrafting.unity
     guid: 9ef20f29f8d540733773f534b5f362d0
+  - enabled: 1
+    path: Assets/_Project/Scenes/Game/MinigameRhythm.unity
+    guid: 385b9754c9cb357479f1183a4b675d08
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
