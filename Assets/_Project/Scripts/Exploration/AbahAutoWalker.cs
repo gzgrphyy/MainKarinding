@@ -46,6 +46,13 @@ namespace MainKarinding.Exploration
             Walking = true;
         }
 
+        /// <summary>Lanjut jalan ke titik baru (dipakai Scene 8: keluar layar setelah "Moal Kataekan").</summary>
+        public void ResumeWalking(float newStopX)
+        {
+            stopX = newStopX;
+            Walking = true;
+        }
+
         private void Update()
         {
             if (!Walking) return;
