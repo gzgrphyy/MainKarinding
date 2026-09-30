@@ -27,5 +27,13 @@ namespace MainKarinding.Cutscenes
         public Sprite pegangCanggung;
         [Tooltip("Rimba bangga setelah berhasil. File: s3_rimba_bangga.png")]
         public Sprite bangga;
+
+        [Header("Scene 9 - Hutan Nyata (terbangun)")]
+        [Tooltip("Rimba bersandar pohon, sendirian. File: s9_rimba_sandar_pohon.png")]
+        public Sprite sandarPohon;
+        [Tooltip("Tangan meraba pinggang, kosong. File: s9_rimba_meraba_pinggang.png")]
+        public Sprite merabaPinggang;
+        [Tooltip("Rimba berdiri, End of Chapter 1. File: s9_rimba_berdiri.png")]
+        public Sprite berdiri;
     }
 }

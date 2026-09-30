@@ -291,7 +291,10 @@ namespace MainKarinding.Cutscenes
         {
             if (audioManager != null) audioManager.FadeOutAmbient(0.5f);
             yield return StartCoroutine(FadeBlackscreen(true, blackscreenDuration + 0.5f));
-            Debug.Log("[Scene8Cutscene] Scene 8 selesai — lanjut Scene 9 (S9_RimbaBangun). Freeze sampai Scene 9 dibangun.");
+            Debug.Log("[Scene8Cutscene] Scene 8 selesai — whiteout ke Scene 9 (S9_RimbaBangun).");
+            StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene9);
+            // Ch1_Hutan terdaftar di Build Settings. Whiteout dibuka di Scene 9 (mulai putih).
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Ch1_Hutan");
         }
 
         private void ApplyRimbaSprite(Sprite sprite, string fieldName)
