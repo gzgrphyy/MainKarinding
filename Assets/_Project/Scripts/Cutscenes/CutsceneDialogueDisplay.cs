@@ -236,24 +236,12 @@ namespace MainKarinding.Cutscenes
         /// </summary>
         public void OnTap()
         {
-            if (isTyping && canSkipTyping)
-            {
-                // Skip typing animation, show full text immediately
-                if (typingCoroutine != null)
-                    StopCoroutine(typingCoroutine);
-
-                if (dialogueText != null)
-                    dialogueText.text = currentFullText;
-
-                isTyping = false;
-                waitingForInput = true;
-                ShowContinueIndicator();
-            }
-            else if (waitingForInput)
-            {
-                // Continue to next dialogue
-                waitingForInput = false;
-            }
+            // Tap selama teks masih mengetik diabaikan total.
+            // Dulu ada skip-typing di sini, tapi itu membunuh coroutine
+            // pemilik onComplete sehingga dialog macet dan tidak lanjut.
+            if (!waitingForInput)
+                return;
+            waitingForInput = false;
         }
 
         private IEnumerator TypeText(string text, System.Action onComplete)

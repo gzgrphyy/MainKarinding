@@ -11,7 +11,7 @@ namespace MainKarinding.Exploration
     public class RimbaWalker : MonoBehaviour
     {
         [Header("Gerak - USER ATUR")]
-        [SerializeField] private float speed = 3f;
+        [SerializeField] private float speed = 1.7f;
         [SerializeField] private float minX = -7.5f;
         [SerializeField] private float maxX = 7.5f;
         [SerializeField] private float minY = -3.4f;
@@ -56,11 +56,11 @@ namespace MainKarinding.Exploration
             if (Locked || analog == null || !analog.isActiveAndEnabled) return;
 
             Vector2 v = analog.Value;
-            if (v.magnitude > 0.15f)
+            // Dikunci sumbu X saja: Y tetap di posisi spawn, analog atas/bawah diabaikan.
+            if (Mathf.Abs(v.x) > 0.15f)
             {
                 Vector3 p = transform.position;
                 p.x = Mathf.Clamp(p.x + v.x * speed * Time.deltaTime, minX, maxX);
-                p.y = Mathf.Clamp(p.y + v.y * speed * Time.deltaTime, minY, maxY);
                 transform.position = p;
 
                 if (v.x > 0.1f) SetFlip(false);

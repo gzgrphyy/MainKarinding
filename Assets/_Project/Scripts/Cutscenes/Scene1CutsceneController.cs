@@ -244,14 +244,10 @@ namespace MainKarinding.Cutscenes
 
             currentBeat = 4;
 
-            // Switch shots
-            if (shot1Root != null) shot1Root.SetActive(false);
-            if (shot2Root != null) shot2Root.SetActive(true);
-
-            // Hierarchy-driven: sprite Shot2 ngikut Inspector, jangan overwrite.
-
-            // Fade in Shot 2 sprites for smooth reveal
-            StartCoroutine(FadeSpriteRenderers(new[] { shot2Abah, shot2Rimba }, 0.5f));
+            // Switch sudah terjadi di balik hitam (SwitchToShot2UnderBlack).
+            // Idempoten: amankan state kalau Beat 4 dipanggil langsung.
+            if (shot1Root != null && shot1Root.activeSelf) shot1Root.SetActive(false);
+            if (shot2Root != null && !shot2Root.activeSelf) shot2Root.SetActive(true);
 
             // Box standby nyala duluan ("..."), dialog asli mulai setelah tombol Lihat (Beat 7).
             if (displayShot2 != null)
@@ -605,7 +601,10 @@ namespace MainKarinding.Cutscenes
                     float holdDuration = blackscreenDuration - 0.6f; // Subtract fade in/out time
                     if (holdDuration > 0)
                         yield return new WaitForSeconds(holdDuration);
-                    
+
+                    // Ganti shot selagi hitam penuh — yang tersingkap nanti langsung Shot 2.
+                    SwitchToShot2UnderBlack();
+
                     // Fade out (1 → 0) over 0.3s
                     yield return StartCoroutine(FadeImage(blackImage, 1f, 0f, 0.3f));
                     
@@ -626,6 +625,25 @@ namespace MainKarinding.Cutscenes
 
             // Proceed to Beat 4
             ExecuteBeat4();
+        }
+
+        /// <summary>
+        /// Ganti Shot 1 -> Shot 2 selagi layar hitam penuh (dipanggil dari tengah transisi).
+        /// </summary>
+        private void SwitchToShot2UnderBlack()
+        {
+            if (shot1Root != null) shot1Root.SetActive(false);
+            if (shot2Root != null) shot2Root.SetActive(true);
+            // Pastikan sprite Shot 2 tampil penuh, bukan sisa alpha dari fade.
+            foreach (var sr in new[] { shot2Abah, shot2Rimba })
+            {
+                if (sr != null)
+                {
+                    Color c = sr.color;
+                    c.a = 1f;
+                    sr.color = c;
+                }
+            }
         }
 
         private IEnumerator DelayedExecute(float delay, System.Action action)

@@ -215,23 +215,12 @@ namespace MainKarinding.Cutscenes
 
         public void OnTap()
         {
-            if (isTyping && canSkipTyping)
-            {
-                if (typingCoroutine != null)
-                    StopCoroutine(typingCoroutine);
-                if (dialogueText != null)
-                    dialogueText.text = currentFullSunda;
-                if (translationText != null)
-                    translationText.text = currentFullIndo;
-                isTyping = false;
-                waitingForInput = true;
-                CheckTrigger(); // trigger tetap fire walau typing di-skip
-                ShowContinueIndicator();
-            }
-            else if (waitingForInput)
-            {
-                waitingForInput = false;
-            }
+            // Tap selama teks masih mengetik diabaikan total.
+            // Skip-typing dihapus: StopCoroutine membunuh pemilik onComplete
+            // sehingga sequence macet (teks penuh tapi dialog tidak lanjut).
+            if (!waitingForInput)
+                return;
+            waitingForInput = false;
         }
 
         private IEnumerator FollowAnchor()

@@ -10,7 +10,7 @@ namespace MainKarinding.Exploration
     public class AbahAutoWalker : MonoBehaviour
     {
         [Header("Gerak - USER ATUR")]
-        [SerializeField] private float speed = 1.6f;
+        [SerializeField] private float speed = 2f;
         [SerializeField] private float stopX = 5f;
         [SerializeField] private float frameTime = 0.14f;
 
