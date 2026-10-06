@@ -29,6 +29,11 @@ namespace MainKarinding.Cutscenes
         [Header("UI Components")]
         [SerializeField] private CutsceneDialogueDisplay dialogueDisplay;
         [SerializeField] private FloatingDialogueController floatingDialogue;
+        [Header("Dialogue Boxes Per-Shot (hierarchy-driven)")]
+        [Tooltip("Shot1 follow kepala (Beat2). Drag DialogueBox_Shot1.")]
+        [SerializeField] private FloatingDialogueController floatingShot1;
+        [Tooltip("Shot2 statis bawah (Beat7). Drag DialogueBox_Shot2.")]
+        [SerializeField] private CutsceneDialogueDisplay displayShot2;
         [SerializeField] private CutsceneActionButton actionButton;
         [SerializeField] private GameObject blackscreenOverlay;
         [Tooltip("Tap fullscreen dialog. Auto-find kalau kosong. Dimatikan paksa saat Beat 5 biar tidak menelan tap Lihat.")]
@@ -44,6 +49,10 @@ namespace MainKarinding.Cutscenes
 
         [Header("Animation")]
         [SerializeField] private CutsceneSpriteSwapper rimbaSpriteSwapper;
+        [Tooltip("Beat6 swap via Inspector (hierarchy-driven). Isi misal [abah2, mountain2]. Kosong = default 2-frame dari SpriteSet tanpa noleh.")]
+        [SerializeField] private Sprite[] beat6SwapSprites = new Sprite[0];
+        [Tooltip("Timing per-frame Beat6. Kosong/tidak cocok = default [0.15, 0.3].")]
+        [SerializeField] private float[] beat6SwapTimings = new float[0];
 
         [Header("Audio")]
         [SerializeField] private CutsceneAudioManager audioManager;
@@ -57,6 +66,12 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private AbahAutoWalker abahWalker;
         [SerializeField] private WalkOffTrigger walkTrigger;
         [SerializeField] private AnalogStickController analogStick;
+
+        [Header("Exploration - BATAS KANAN (USER ATUR)")]
+        [Tooltip("Spawn X Rimba saat Beat 8 dimulai (harus >= maxX RimbaWalker supaya dia MASUK dari kanan).")]
+        [SerializeField] private float spawnRimbaX = 8.5f;
+        [Tooltip("Spawn X Abah saat Beat 8 dimulai (harus >= spawn Rimba supaya Abah di depan).")]
+        [SerializeField] private float spawnAbahX = 10.2f;
 
         private Vector3 spawnRimbaPos;
         private Vector3 spawnAbahPos;
@@ -175,19 +190,24 @@ namespace MainKarinding.Cutscenes
             if (shot1Root != null) shot1Root.SetActive(true);
             if (shot2Root != null) shot2Root.SetActive(false);
 
-            // Set initial sprites
-            if (shot1Rimba != null && rimbaSpriteSet != null)
-                shot1Rimba.sprite = rimbaSpriteSet.idlePintu;
-
-            if (shot1Abah != null && abahSpriteSet != null)
-                shot1Abah.sprite = abahSpriteSet.idleTerasTalking;
+            // Tahap 1 hierarchy-driven: sprite awal ngikut Inspector
+            // (pasang pintu1 di Shot1/Char_Rimba via drag-drop), jangan overwrite dari SpriteSet.
 
             // Play ambient audio
             if (audioManager != null && ambientMorning != null)
                 audioManager.PlayAmbient(ambientMorning, 0.6f);
 
-            // Auto-advance to Beat 2 after 1 second
-            StartCoroutine(DelayedExecute(1f, ExecuteBeat2));
+            // Dua tahap sebelum Beat 2 (dialog Abah)
+            StartCoroutine(Beat1TwoStage());
+        }
+
+        private IEnumerator Beat1TwoStage()
+        {
+            yield return new WaitForSeconds(2f);
+            if (shot1Rimba != null && rimbaSpriteSet != null && rimbaSpriteSet.idlePintu != null)
+                shot1Rimba.sprite = rimbaSpriteSet.idlePintu;
+            yield return new WaitForSeconds(1f);
+            ExecuteBeat2();
         }
 
         /// <summary>
@@ -228,15 +248,16 @@ namespace MainKarinding.Cutscenes
             if (shot1Root != null) shot1Root.SetActive(false);
             if (shot2Root != null) shot2Root.SetActive(true);
 
-            // Set Shot 2 sprites (berdampingan dari awal)
-            if (shot2Abah != null && abahSpriteSet != null)
-                shot2Abah.sprite = abahSpriteSet.lookoutFacingMountain;
-
-            if (shot2Rimba != null && rimbaSpriteSet != null)
-                shot2Rimba.sprite = rimbaSpriteSet.lookoutFacingAbah;
+            // Hierarchy-driven: sprite Shot2 ngikut Inspector, jangan overwrite.
 
             // Fade in Shot 2 sprites for smooth reveal
             StartCoroutine(FadeSpriteRenderers(new[] { shot2Abah, shot2Rimba }, 0.5f));
+
+            // Box standby nyala duluan ("..."), dialog asli mulai setelah tombol Lihat (Beat 7).
+            if (displayShot2 != null)
+                displayShot2.ShowStandby("...");
+            else if (dialogueDisplay != null)
+                dialogueDisplay.ShowStandby("...");
 
             // Auto-advance to Beat 5 (increased delay for breathing room)
             StartCoroutine(DelayedExecute(1.0f, ExecuteBeat5));
@@ -277,20 +298,29 @@ namespace MainKarinding.Cutscenes
             currentBeat = 6;
 
             // Play sprite swap sequence with variable frame timing
+            // Hierarchy-driven: isi beat6SwapSprites/Timings di Inspector. Kosong = default 2-frame tanpa noleh.
             if (rimbaSpriteSwapper != null && rimbaSpriteSet != null)
             {
-                Sprite[] swapSequence = new[]
+                Sprite[] swapSequence;
+                float[] timings;
+                if (beat6SwapSprites != null && beat6SwapSprites.Length > 0)
                 {
-                    rimbaSpriteSet.lookoutFacingAbah,
-                    rimbaSpriteSet.lookoutNoleh1,
-                    rimbaSpriteSet.lookoutNoleh2,
-                    rimbaSpriteSet.lookoutFacingMountain
-                };
+                    swapSequence = beat6SwapSprites;
+                    timings = (beat6SwapTimings != null && beat6SwapTimings.Length == swapSequence.Length)
+                        ? beat6SwapTimings
+                        : null;
+                }
+                else
+                {
+                    swapSequence = new[]
+                    {
+                        rimbaSpriteSet.lookoutFacingAbah,
+                        rimbaSpriteSet.lookoutFacingMountain
+                    };
+                    timings = new[] { 0.15f, 0.3f };
+                }
 
-                // Timing: jelas terlihat noleh (±0.15s/frame, hold akhir)
-                float[] timings = new[] { 0.15f, 0.15f, 0.15f, 0.25f };
-
-                Debug.Log("[Scene1Cutscene] Beat 6 swap start (4 frame)");
+                Debug.Log($"[Scene1Cutscene] Beat 6 swap start ({swapSequence.Length} frame)");
                 rimbaSpriteSwapper.PlaySwapSequence(swapSequence, timings, () =>
                 {
                     Debug.Log("[Scene1Cutscene] Beat 6 swap complete -> Beat 7");
@@ -299,10 +329,7 @@ namespace MainKarinding.Cutscenes
             }
             else
             {
-                // Fallback: direct sprite change
-                if (shot2Rimba != null && rimbaSpriteSet != null)
-                    shot2Rimba.sprite = rimbaSpriteSet.lookoutFacingMountain;
-
+                // Hierarchy-driven: jangan ganti sprite, langsung lanjut.
                 ExecuteBeat7();
             }
         }
@@ -332,6 +359,10 @@ namespace MainKarinding.Cutscenes
             currentBeat = 8;
 
             // Hide cutscene UI
+            if (displayShot2 != null)
+                displayShot2.Hide();
+            if (floatingShot1 != null)
+                floatingShot1.Hide();
             if (dialogueDisplay != null)
                 dialogueDisplay.Hide();
             if (floatingDialogue != null)
@@ -358,8 +389,12 @@ namespace MainKarinding.Cutscenes
 
             if (!spawnCaptured && rimbaWalker != null && abahWalker != null)
             {
+                // Tangkap Y/Z scene sebagai acuan, tapi X dipaksa dari field spawn
+                // (harus >= maxX Walker) supaya keduanya MUNCUL dari tepi kanan.
                 spawnRimbaPos = rimbaWalker.transform.position;
                 spawnAbahPos = abahWalker.transform.position;
+                spawnRimbaPos.x = spawnRimbaX;
+                spawnAbahPos.x = spawnAbahX;
                 spawnCaptured = true;
             }
             if (rimbaWalker != null)
@@ -501,8 +536,23 @@ namespace MainKarinding.Cutscenes
                 bool dialogueFinished = false;
                 Transform anchor = ResolveAnchor(line.speaker);
 
-                // Prioritas: floating bubble (Scene 1-8 reusable) kalau sudah di-assign
-                if (floatingDialogue != null && anchor != null)
+                // Shot1 (Beat2) = follow kepala, Shot2 (Beat7+) = statis bawah.
+                bool isShot1 = currentBeat == 2;
+                var floating = isShot1 ? (floatingShot1 != null ? floatingShot1 : floatingDialogue) : null;
+                var display = !isShot1 ? (displayShot2 != null ? displayShot2 : dialogueDisplay) : null;
+                // Fallback lama kalau ref per-shot kosong.
+                if (isShot1 && floating == null) display = dialogueDisplay;
+                if (!isShot1 && display == null) floating = floatingDialogue;
+
+                if (isShot1 && floating != null && anchor != null)
+                {
+                    floating.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => dialogueFinished = true);
+                }
+                else if (!isShot1 && display != null)
+                {
+                    display.ShowDialogue(line.textSunda, line.speaker, () => dialogueFinished = true);
+                }
+                else if (floatingDialogue != null && anchor != null)
                 {
                     floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => dialogueFinished = true);
                 }
@@ -522,6 +572,10 @@ namespace MainKarinding.Cutscenes
             }
 
             // Hide dialogue box after sequence
+            if (displayShot2 != null)
+                displayShot2.Hide();
+            if (floatingShot1 != null)
+                floatingShot1.Hide();
             if (dialogueDisplay != null)
                 dialogueDisplay.Hide();
             if (floatingDialogue != null)

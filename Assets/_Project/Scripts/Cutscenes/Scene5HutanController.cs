@@ -12,6 +12,9 @@ namespace MainKarinding.Cutscenes
     /// Beat 2 S5_SearchBambu: Rimba jalan bebas (analog), klik 3 rumpun bambu (no-decoy)
     /// -> tas 3/3 -> mode jalan-pulang: Rimba ke KIRI -> ujung -> blackscreen -> LoadScene(Teras).
     /// Abah tidak ada di hutan (menunggu di Teras).
+    ///
+    /// Masuk hutan: scene ini dimuat setelah teras fade-to-black, jadi frame pertama ditahan
+    /// hitam lalu fade-in — Rimba sudah berdiri di TEPI KIRI (baru datang dari teras).
     /// </summary>
     public class Scene5HutanController : MonoBehaviour
     {
@@ -56,7 +59,10 @@ namespace MainKarinding.Cutscenes
         {
             StoryState.EnsureExists();
             BambooInventory.EnsureExists();
-            if (blackscreenOverlay != null) blackscreenOverlay.SetActive(false);
+            // Scene ini dimuat tepat setelah teras fade-to-black (LoadScene dari Scene5TerasController).
+            // Tahan hitam sejak frame pertama, baru fade-in di IntroRoutine supaya masuk hutan
+            // terasa nyambung (Rimba "muncul" di tepi kiri setelah layar terang).
+            SetBlackscreenOpaque();
             AutoFind();
 
             SetBeat(Ch1Beat.S5_SearchBambu);
@@ -66,13 +72,45 @@ namespace MainKarinding.Cutscenes
 
             if (puzzleController != null) puzzleController.allCollected += OnAllCollected;
 
-            StartCoroutine(DelayedExecute(openingDelay, () =>
+            StartCoroutine(IntroRoutine());
+        }
+
+        /// <summary>
+        /// Fade-in dari hitam (sisa fade-out teras) -> baru walk phase hidup + toast hint.
+        /// Overlay wajib dimatikan lagi setelah fade: Image alpha 0 masih menahan raycast
+        /// ke tombol analog di bawahnya.
+        /// </summary>
+        private IEnumerator IntroRoutine()
+        {
+            yield return StartCoroutine(FadeBlackscreen(false, blackscreenDuration));
+            if (blackscreenOverlay != null) blackscreenOverlay.SetActive(false);
+
+            yield return new WaitForSeconds(openingDelay);
+
+            EnableWalking(true);
+            if (toast == null) toast = Object.FindFirstObjectByType<Scene5Toast>();
+            if (toast != null) toast.ShowToast(HintToast, 3f);
+            else Debug.LogWarning("[Scene5Hutan] Scene5Toast belum di-setup! Tambah ToastRoot di UI_Cutscene.");
+        }
+
+        /// <summary>
+        /// Tahan layar hitam penuh di frame pertama. Dipakai karena scene ini dimuat tepat
+        /// setelah teras fade-to-black, jadi frame pertamanya harus gelap dulu sebelum fade-in
+        /// (biar tidak ada 1 frame terang yang "nyeplak" di antara dua fade).
+        /// </summary>
+        private void SetBlackscreenOpaque()
+        {
+            if (blackscreenOverlay == null) return;
+            blackscreenOverlay.SetActive(true);
+            var canvasGroup = blackscreenOverlay.GetComponent<CanvasGroup>();
+            if (canvasGroup != null) canvasGroup.alpha = 1f;
+            var image = blackscreenOverlay.GetComponent<UnityEngine.UI.Image>();
+            if (image != null)
             {
-                EnableWalking(true);
-                if (toast == null) toast = Object.FindFirstObjectByType<Scene5Toast>();
-                if (toast != null) toast.ShowToast(HintToast, 3f);
-                else Debug.LogWarning("[Scene5Hutan] Scene5Toast belum di-setup! Tambah ToastRoot di UI_Cutscene.");
-            }));
+                var c = image.color;
+                c.a = 1f;
+                image.color = c;
+            }
         }
 
         private void OnDestroy()

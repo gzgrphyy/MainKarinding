@@ -7,6 +7,8 @@ namespace MainKarinding.Cutscenes
     {
         [Header("Scene 1 - Teras Rumah")]
         public Sprite idlePintu;
+        [Tooltip("Rimba baru bangun. File: rimba_idle_pintu1.png")]
+        public Sprite idlePintuBangun;
         public Sprite lookoutFacingAbah;
         public Sprite lookoutNoleh1;
         public Sprite lookoutNoleh2;

@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cab247775bad0184e9fde5b088948612, type: 3}
   m_Name: RimbaSpriteSet
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Cutscenes.RimbaSpriteSet
-  idlePintu: {fileID: 21300000, guid: cbaed4b60cf8fc34fbb58a03684bcb74, type: 3}
-  lookoutFacingAbah: {fileID: 21300000, guid: 9a3de6ccbb7bbcf45afd7300017e3401, type: 3}
+  idlePintu: {fileID: 21300000, guid: f7de6106ef50a3f43b2d6597c488c6be, type: 3}
+  idlePintuBangun: {fileID: 21300000, guid: 8e331d178f7ee89428350ba8b7f2f57f, type: 3}
+  lookoutFacingAbah: {fileID: 21300000, guid: 1974d9d14dc9e50408c86224b7cac65d, type: 3}
   lookoutNoleh1: {fileID: 21300000, guid: 6846010986de3c04f8ec6cbe3c2fc8a4, type: 3}
   lookoutNoleh2: {fileID: 21300000, guid: 1ace57579bc52fe49a6510e8bd86f646, type: 3}
-  lookoutFacingMountain: {fileID: 21300000, guid: e9e3b45bb02a24b48b3150616a1cf3eb, type: 3}
+  lookoutFacingMountain: {fileID: 21300000, guid: 86c86677b53e7f44a932edcdeeb2d447, type: 3}
   walkRight:
   - {fileID: 21300000, guid: 874470f19769dc34f9084807d2f97c22, type: 3}
   - {fileID: 21300000, guid: 17b451d09efbec549924d66dd55a2142, type: 3}

@@ -127,6 +127,36 @@ namespace MainKarinding.Cutscenes
         }
 
         /// <summary>
+        /// Standby box: nyala visual + teks placeholder TANPA typing,
+        /// tanpa continue indicator, tanpa tap fullscreen. Dipakai Shot 2
+        /// sebelum tombol Lihat ditekan — dialog asli mulai via ShowDialogue().
+        /// </summary>
+        public void ShowStandby(string standbyText = "...")
+        {
+            currentSpeaker = "";
+            currentFullText = standbyText ?? "";
+
+            if (!gameObject.activeInHierarchy)
+                gameObject.SetActive(true);
+            SetVisualActive(true);
+            // Sengaja TIDAK nyalakan fullScreenTapButton biar tap jatuh ke ActionButton.
+
+            if (typingCoroutine != null)
+            {
+                StopCoroutine(typingCoroutine);
+                typingCoroutine = null;
+            }
+
+            HideContinueIndicator();
+
+            if (dialogueText != null)
+                dialogueText.text = currentFullText;
+
+            isTyping = false;
+            waitingForInput = false;
+        }
+
+        /// <summary>
         /// Update posisi/flip BoxPointer sesuai speaker.
         /// Base position = hasil tata manual kamu di Scene View (ditangkap otomatis saat pertama tampil).
         /// Offset per-speaker (pointerOffsetAbah/Rimba) ditambah di atas base — nol-kan kalau mau full manual.
