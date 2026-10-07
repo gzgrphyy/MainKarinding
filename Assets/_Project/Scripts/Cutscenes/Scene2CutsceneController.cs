@@ -138,6 +138,64 @@ namespace MainKarinding.Cutscenes
             return anchor;
         }
 
+        #region Sprite Swap (talk/idle/play/hold)
+
+        private static bool IsRimbaLine(string speaker)
+        {
+            return speaker != null && speaker.ToLower().Contains("rimba");
+        }
+
+        private bool IsKarindingLoopPlaying()
+        {
+            return karindingLoopSource != null && karindingLoopSource.isPlaying;
+        }
+
+        private void StopKarindingLoop()
+        {
+            if (karindingLoopSource != null && karindingLoopSource.isPlaying)
+                karindingLoopSource.Stop();
+        }
+
+        private void SetRimbaSpeaking(bool speaking)
+        {
+            if (shotRimba == null || rimbaSpriteSet == null)
+                return;
+            Sprite s = speaking ? rimbaSpriteSet.sitTalk : rimbaSpriteSet.sitIdle;
+            if (s == null) s = rimbaSpriteSet.duduk;
+            if (s != null) shotRimba.sprite = s;
+            else Debug.LogWarning("[Scene2Cutscene] RimbaSpriteSet.sitTalk/sitIdle/duduk kosong! Assign s2_rimba_sit_talk.png & s2_rimba_sit_idle.png");
+        }
+
+        /// <summary>
+        /// Prioritas Abah: backsound bunyi -> play; else penjelasan bagian -> hold; else -> talk
+        /// (talk dipakai juga saat Abah diam, tidak ada s2_abah_sit_idle).
+        /// </summary>
+        private void SetAbahForLine(bool isAbahLine, bool isPartExplanation)
+        {
+            if (shotAbah == null || abahSpriteSet == null)
+                return;
+            Sprite s;
+            if (IsKarindingLoopPlaying())
+                s = abahSpriteSet.sitPlayKarinding;
+            else if (isPartExplanation)
+                s = abahSpriteSet.sitHoldKarinding;
+            else
+                s = abahSpriteSet.sitTalk;
+            if (s == null) s = abahSpriteSet.duduk;
+            if (s != null) shotAbah.sprite = s;
+            else Debug.LogWarning("[Scene2Cutscene] AbahSpriteSet.sitTalk/sitPlayKarinding/sitHoldKarinding kosong! Assign asset s2_abah_*.");
+        }
+
+        private void ApplyLineSprites(string speaker, bool isPartExplanation)
+        {
+            bool rimbaSpeaks = IsRimbaLine(speaker) && !isPartExplanation;
+            bool abahSpeaks = !IsRimbaLine(speaker) || isPartExplanation;
+            SetRimbaSpeaking(rimbaSpeaks);
+            SetAbahForLine(abahSpeaks, isPartExplanation);
+        }
+
+        #endregion
+
         public void StartCutscene()
         {
             cutsceneActive = true;
@@ -158,16 +216,9 @@ namespace MainKarinding.Cutscenes
             SetBeat(Ch1Beat.S2_AbahMainKarinding);
 
             if (shotRoot != null) shotRoot.SetActive(true);
-            if (shotRimba != null && rimbaSpriteSet != null)
-            {
-                if (rimbaSpriteSet.duduk != null) shotRimba.sprite = rimbaSpriteSet.duduk;
-                else Debug.LogWarning("[Scene2Cutscene] RimbaSpriteSet.duduk belum di-assign! Assign s2_rimba_duduk.png");
-            }
-            if (shotAbah != null && abahSpriteSet != null)
-            {
-                if (abahSpriteSet.duduk != null) shotAbah.sprite = abahSpriteSet.duduk;
-                else Debug.LogWarning("[Scene2Cutscene] AbahSpriteSet.duduk belum di-assign! Assign s2_abah_duduk.png");
-            }
+            // Beat 1: belum ada dialog — Rimba idle. Sprite Abah (play) dipasang
+            // setelah loop dengung jalan (play menang selama backsound bunyi).
+            SetRimbaSpeaking(false);
             if (bgRenderer != null && bgTerasSiang != null)
                 bgRenderer.sprite = bgTerasSiang;
 
@@ -190,14 +241,18 @@ namespace MainKarinding.Cutscenes
                 Debug.LogWarning("[Scene2Cutscene] dengungLow belum di-assign! Assign sfx_karinding_dengung_low.wav");
             }
 
+            // Loop sudah jalan di titik ini -> Abah = play_karinding.
+            SetAbahForLine(false, false);
+
             StartCoroutine(DelayedExecute(openingDelay, ExecuteBeat2));
         }
 
-        // Beat 2 — intro dialog
+        // Beat 2 — intro dialog (backsound dimatikan biar sprite talk tampil — play menang selama loop bunyi)
         private void ExecuteBeat2()
         {
             Debug.Log("[Scene2Cutscene] Beat 2 - IntroDialog");
             SetBeat(Ch1Beat.S2_IntroDialog);
+            StopKarindingLoop();
             StartCoroutine(PlayDialogueSequence(introDialogue, ExecuteBeat3));
         }
 
@@ -214,6 +269,9 @@ namespace MainKarinding.Cutscenes
                 StartCoroutine(PlayDialogueSequence(new[] { jawabanAbah[0] }, ExecuteBeat4));
                 return;
             }
+            // Selama menunggu pilihan: keduanya diam (Rimba idle, Abah talk).
+            SetRimbaSpeaking(false);
+            SetAbahForLine(false, false);
             choicePrompt.Show(opsiRimba, (idx) =>
             {
                 int safe = Mathf.Clamp(idx, 0, 2);
@@ -222,13 +280,14 @@ namespace MainKarinding.Cutscenes
         }
 
         [Header("Beat 4 presentation")]
-        [Tooltip("Karakter di-fade selama karinding tampil biar tidak adu tampil.")]
-        [SerializeField] private float beat4CharDimAlpha = 0.35f;
+        [Tooltip("Karakter digelapkan (RGB) selama karinding tampil biar tidak adu tampil. Alpha tetap 1.")]
+        [SerializeField] private float beat4DarkenFactor = 0.35f;
         [Tooltip("Auto-lanjut ke bagian berikutnya kalau player tidak tap (anti-stuck).")]
         [SerializeField] private float partAutoAdvanceSeconds = 8f;
 
         private Color savedRimbaColor = Color.white;
         private Color savedAbahColor = Color.white;
+        private Color savedBgColor = Color.white;
         private bool charColorsSaved;
 
         // Beat 4 — karinding 2D tampil tengah, highlight per bagian satu-persatu + sway
@@ -258,17 +317,15 @@ namespace MainKarinding.Cutscenes
             else
                 Debug.LogWarning("[Scene2Cutscene] highlight2D/highlightController belum di-assign!");
 
-            // Baris Abah per bagian (full text + makna tiap bagian)
-            var line = new DialogueLine("Abah", part.barissunda, part.makna);
+            // Baris Abah per bagian — Abah hold karinding, Rimba idle.
+            // Box statis bawah ala Shot 2 Scene 1: Sunda saja + label speaker.
+            ApplyLineSprites("Abah", true);
             bool done = false;
-            Transform anchor = ResolveAnchor("Abah");
-            if (floatingDialogue != null && anchor != null)
-                floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => done = true);
-            else if (dialogueDisplay != null)
-                dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => done = true);
+            if (dialogueDisplay != null)
+                dialogueDisplay.ShowDialogue(part.barissunda, "Abah", () => done = true);
             else
             {
-                Debug.LogWarning("[Scene2Cutscene] Tidak ada dialogue display! Skip: " + line.textSunda);
+                Debug.LogWarning("[Scene2Cutscene] dialogueDisplay belum di-assign! Skip: " + part.barissunda);
                 done = true;
             }
             yield return StartCoroutine(WaitDialogueOrTimeout(() => done, partAutoAdvanceSeconds));
@@ -294,27 +351,36 @@ namespace MainKarinding.Cutscenes
         {
             if (dim)
             {
+                if (!charColorsSaved)
+                {
+                    savedRimbaColor = shotRimba != null ? shotRimba.color : Color.white;
+                    savedAbahColor = shotAbah != null ? shotAbah.color : Color.white;
+                    savedBgColor = bgRenderer != null ? bgRenderer.color : Color.white;
+                    charColorsSaved = true;
+                }
                 if (shotRimba != null)
-                {
-                    if (!charColorsSaved)
-                    {
-                        savedRimbaColor = shotRimba.color;
-                        savedAbahColor = shotAbah != null ? shotAbah.color : Color.white;
-                        charColorsSaved = true;
-                    }
-                    Color c = shotRimba.color; c.a = beat4CharDimAlpha; shotRimba.color = c;
-                }
+                    shotRimba.color = Darken(savedRimbaColor);
                 if (shotAbah != null)
-                {
-                    Color c = shotAbah.color; c.a = beat4CharDimAlpha; shotAbah.color = c;
-                }
+                    shotAbah.color = Darken(savedAbahColor);
+                if (bgRenderer != null)
+                    bgRenderer.color = Darken(savedBgColor);
             }
             else if (charColorsSaved)
             {
                 if (shotRimba != null) shotRimba.color = savedRimbaColor;
                 if (shotAbah != null) shotAbah.color = savedAbahColor;
+                if (bgRenderer != null) bgRenderer.color = savedBgColor;
                 charColorsSaved = false;
             }
+        }
+
+        /// <summary>
+        /// Gelapkan warna (RGB) tapi pertahankan alpha asal — karakter solid gelap, bukan transparan.
+        /// </summary>
+        private Color Darken(Color c)
+        {
+            float f = Mathf.Clamp01(beat4DarkenFactor);
+            return new Color(c.r * f, c.g * f, c.b * f, c.a);
         }
 
         // Beat 5 — closing filosofi
@@ -334,8 +400,10 @@ namespace MainKarinding.Cutscenes
         private void OnScene2Complete()
         {
             cutsceneActive = false;
-            if (karindingLoopSource != null && karindingLoopSource.isPlaying)
-                karindingLoopSource.Stop();
+            StopKarindingLoop();
+            // Posisi diam akhir: Rimba idle, Abah talk.
+            SetRimbaSpeaking(false);
+            SetAbahForLine(false, false);
             Debug.Log("[Scene2Cutscene] Scene 2 selesai — lanjut Scene 3 (S3_Handoff). Freeze di sini sampai Scene 3 dibangun.");
             // Tidak auto-load scene lain; StoryState.CurrentBeat = S2_ClosingFilosofi jadi acuan Scene 3.
         }
@@ -351,15 +419,15 @@ namespace MainKarinding.Cutscenes
                     yield return new WaitForSeconds(0.8f);
                     continue;
                 }
+                // Sprite per baris: Rimba ngomong -> talk, else idle; Abah -> talk (play kalau loop bunyi).
+                // Box statis bawah ala Shot 2 Scene 1: Sunda saja + label speaker.
+                ApplyLineSprites(line.speaker, false);
                 bool finished = false;
-                Transform anchor = ResolveAnchor(line.speaker);
-                if (floatingDialogue != null && anchor != null)
-                    floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true);
-                else if (dialogueDisplay != null)
+                if (dialogueDisplay != null)
                     dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true);
                 else
                 {
-                    Debug.LogWarning("[Scene2Cutscene] Tidak ada dialogue display! Skip: " + line.textSunda);
+                    Debug.LogWarning("[Scene2Cutscene] dialogueDisplay belum di-assign! Skip: " + line.textSunda);
                     finished = true;
                 }
                 yield return new WaitUntil(() => finished);

@@ -836,7 +836,7 @@ SpriteRenderer:
   m_Size: {x: 16.71, y: 9.41}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &105860991
 GameObject:
@@ -1863,7 +1863,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 71, y: 0}
+  m_AnchoredPosition: {x: 40, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &249786833
@@ -1888,8 +1888,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 774048803}
+  m_fontAsset: {fileID: 11400000, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
+  m_sharedMaterial: {fileID: -3860578192364764687, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
   m_fontSharedMaterials:
   - {fileID: 774048803}
   m_fontMaterial: {fileID: 774048803}
@@ -1897,8 +1897,8 @@ MonoBehaviour:
   - {fileID: 774048803}
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2372,6 +2372,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Cutscenes.CutsceneDialogueDisplay
   dialogueBoxRoot: {fileID: 1833458950}
   dialogueText: {fileID: 490892942}
+  speakerNameText: {fileID: 0}
   dialogueBoxImage: {fileID: 1833458953}
   continueIndicator: {fileID: 1745873652}
   fullScreenTapButton: {fileID: 942213740}
@@ -2797,6 +2798,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Cutscenes.CutsceneDialogueDisplay
   dialogueBoxRoot: {fileID: 172609798}
   dialogueText: {fileID: 479214026}
+  speakerNameText: {fileID: 0}
   dialogueBoxImage: {fileID: 172609799}
   continueIndicator: {fileID: 1173069149}
   fullScreenTapButton: {fileID: 1715980394}
@@ -2856,7 +2858,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 344548368}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 64659178f09a4a44abd672be4ee921f3, type: 3}
   m_Name: 
@@ -2877,8 +2879,8 @@ MonoBehaviour:
   pointerOffsetAbah: {x: 40, y: -10}
   autoFlipPointer: 1
   typingSpeed: 0.03
-  canSkipTyping: 1
-  continueBounceSpeed: 2
+  canSkipTyping: 0
+  continueBounceSpeed: 1
 --- !u!114 &344548371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2931,6 +2933,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Cutscenes.CutsceneDialogueDisplay
   dialogueBoxRoot: {fileID: 529271300}
   dialogueText: {fileID: 361359444}
+  speakerNameText: {fileID: 344548403}
   dialogueBoxImage: {fileID: 529271303}
   continueIndicator: {fileID: 843917375}
   fullScreenTapButton: {fileID: 393461660}
@@ -2941,7 +2944,7 @@ MonoBehaviour:
   pointerOffsetRimba: {x: 0, y: 0}
   typingSpeed: 0.05
   canSkipTyping: 1
-  continueIndicatorBounceSpeed: 2
+  continueIndicatorBounceSpeed: 1
 --- !u!223 &344548374
 Canvas:
   m_ObjectHideFlags: 0
@@ -2965,6 +2968,145 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
+--- !u!1 &344548400
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 344548401}
+  - component: {fileID: 344548402}
+  - component: {fileID: 344548403}
+  m_Layer: 5
+  m_Name: SpeakerName
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &344548401
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 344548400}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 529271301}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 63, y: -37}
+  m_SizeDelta: {x: 400, y: 90}
+  m_Pivot: {x: 0, y: 1}
+--- !u!222 &344548402
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 344548400}
+  m_CullTransparentMesh: 1
+--- !u!114 &344548403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 344548400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: 
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
+  m_sharedMaterial: {fileID: -3860578192364764687, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
+  m_fontSharedMaterials:
+  - {fileID: 774048803}
+  m_fontMaterial: {fileID: 774048803}
+  m_fontMaterials:
+  - {fileID: 774048803}
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 40
+  m_fontSizeBase: 40
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 1
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 10, y: 5, z: 10, w: 5}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &346321376
 GameObject:
   m_ObjectHideFlags: 0
@@ -3140,7 +3282,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 361359442}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -3149,7 +3291,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 31, y: -3}
+  m_AnchoredPosition: {x: 80, y: -70}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &361359444
@@ -3174,8 +3316,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 774048803}
+  m_fontAsset: {fileID: 11400000, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
+  m_sharedMaterial: {fileID: -3860578192364764687, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
   m_fontSharedMaterials:
   - {fileID: 774048803}
   m_fontMaterial: {fileID: 774048803}
@@ -3183,8 +3325,8 @@ MonoBehaviour:
   - {fileID: 774048803}
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -3201,8 +3343,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3400,6 +3542,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Cutscenes.CutsceneDialogueDisplay
   dialogueBoxRoot: {fileID: 1993852858}
   dialogueText: {fileID: 432457606}
+  speakerNameText: {fileID: 0}
   dialogueBoxImage: {fileID: 1993852861}
   continueIndicator: {fileID: 1003620092}
   fullScreenTapButton: {fileID: 1649522159}
@@ -3809,8 +3952,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 260, y: -60}
-  m_SizeDelta: {x: 20, y: 20}
+  m_AnchoredPosition: {x: -109, y: 69}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &393940635
 MonoBehaviour:
@@ -3832,7 +3975,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 54d1ac73305aa484b8daadb6ab2df61f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4400,7 +4543,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12, g: 0.12, b: 0.12, a: 0.94}
+  m_Color: {r: 0.12, g: 0.12, b: 0.12, a: 0}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -4766,7 +4909,7 @@ SpriteRenderer:
   m_Size: {x: 16.71, y: 9.41}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &468232169
 GameObject:
@@ -5320,7 +5463,7 @@ SpriteRenderer:
   m_Size: {x: 16.72, y: 9.41}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &518588089
 GameObject:
@@ -5478,12 +5621,13 @@ RectTransform:
   - {fileID: 361359443}
   - {fileID: 843917376}
   - {fileID: 429020039}
+  - {fileID: 344548401}
   m_Father: {fileID: 344548369}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 200}
-  m_SizeDelta: {x: 600, y: 150}
+  m_AnchoredPosition: {x: -0.01001, y: -488}
+  m_SizeDelta: {x: 1920, y: 325.84}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &529271302
 MonoBehaviour:
@@ -5513,14 +5657,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12, g: 0.12, b: 0.12, a: 0.94}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3929486a3bc06df40a450d6854688568, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 930b2115785f43f4b95ef4e12535df54, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5899,6 +6043,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Cutscenes.CutsceneDialogueDisplay
   dialogueBoxRoot: {fileID: 2089706839}
   dialogueText: {fileID: 1574029429}
+  speakerNameText: {fileID: 2089706847}
   dialogueBoxImage: {fileID: 2089706842}
   continueIndicator: {fileID: 393940633}
   fullScreenTapButton: {fileID: 468232171}
@@ -5909,7 +6054,7 @@ MonoBehaviour:
   pointerOffsetRimba: {x: 0, y: 0}
   typingSpeed: 0.05
   canSkipTyping: 1
-  continueIndicatorBounceSpeed: 2
+  continueIndicatorBounceSpeed: 1
 --- !u!223 &564877709
 Canvas:
   m_ObjectHideFlags: 0
@@ -6711,8 +6856,8 @@ Transform:
   m_GameObject: {fileID: 696416393}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4.01, y: -2.76, z: 0}
-  m_LocalScale: {x: 1.5359, y: 1.3559, z: 1}
+  m_LocalPosition: {x: -2.33, y: -0.41, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1255051257}
@@ -6781,12 +6926,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: cdee679445f5d114eae8fd60e313b7a4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 65bf62bbe4c9c2941854a864441cfa41, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1.38, y: 2.05}
+  m_Size: {x: 10.24, y: 15.36}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -6937,6 +7082,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Cutscenes.CutsceneDialogueDisplay
   dialogueBoxRoot: {fileID: 1657838326}
   dialogueText: {fileID: 1369594292}
+  speakerNameText: {fileID: 0}
   dialogueBoxImage: {fileID: 1657838327}
   continueIndicator: {fileID: 354147637}
   fullScreenTapButton: {fileID: 827444785}
@@ -8338,15 +8484,15 @@ RectTransform:
   m_GameObject: {fileID: 843917375}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 529271301}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 260, y: -60}
-  m_SizeDelta: {x: 20, y: 20}
+  m_AnchoredPosition: {x: -109, y: 69}
+  m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &843917377
 MonoBehaviour:
@@ -8368,7 +8514,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 54d1ac73305aa484b8daadb6ab2df61f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -9101,6 +9247,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Cutscenes.CutsceneDialogueDisplay
   dialogueBoxRoot: {fileID: 1860678206}
   dialogueText: {fileID: 1493106931}
+  speakerNameText: {fileID: 0}
   dialogueBoxImage: {fileID: 1860678207}
   continueIndicator: {fileID: 1497390942}
   fullScreenTapButton: {fileID: 878499974}
@@ -9959,6 +10106,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Cutscenes.CutsceneDialogueDisplay
   dialogueBoxRoot: {fileID: 144938687}
   dialogueText: {fileID: 809284523}
+  speakerNameText: {fileID: 0}
   dialogueBoxImage: {fileID: 144938690}
   continueIndicator: {fileID: 346321376}
   fullScreenTapButton: {fileID: 566439065}
@@ -10189,7 +10337,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1059921780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10225,7 +10373,7 @@ MonoBehaviour:
   karindingLoopSource: {fileID: 0}
   sfxTapConfirm: {fileID: 8300000, guid: 4e53bf99c31631c4cb9ab6ab58606cc3, type: 3}
   openingDelay: 1
-  beat4CharDimAlpha: 0.35
+  beat4DarkenFactor: 0.35
   partAutoAdvanceSeconds: 8
 --- !u!4 &1059921781
 Transform:
@@ -11055,7 +11203,7 @@ SpriteRenderer:
   m_Size: {x: 16.71, y: 9.41}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1173069149
 GameObject:
@@ -11854,11 +12002,11 @@ MonoBehaviour:
   cecetUcingRenderer: {fileID: 1793101355}
   highlightTint: {r: 1, g: 0.85, b: 0.3, a: 1}
   dimTint: {r: 0.55, g: 0.55, b: 0.55, a: 1}
-  pulseSpeed: 4
+  pulseSpeed: 1
   pulseScaleAmp: 0.04
   swayEnabled: 1
-  swayAngle: 5
-  swaySpeed: 0.8
+  swayAngle: 1.5
+  swaySpeed: 0.5
 --- !u!4 &1316732563
 Transform:
   m_ObjectHideFlags: 0
@@ -11867,8 +12015,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1316732561}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.32, y: -1.32, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: 0.41329733, w: 0.91059613}
+  m_LocalPosition: {x: 3.02, y: 1.39, z: 0}
   m_LocalScale: {x: 0.12, y: 0.12, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11876,7 +12024,7 @@ Transform:
   - {fileID: 1793101356}
   - {fileID: 650257624}
   m_Father: {fileID: 1059921781}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 48.824}
 --- !u!1 &1321743910
 GameObject:
   m_ObjectHideFlags: 0
@@ -12222,7 +12370,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -3.29, y: -0.99, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 1}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1098647540}
@@ -13119,7 +13267,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1495506218
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13795,7 +13943,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12, g: 0.12, b: 0.12, a: 0.94}
+  m_Color: {r: 0.12, g: 0.12, b: 0.12, a: 0}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -13846,8 +13994,8 @@ Transform:
   m_GameObject: {fileID: 1524800890}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.1486, y: -2.8493, z: 0}
-  m_LocalScale: {x: 1.6547582, y: 1.5962396, z: 1}
+  m_LocalPosition: {x: 2.72, y: -0.73, z: 0}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2114137166}
@@ -13902,12 +14050,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: df359cf5f8e8fdd4ca2ee65cac006837, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a24104183c2f9084d8eab6e7e433b1b6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.98, y: 2.28}
+  m_Size: {x: 10.24, y: 15.36}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -13998,7 +14146,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 174, y: -10}
+  m_AnchoredPosition: {x: 81, y: -62}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1574029429
@@ -14023,8 +14171,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: New Text
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 774048803}
+  m_fontAsset: {fileID: 11400000, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
+  m_sharedMaterial: {fileID: -3860578192364764687, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
   m_fontSharedMaterials:
   - {fileID: 774048803}
   m_fontMaterial: {fileID: 774048803}
@@ -14032,8 +14180,8 @@ MonoBehaviour:
   - {fileID: 774048803}
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4278190080
+  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -14192,7 +14340,7 @@ SpriteRenderer:
   m_Size: {x: 16.71, y: 9.41}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1578177189
 GameObject:
@@ -15274,14 +15422,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12, g: 0.12, b: 0.12, a: 0.94}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3929486a3bc06df40a450d6854688568, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a373875a3268d9447b8708ea86774d35, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -15756,7 +15904,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: -10}
+  m_AnchoredPosition: {x: 0, y: -25}
   m_SizeDelta: {x: 24, y: 12}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1704555821
@@ -15772,7 +15920,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12, g: 0.12, b: 0.12, a: 0.94}
+  m_Color: {r: 0.12, g: 0.12, b: 0.12, a: 0}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -16092,7 +16240,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Core.StoryState
   currentBeat: 0
-  entryPoint: 0
+  entryPoint: 1
 --- !u!4 &1734499648
 Transform:
   m_ObjectHideFlags: 0
@@ -16729,7 +16877,7 @@ MonoBehaviour:
   autoFlipPointer: 1
   typingSpeed: 0.03
   canSkipTyping: 1
-  continueBounceSpeed: 2
+  continueBounceSpeed: 1
 --- !u!1 &1813584780
 GameObject:
   m_ObjectHideFlags: 0
@@ -16796,7 +16944,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 09ae5846e4183cc47bff9fcb66f50935, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 5bb522ee68a3c904aae09a0e20ad8eb0, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -16815,8 +16963,8 @@ Transform:
   m_GameObject: {fileID: 1813584780}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 20}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0, y: -0.0194, z: 20}
+  m_LocalScale: {x: 0.87506247, y: 0.8602556, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1684891794}
@@ -16838,7 +16986,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1829835895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17294,7 +17442,7 @@ SpriteRenderer:
   m_Size: {x: 16.72, y: 9.41}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1961031901
 GameObject:
@@ -17735,7 +17883,7 @@ SpriteRenderer:
   m_Size: {x: 16.71, y: 9.41}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &2000894494
 Transform:
@@ -17904,7 +18052,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2016068338
 Transform:
   m_ObjectHideFlags: 0
@@ -18742,6 +18890,7 @@ RectTransform:
   - {fileID: 1574029428}
   - {fileID: 393940634}
   - {fileID: 1524691734}
+  - {fileID: 2089706845}
   m_Father: {fileID: 564877705}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -18777,14 +18926,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.12, g: 0.12, b: 0.12, a: 0.94}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3929486a3bc06df40a450d6854688568, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 930b2115785f43f4b95ef4e12535df54, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -18802,6 +18951,145 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2089706839}
   m_CullTransparentMesh: 1
+--- !u!1 &2089706844
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2089706845}
+  - component: {fileID: 2089706846}
+  - component: {fileID: 2089706847}
+  m_Layer: 5
+  m_Name: SpeakerName
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2089706845
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089706844}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2089706840}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 60, y: -30}
+  m_SizeDelta: {x: 400, y: 90}
+  m_Pivot: {x: 0, y: 1}
+--- !u!222 &2089706846
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089706844}
+  m_CullTransparentMesh: 1
+--- !u!114 &2089706847
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089706844}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: Abah
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
+  m_sharedMaterial: {fileID: -3860578192364764687, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
+  m_fontSharedMaterials:
+  - {fileID: 774048803}
+  m_fontMaterial: {fileID: 774048803}
+  m_fontMaterials:
+  - {fileID: 774048803}
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 40
+  m_fontSizeBase: 40
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 1
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_characterHorizontalScale: 1
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 10, y: 5, z: 10, w: 5}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &2089821581
 GameObject:
   m_ObjectHideFlags: 0
@@ -18891,7 +19179,7 @@ SpriteRenderer:
   m_Size: {x: 16.71, y: 9.41}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &2114137165
 GameObject:
@@ -19011,8 +19299,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 260, y: -60}
-  m_SizeDelta: {x: 20, y: 20}
+  m_AnchoredPosition: {x: -27.2, y: 37}
+  m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2139070554
 MonoBehaviour:
@@ -19034,7 +19322,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 54d1ac73305aa484b8daadb6ab2df61f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

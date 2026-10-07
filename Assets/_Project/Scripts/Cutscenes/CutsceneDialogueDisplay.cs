@@ -14,6 +14,8 @@ namespace MainKarinding.Cutscenes
     [Header("UI References")]
     [SerializeField] private GameObject dialogueBoxRoot;
     [SerializeField] private TextMeshProUGUI dialogueText;
+    [Tooltip("Label nama pembicara (Shot 2). Buat TextMeshProUGUI sendiri di bawah Background, atur posisi/font manual, lalu drag ke sini.")]
+    [SerializeField] private TextMeshProUGUI speakerNameText;
     [SerializeField] private Image dialogueBoxImage;
     [SerializeField] private GameObject continueIndicator;
     [SerializeField] private Button fullScreenTapButton;
@@ -108,6 +110,12 @@ namespace MainKarinding.Cutscenes
         {
             currentSpeaker = speaker ?? "";
 
+            if (speakerNameText != null)
+            {
+                speakerNameText.text = currentSpeaker;
+                speakerNameText.gameObject.SetActive(!string.IsNullOrEmpty(currentSpeaker));
+            }
+
             if (!gameObject.activeInHierarchy)
                 gameObject.SetActive(true);
             SetVisualActive(true);
@@ -135,6 +143,12 @@ namespace MainKarinding.Cutscenes
         {
             currentSpeaker = "";
             currentFullText = standbyText ?? "";
+
+            if (speakerNameText != null)
+            {
+                speakerNameText.text = "";
+                speakerNameText.gameObject.SetActive(false);
+            }
 
             if (!gameObject.activeInHierarchy)
                 gameObject.SetActive(true);
@@ -225,6 +239,8 @@ namespace MainKarinding.Cutscenes
             isTyping = false;
             waitingForInput = false;
             currentSpeaker = "";
+            if (speakerNameText != null)
+                speakerNameText.text = "";
 
             SetVisualActive(false);
             if (fullScreenTapButton != null)

@@ -16,8 +16,14 @@ namespace MainKarinding.Cutscenes
         public Sprite idleRight;
 
         [Header("Scene 2 - Teras Siang (duduk)")]
-        [Tooltip("Pose duduk Abah di teras siang. File: s2_abah_duduk.png")]
+        [Tooltip("Pose duduk Abah di teras siang. File: s2_abah_duduk.png (legacy fallback)")]
         public Sprite duduk;
+        [Tooltip("Abah ngomong / diam. File: s2_abah_sit_talk.png")]
+        public Sprite sitTalk;
+        [Tooltip("Abah main karinding saat backsound bunyi. File: s2_abah_sit_play_karinding.png")]
+        public Sprite sitPlayKarinding;
+        [Tooltip("Abah pegang karinding saat jelaskan Pancepengan/Panabeuh/Cecet Ucing. File: s2_abah_sit_hold_karinding.png")]
+        public Sprite sitHoldKarinding;
 
         [Header("Scene 3 - Belajar Memainkan Karinding")]
         [Tooltip("Abah tersenyum tipis di closing Scene 3. File: s3_abah_senyum_tipis.png")]
