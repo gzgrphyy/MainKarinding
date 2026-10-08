@@ -661,7 +661,7 @@ Transform:
   m_GameObject: {fileID: 77899694}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -6, y: -2.6, z: 0}
+  m_LocalPosition: {x: -5.3, y: -2.54, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -738,9 +738,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b69f84f17ab63a4bac7bf80791b35c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Exploration.RimbaWalker
-  speed: 2.6
-  minX: -18.2
-  maxX: 18.2
+  speed: 1.9
+  minX: -8
+  maxX: 8
   minY: -3.4
   maxY: -0.6
   frameTime: 0.12
@@ -1719,7 +1719,7 @@ SpriteRenderer:
   m_Size: {x: 16.71, y: 9.41}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &210551051
 GameObject:
@@ -5629,8 +5629,8 @@ Transform:
   m_GameObject: {fileID: 518588089}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.01, y: 0.05, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: -0.27, z: 0}
+  m_LocalScale: {x: 0.8657292, y: 0.8086737, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1531973928}
@@ -5684,7 +5684,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 18ef073ee0d403346a59ab7a16ea0591, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1574297d72363114b9835aa6d823afa7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -9658,7 +9658,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &922263279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11097,7 +11097,7 @@ SpriteRenderer:
   m_Size: {x: 16.71, y: 9.41}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!1 &1078893597
 GameObject:
@@ -11633,7 +11633,7 @@ SpriteRenderer:
   m_Size: {x: 16.72, y: 9.41}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1212189728
 Transform:
@@ -12740,8 +12740,8 @@ Transform:
   m_GameObject: {fileID: 1363835444}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0.041, y: -0.0273, z: 0}
+  m_LocalScale: {x: 0.8676922, y: 0.86350554, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1531973928}
@@ -12795,7 +12795,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 8d9b986c430416642864911d88fbd000, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ea85161155eeb7a4ab18c75825f021c4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -13370,7 +13370,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1459294826
 Transform:
   m_ObjectHideFlags: 0
@@ -14171,8 +14171,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1962866afc0f3e84086a0800f02812cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Exploration.AbahAutoWalker
-  speed: 2.8
-  stopX: 16.5
+  speed: 2.1
+  stopX: 6
   frameTime: 0.14
   walkFrames: []
   idleSprite: {fileID: 0}
@@ -14498,7 +14498,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Exploration.WalkOffTrigger
   direction: 0
-  endX: 17.5
+  endX: 7.5
   rimba: {fileID: 0}
 --- !u!1 &1574029427
 GameObject:
@@ -16628,7 +16628,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Core.StoryState
   currentBeat: 0
-  entryPoint: 3
+  entryPoint: 0
 --- !u!4 &1734499648
 Transform:
   m_ObjectHideFlags: 0
@@ -17374,7 +17374,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1829835895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17417,8 +17417,8 @@ MonoBehaviour:
   abahWalker: {fileID: 1516054000}
   walkTrigger: {fileID: 1531973929}
   analogStick: {fileID: 1061356698}
-  spawnRimbaX: -17.5
-  spawnAbahX: -16
+  spawnRimbaX: -7.5
+  spawnAbahX: -6.5
   blackscreenDuration: 0.7
   loopForTesting: 1
 --- !u!4 &1829835896
@@ -18550,7 +18550,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2016068338
 Transform:
   m_ObjectHideFlags: 0
