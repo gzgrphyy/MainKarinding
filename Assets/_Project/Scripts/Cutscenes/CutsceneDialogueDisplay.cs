@@ -45,6 +45,9 @@ namespace MainKarinding.Cutscenes
         private bool waitingForInput = false;
         private string currentFullText = "";
         private string currentSpeaker = "";
+        private string currentTriggerWord;
+        private System.Action triggerCallback;
+        private bool triggerFired;
         private Vector2 boxPointerBasePos;
         private bool boxPointerBaseCaptured = false;
 
@@ -108,7 +111,19 @@ namespace MainKarinding.Cutscenes
         /// </summary>
         public void ShowDialogue(string text, string speaker, System.Action onComplete = null)
         {
+            ShowDialogue(text, speaker, onComplete, null, null);
+        }
+
+        /// <summary>
+        /// Show dialogue dengan trigger kata opsional (dipakai Scene 4 "bledag!").
+        /// Trigger fire sekali saat teks terketik berakhiran triggerWord (case-insensitive).
+        /// </summary>
+        public void ShowDialogue(string text, string speaker, System.Action onComplete, string triggerWord, System.Action onTrigger)
+        {
             currentSpeaker = speaker ?? "";
+            currentTriggerWord = triggerWord;
+            triggerCallback = onTrigger;
+            triggerFired = false;
 
             if (speakerNameText != null)
             {
@@ -236,6 +251,11 @@ namespace MainKarinding.Cutscenes
 
             HideContinueIndicator();
 
+            // Cegah trigger basi fire setelah Hide.
+            triggerFired = true;
+            triggerCallback = null;
+            currentTriggerWord = null;
+
             isTyping = false;
             waitingForInput = false;
             currentSpeaker = "";
@@ -274,6 +294,7 @@ namespace MainKarinding.Cutscenes
                 if (dialogueText != null)
                     dialogueText.text += c;
 
+                CheckTrigger();
                 yield return new WaitForSeconds(typingSpeed);
             }
 
@@ -290,6 +311,21 @@ namespace MainKarinding.Cutscenes
 
             onComplete?.Invoke();
             typingCoroutine = null;
+        }
+
+        /// <summary>
+        /// Cek trigger keyword setiap karakter diketik. Fire sekali saja.
+        /// </summary>
+        private void CheckTrigger()
+        {
+            if (triggerFired || string.IsNullOrEmpty(currentTriggerWord)) return;
+            string typed = dialogueText != null ? dialogueText.text : currentFullText;
+            if (!string.IsNullOrEmpty(typed) && typed.EndsWith(currentTriggerWord, System.StringComparison.OrdinalIgnoreCase))
+            {
+                triggerFired = true;
+                try { if (triggerCallback != null) triggerCallback(); }
+                catch (System.Exception e) { Debug.LogException(e); }
+            }
         }
 
         private void ShowContinueIndicator()

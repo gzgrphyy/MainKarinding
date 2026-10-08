@@ -276,10 +276,8 @@ namespace MainKarinding.Cutscenes
                     continue;
                 }
                 bool finished = false;
-                Transform anchor = ResolveAnchor(line.speaker);
-                if (floatingDialogue != null && anchor != null)
-                    floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true);
-                else if (dialogueDisplay != null)
+                // Disamakan Scene 2: selalu box statis bawah via dialogueDisplay.
+                if (dialogueDisplay != null)
                     dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true);
                 else
                 {

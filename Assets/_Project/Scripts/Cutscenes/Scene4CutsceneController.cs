@@ -23,6 +23,12 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private RimbaSpriteSet rimbaSpriteSet;
         [SerializeField] private AbahSpriteSet abahSpriteSet;
 
+        [Header("Scene 4 Overrides (hanya Scene 4, tidak ganggu Scene 2/3)")]
+        [Tooltip("Kalau diisi, dipakai sebagai pengganti rimbaSpriteSet.duduk. Kosong = fallback ke duduk.")]
+        [SerializeField] private Sprite overrideRimba;
+        [Tooltip("Kalau diisi, dipakai sebagai pengganti abahSpriteSet.duduk. Kosong = fallback ke duduk.")]
+        [SerializeField] private Sprite overrideAbah;
+
         [Header("Shot - Teras Siang (salinan milik Scene 4)")]
         [SerializeField] private GameObject shotRoot;
         [SerializeField] private SpriteRenderer shotRimba;
@@ -144,8 +150,8 @@ namespace MainKarinding.Cutscenes
             SetBeat(Ch1Beat.S4_FilosofiBigBang);
 
             if (shotRoot != null) shotRoot.SetActive(true);
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.duduk : null, "RimbaSpriteSet.duduk");
-            ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.duduk : null, "AbahSpriteSet.duduk");
+            ApplyRimbaSprite(overrideRimba != null ? overrideRimba : (rimbaSpriteSet != null ? rimbaSpriteSet.duduk : null), "Rimba(overrideScene4/duduk)");
+            ApplyAbahSprite(overrideAbah != null ? overrideAbah : (abahSpriteSet != null ? abahSpriteSet.duduk : null), "Abah(overrideScene4/duduk)");
             if (bgRenderer != null && bgTerasSiang != null) bgRenderer.sprite = bgTerasSiang;
 
             if (audioManager != null && ambienceSiang != null)
@@ -216,11 +222,16 @@ namespace MainKarinding.Cutscenes
                     continue;
                 }
                 bool finished = false;
-                Transform anchor = ResolveAnchor(line.speaker);
-                if (floatingDialogue != null && anchor != null)
-                    floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true, TriggerWord, OnBledag);
-                else if (dialogueDisplay != null)
-                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true);
+                if (dialogueDisplay != null)
+                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true, TriggerWord, OnBledag);
+                else if (floatingDialogue != null)
+                {
+                    Transform anchor = ResolveAnchor(line.speaker);
+                    if (anchor != null)
+                        floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true, TriggerWord, OnBledag);
+                    else
+                        finished = true;
+                }
                 else
                 {
                     Debug.LogWarning("[Scene4Cutscene] Tidak ada dialogue display! Skip: " + line.textSunda);
