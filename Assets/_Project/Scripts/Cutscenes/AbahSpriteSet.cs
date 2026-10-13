@@ -26,7 +26,15 @@ namespace MainKarinding.Cutscenes
         public Sprite sitHoldKarinding;
 
         [Header("Scene 3 - Belajar Memainkan Karinding")]
-        [Tooltip("Abah tersenyum tipis di closing Scene 3. File: s3_abah_senyum_tipis.png")]
+        [Tooltip("Abah menyerahkan karinding. File: abah_s3_givekarinding.png")]
+        public Sprite giveKarinding;
+        [Tooltip("Abah idle Scene 3. File: abah_s3_idle.png")]
+        public Sprite idleS3;
+        [Tooltip("Abah tersenyum Scene 3. File: abah_s3_smile.png")]
+        public Sprite smileS3;
+        [Tooltip("Abah berbicara Scene 3. File: abah_s3_talking.png")]
+        public Sprite talkingS3;
+        [Tooltip("Abah tersenyum tipis di closing Scene 3. File: s3_abah_senyum_tipis.png (legacy fallback)")]
         public Sprite senyumTipis;
 
         [Header("Scene 5 - Ajak ke Hutan + Reaksi Bambu")]

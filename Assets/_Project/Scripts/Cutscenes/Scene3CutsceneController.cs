@@ -46,6 +46,12 @@ namespace MainKarinding.Cutscenes
 
         [Header("Scene 3 Settings")]
         [SerializeField] private float openingDelay = 1f;
+        [Tooltip("Durasi pose idle/hold sebelum ganti ke play.")]
+        [SerializeField] private float holdPoseSeconds = 1.5f;
+        [Tooltip("Durasi pose play sebelum masuk minigame.")]
+        [SerializeField] private float playPoseSeconds = 1.5f;
+        [Tooltip("Jeda setelah balik dari minigame sebelum dialog Omat (Beat 3).")]
+        [SerializeField] private float closingDelaySeconds = 2f;
         [Tooltip("Fade ambient sebelum pindah ke scene tutorial.")]
         [SerializeField] private float ambientFadeOutSeconds = 0.35f;
         [Tooltip("Durasi blackscreen sebelum LoadScene.")]
@@ -67,11 +73,9 @@ namespace MainKarinding.Cutscenes
             new DialogueLine("", "", ""), // narasi: Abah menyodorkan karinding ke arah Rimba
         };
 
-        /// Beat 2 — tampil SEBELUM minigame sebagai encouragement, bukan interupsi mid-gameplay.
-        private readonly DialogueLine[] beat2Dialogue = new[]
-        {
-            new DialogueLine("Abah", "Ulah maksa, Rimba. Lain kuat na leungeun nu di penta, tapi tenang jeung sabar na haté.", "Jangan maksa, Rimba. Bukan kekuatan tangan yang diminta, tapi sabar dan ketenangan hati."),
-        };
+        /// Beat 2 — TIDAK ada dialog di teras. Dialog "Ulah maksa..." sudah pindah
+        /// ke dalam TutorialMinigameRhythm (momen scripted-fail Fase 3).
+        /// Beat 2 di sini hanya urutan pose: idle/hold -> play -> LoadScene.
 
         /// Beat 3 — setelah tutorial selesai, back di teras.
         private readonly DialogueLine[] beat3Dialogue = new[]
@@ -145,16 +149,19 @@ namespace MainKarinding.Cutscenes
             if (StoryState.Instance != null) StoryState.Instance.SetBeat(beat);
         }
 
-        // Beat 1 — Abah menyerahkan karinding (dialog/narasi only, tanpa sprite handoff)
+        // Beat 1 — Abah menyerahkan karinding: give + receive
         private void ExecuteBeat1()
         {
             Debug.Log("[Scene3Cutscene] Beat 1 - S3_Handoff");
             SetBeat(Ch1Beat.S3_Handoff);
 
             if (shotRoot != null) shotRoot.SetActive(true);
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.duduk : null, "RimbaSpriteSet.duduk");
-            ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.duduk : null, "AbahSpriteSet.duduk");
+            ApplyRimbaSprite(ResolveRimbaReceive(), "RimbaSpriteSet.receiveKarinding");
+            ApplyAbahSprite(ResolveAbahGive(), "AbahSpriteSet.giveKarinding");
             if (bgRenderer != null && bgTerasSiang != null) bgRenderer.sprite = bgTerasSiang;
+
+            // Dialog box tetap nyala walau belum ada dialog (standby "...").
+            if (dialogueDisplay != null) dialogueDisplay.ShowStandby();
 
             if (audioManager != null && ambienceSiang != null)
                 audioManager.PlayAmbient(ambienceSiang, 0.6f);
@@ -175,24 +182,44 @@ namespace MainKarinding.Cutscenes
             StartCoroutine(DelayedExecute(openingDelay, () => StartCoroutine(PlayDialogueSequence(beat1Dialogue, ExecuteBeat2))));
         }
 
-        // Beat 2 — swap ke pose pegang karinding, dialog encouragement, lalu pindah ke scene tutorial
+        // Beat 2 — pose idle/hold beberapa detik, lalu play beberapa detik, lalu LoadScene tutorial.
+        // Tanpa dialog di teras (dialog "Ulah maksa..." pindah ke dalam minigame).
         private void ExecuteBeat2()
         {
             Debug.Log("[Scene3Cutscene] Beat 2 - S3_TutorialRhythm");
             SetBeat(Ch1Beat.S3_TutorialRhythm);
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.pegangCanggung : null, "RimbaSpriteSet.pegangCanggung");
-            StartCoroutine(PlayDialogueSequence(beat2Dialogue, () => StartCoroutine(LoadTutorialRoutine())));
+            StartCoroutine(Beat2PoseRoutine());
         }
 
-        // Beat 3 — kembali dari tutorial, closing dialog
+        private IEnumerator Beat2PoseRoutine()
+        {
+            ApplyAbahSprite(ResolveAbahIdle(), "AbahSpriteSet.idleS3");
+            ApplyRimbaSprite(ResolveRimbaHold(), "RimbaSpriteSet.holdKarinding");
+            yield return new WaitForSeconds(Mathf.Max(0f, holdPoseSeconds));
+
+            ApplyRimbaSprite(ResolveRimbaPlay(), "RimbaSpriteSet.playKarinding");
+            yield return new WaitForSeconds(Mathf.Max(0f, playPoseSeconds));
+
+            yield return StartCoroutine(LoadTutorialRoutine());
+        }
+
+        // Beat 3 — kembali dari tutorial: hold + smile, 2 detik, lalu dialog Omat pakai talking
         private void ExecuteBeat3()
         {
             Debug.Log("[Scene3Cutscene] Beat 3 - S3_ClosingDialog");
             SetBeat(Ch1Beat.S3_ClosingDialog);
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.bangga : null, "RimbaSpriteSet.bangga");
-            ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.senyumTipis : null, "AbahSpriteSet.senyumTipis");
+            StartCoroutine(Beat3Routine());
+        }
+
+        private IEnumerator Beat3Routine()
+        {
+            ApplyRimbaSprite(ResolveRimbaHold(), "RimbaSpriteSet.holdKarinding");
+            ApplyAbahSprite(ResolveAbahSmile(), "AbahSpriteSet.smileS3");
             if (bgRenderer != null && bgTerasSiang != null) bgRenderer.sprite = bgTerasSiang;
             if (shotRoot != null) shotRoot.SetActive(true);
+
+            // Balik dari minigame: box langsung nyala (standby) selama jeda 2 detik.
+            if (dialogueDisplay != null) dialogueDisplay.ShowStandby();
 
             if (audioManager != null && ambienceSiang != null)
                 audioManager.PlayAmbient(ambienceSiang, 0.6f);
@@ -202,7 +229,57 @@ namespace MainKarinding.Cutscenes
                 if (!karindingLoopSource.isPlaying) karindingLoopSource.Play();
             }
 
-            StartCoroutine(PlayDialogueSequence(beat3Dialogue, OnScene3Complete));
+            yield return new WaitForSeconds(Mathf.Max(0f, closingDelaySeconds));
+
+            // Saat dialog muncul, Abah pakai talking.
+            ApplyAbahSprite(ResolveAbahTalking(), "AbahSpriteSet.talkingS3");
+            yield return StartCoroutine(PlayDialogueSequence(beat3Dialogue, () => StartCoroutine(OnScene3CompleteRoutine())));
+        }
+
+        private Sprite ResolveRimbaReceive()
+        {
+            if (rimbaSpriteSet == null) return null;
+            return rimbaSpriteSet.receiveKarinding != null ? rimbaSpriteSet.receiveKarinding : rimbaSpriteSet.duduk;
+        }
+
+        private Sprite ResolveRimbaHold()
+        {
+            if (rimbaSpriteSet == null) return null;
+            if (rimbaSpriteSet.holdKarinding != null) return rimbaSpriteSet.holdKarinding;
+            return rimbaSpriteSet.pegangCanggung != null ? rimbaSpriteSet.pegangCanggung : rimbaSpriteSet.duduk;
+        }
+
+        private Sprite ResolveRimbaPlay()
+        {
+            if (rimbaSpriteSet == null) return null;
+            if (rimbaSpriteSet.playKarinding != null) return rimbaSpriteSet.playKarinding;
+            return ResolveRimbaHold();
+        }
+
+        private Sprite ResolveAbahGive()
+        {
+            if (abahSpriteSet == null) return null;
+            return abahSpriteSet.giveKarinding != null ? abahSpriteSet.giveKarinding : abahSpriteSet.duduk;
+        }
+
+        private Sprite ResolveAbahIdle()
+        {
+            if (abahSpriteSet == null) return null;
+            return abahSpriteSet.idleS3 != null ? abahSpriteSet.idleS3 : abahSpriteSet.duduk;
+        }
+
+        private Sprite ResolveAbahSmile()
+        {
+            if (abahSpriteSet == null) return null;
+            if (abahSpriteSet.smileS3 != null) return abahSpriteSet.smileS3;
+            return abahSpriteSet.senyumTipis != null ? abahSpriteSet.senyumTipis : abahSpriteSet.duduk;
+        }
+
+        private Sprite ResolveAbahTalking()
+        {
+            if (abahSpriteSet == null) return null;
+            if (abahSpriteSet.talkingS3 != null) return abahSpriteSet.talkingS3;
+            return ResolveAbahSmile();
         }
 
         private void ApplyRimbaSprite(Sprite sprite, string fieldName)
@@ -247,10 +324,23 @@ namespace MainKarinding.Cutscenes
 
         private void OnScene3Complete()
         {
+            StartCoroutine(OnScene3CompleteRoutine());
+        }
+
+        // Setelah dialog Omat beres: Abah kembali smile, lalu blackscreen ON untuk lanjut ke scene berikutnya.
+        private IEnumerator OnScene3CompleteRoutine()
+        {
             cutsceneActive = false;
+            ApplyAbahSprite(ResolveAbahSmile(), "AbahSpriteSet.smileS3");
             if (karindingLoopSource != null && karindingLoopSource.isPlaying)
                 karindingLoopSource.Stop();
-            Debug.Log("[Scene3Cutscene] Scene 3 selesai — lanjut Scene 4 (S4_FilosofiBigBang). Freeze di sini sampai Scene 4 dibangun.");
+            if (audioManager != null) audioManager.FadeOutAmbient(ambientFadeOutSeconds);
+
+            yield return StartCoroutine(FadeBlackscreen(true, blackscreenDuration));
+
+            if (MainKarinding.Core.StoryState.Instance != null)
+                MainKarinding.Core.StoryState.Instance.SetEntryPoint(MainKarinding.Core.Ch1EntryPoint.Scene4);
+            Debug.Log("[Scene3Cutscene] Scene 3 selesai + blackscreen — lanjut Scene 4 (S4_FilosofiBigBang).");
         }
 
         #region Helpers (pola Scene 1 & 2)
@@ -287,7 +377,7 @@ namespace MainKarinding.Cutscenes
                 yield return StartCoroutine(WaitDialogueOrTimeout(() => finished, dialogueTimeoutSeconds));
                 yield return new WaitForSeconds(0.2f);
             }
-            if (dialogueDisplay != null) dialogueDisplay.Hide();
+            if (dialogueDisplay != null) dialogueDisplay.ShowStandby();
             if (floatingDialogue != null) floatingDialogue.Hide();
             onComplete?.Invoke();
         }

@@ -29,6 +29,9 @@ MonoBehaviour:
   sitIdle: {fileID: 21300000, guid: 65bf62bbe4c9c2941854a864441cfa41, type: 3}
   pegangCanggung: {fileID: 21300000, guid: 07998aa284f340241a49cea3f2fb37ca, type: 3}
   bangga: {fileID: 21300000, guid: dbe51d51427a1bf41ae5b1ba0b15b82a, type: 3}
+  receiveKarinding: {fileID: 21300000, guid: ecb60981b16cf16449e88b6aaa5eee7e, type: 3}
+  holdKarinding: {fileID: 21300000, guid: 49d814ad0749da741a97aefc7eb536da, type: 3}
+  playKarinding: {fileID: 21300000, guid: 48c735564802c4043bad5f7d733543c1, type: 3}
   sandarPohon: {fileID: 21300000, guid: eed95b75e0582fe46942f9ecf292c41e, type: 3}
   merabaPinggang: {fileID: 21300000, guid: 663186f729d3d4c4d9421018b5a6b447, type: 3}
   berdiri: {fileID: 21300000, guid: ea9893f7c887ff746873817798895ea8, type: 3}

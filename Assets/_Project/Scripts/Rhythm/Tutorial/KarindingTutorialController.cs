@@ -47,6 +47,12 @@ public class KarindingTutorialController : MonoBehaviour
     [SerializeField] private float lenientGoodWindow = 0.30f;
     [SerializeField] private int lenientMaxMisses = 99;
 
+    [Header("Dialog Abah saat Miss (slot teks tutorial)")]
+    [Tooltip("Cooldown antar tampil dialog Abah supaya miss beruntun tidak spam teks.")]
+    [SerializeField] private float abahMissCooldown = 5f;
+    [Tooltip("Durasi tampil dialog Abah di slot InstructionText (auto-hilang, tanpa tap).")]
+    [SerializeField] private float abahMissDuration = 2.5f;
+
     [Header("Debug")]
     [SerializeField] private bool autoStart = true;
     [SerializeField] private bool logVerbose = true;
@@ -59,6 +65,8 @@ public class KarindingTutorialController : MonoBehaviour
     private int _rushCount;
     private int _streak;
     private bool _fase2FirstHintShown;
+    private float _lastAbahMissTime = -999f;
+    private const string AbahUlahMaksaLine = "Abah: Ulah maksa, Rimba. Lain kuat na leungeun nu di penta, tapi tenang jeung sabar na haté.";
     private bool _waitingForHandTap;
     private LaneSide _expectedHandLane;
     private System.Action<LaneSide> _onHandTapCallback;
@@ -218,6 +226,22 @@ public class KarindingTutorialController : MonoBehaviour
         {
             _streak = 0;
         }
+    }
+
+    /// <summary>
+    /// Dipanggil saat note di-judge Miss selama Fase 3 (Resonansi) saja — Fase 2
+    /// (guided) sengaja tidak di-hook supaya slot teks tutorial tidak ketabrak hint.
+    /// Tampil di slot InstructionText yang sudah ada (auto-hilang) — bukan toast/popup
+    /// baru, tanpa tap. Dibatasi cooldown supaya miss beruntun tidak spam.
+    /// </summary>
+    private void HandleMissAbahLine(NoteData data, HitGrade grade)
+    {
+        if (grade != HitGrade.Miss) return;
+        if (CurrentPhase != TutorialPhase.Resonansi) return;
+        if (Time.time - _lastAbahMissTime < Mathf.Max(0f, abahMissCooldown)) return;
+        _lastAbahMissTime = Time.time;
+        Log("Miss -> dialog Abah di slot teks tutorial");
+        overlay?.ShowInstruction(AbahUlahMaksaLine, Mathf.Max(0.5f, abahMissDuration));
     }
 
     private IEnumerator ShowRushToastHint()
@@ -482,9 +506,11 @@ public class KarindingTutorialController : MonoBehaviour
         RhythmMinigameResult res = null;
         System.Action<RhythmMinigameResult> handler = (r) => { res = r; done = true; };
         rhythmController.OnMinigameComplete += handler;
+        rhythmController.OnNoteJudged += HandleMissAbahLine;
         rhythmController.StartMinigame(chart, true); // start ter-script (bukan auto-loop)
         yield return new WaitUntil(() => done);
         rhythmController.OnMinigameComplete -= handler;
+        rhythmController.OnNoteJudged -= HandleMissAbahLine;
         onDone?.Invoke(res);
     }
 
@@ -661,6 +687,12 @@ public class KarindingTutorialController : MonoBehaviour
         _streak = 0;
         _fase2FirstHintShown = false;
         _waitingForHandTap = false;
+        _lastAbahMissTime = -999f;
+        // Coroutine bisa mati sebelum unsubscribe (StopAllCoroutines di atas) —
+        // cabut handler miss di sini supaya tidak ganda di run berikutnya.
+        if (rhythmController == null) rhythmController = RhythmMinigameController.Instance;
+        if (rhythmController == null) rhythmController = FindFirstObjectByType<RhythmMinigameController>();
+        if (rhythmController != null) rhythmController.OnNoteJudged -= HandleMissAbahLine;
         CurrentPhase = TutorialPhase.Idle;
         StartCoroutine(DelayedRestart());
     }

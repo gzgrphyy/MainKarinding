@@ -4343,8 +4343,8 @@ Transform:
   m_GameObject: {fileID: 408738025}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.72, y: -0.73, z: 0}
-  m_LocalScale: {x: 0.6, y: 0.6, z: 1}
+  m_LocalPosition: {x: 2.59, y: -0.09, z: 0}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1924324142}
@@ -4399,7 +4399,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: a24104183c2f9084d8eab6e7e433b1b6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 73bcc675c3c779441837f29cc7f1f0c8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -6017,7 +6017,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &553588570
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6047,6 +6047,9 @@ MonoBehaviour:
   dengungLow: {fileID: 8300000, guid: f9aa595562b43b04ab7a033ecefd549a, type: 3}
   karindingLoopSource: {fileID: 0}
   openingDelay: 1
+  holdPoseSeconds: 1.5
+  playPoseSeconds: 1.5
+  closingDelaySeconds: 2
   ambientFadeOutSeconds: 0.35
   blackscreenDuration: 0.7
   tutorialSceneName: TutorialMinigameRhythm
@@ -12167,8 +12170,8 @@ Transform:
   m_GameObject: {fileID: 1308293414}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.33, y: -0.41, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_LocalPosition: {x: -2.29, y: -0.48, z: 0}
+  m_LocalScale: {x: 0.35, y: 0.35, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1509464777}
@@ -12237,7 +12240,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 65bf62bbe4c9c2941854a864441cfa41, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ecb60981b16cf16449e88b6aaa5eee7e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -16628,7 +16631,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Core.StoryState
   currentBeat: 0
-  entryPoint: 0
+  entryPoint: 2
 --- !u!4 &1734499648
 Transform:
   m_ObjectHideFlags: 0
@@ -17374,7 +17377,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1829835895
 MonoBehaviour:
   m_ObjectHideFlags: 0

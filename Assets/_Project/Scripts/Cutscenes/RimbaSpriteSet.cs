@@ -29,7 +29,13 @@ namespace MainKarinding.Cutscenes
         public Sprite sitIdle;
 
         [Header("Scene 3 - Belajar Memainkan Karinding")]
-        [Tooltip("Rimba sudah pegang karinding, masih duduk. File: s3_rimba_pegang_canggung.png")]
+        [Tooltip("Rimba menerima karinding dari Abah. File: rimba_s3_receivekarinding.png")]
+        public Sprite receiveKarinding;
+        [Tooltip("Rimba memegang karinding (diam). File: rimba_s3_holdkarinding.png")]
+        public Sprite holdKarinding;
+        [Tooltip("Rimba memainkan karinding. File: rimba_s3_playkarinding.png")]
+        public Sprite playKarinding;
+        [Tooltip("Rimba sudah pegang karinding, masih duduk. File: s3_rimba_pegang_canggung.png (legacy fallback)")]
         public Sprite pegangCanggung;
         [Tooltip("Rimba bangga setelah berhasil. File: s3_rimba_bangga.png")]
         public Sprite bangga;
