@@ -3,9 +3,10 @@ using UnityEngine;
 namespace MainKarinding.Crafting
 {
     /// <summary>
-    /// Satu rumpun bambu di hutan Scene 5 (Beat 2, S5_SearchBambu).
-    /// No-decoy: semua 3 hotspot wajib diambil, tidak ada jebakan/salah.
-    /// Klik/tap (OnMouseDown, butuh Collider2D) -> masuk tas + lapor controller.
+    /// Satu titik claim bambu di hutan Scene 5 (Beat 2, S5_SearchBambu).
+    /// No-decoy: semua 3 titik wajib diambil, tidak ada jebakan/salah.
+    /// Tanpa visual PNG (cuma marker hint): claim lewat tombol "Ambil Bambu"
+    /// saat Rimba dalam radius (dideteksi Scene5HutanController) -> Collect().
     /// </summary>
     [AddComponentMenu("Main Karinding/Crafting/Crafting Hotspot")]
     [RequireComponent(typeof(Collider2D))]
@@ -34,11 +35,6 @@ namespace MainKarinding.Crafting
                 if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
                 audioSource.playOnAwake = false;
             }
-        }
-
-        private void OnMouseDown()
-        {
-            Collect();
         }
 
         public void Collect()

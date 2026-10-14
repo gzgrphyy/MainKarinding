@@ -9,7 +9,8 @@ namespace MainKarinding.Cutscenes
 {
     /// <summary>
     /// Scene 5 — Hutan side (PLAN E5 revisi), tinggal di Ch1_Hutan.unity.
-    /// Beat 2 S5_SearchBambu: Rimba jalan bebas (analog), klik 3 rumpun bambu (no-decoy)
+    /// Beat 2 S5_SearchBambu: Rimba jalan bebas (analog), 3 titik tak terlihat
+    /// (marker kuning kedip, no-decoy) -> tombol Ambil Bambu saat dekat
     /// -> tas 3/3 -> mode jalan-pulang: Rimba ke KIRI -> ujung -> blackscreen -> LoadScene(Teras).
     /// Abah tidak ada di hutan (menunggu di Teras).
     ///
@@ -23,6 +24,7 @@ namespace MainKarinding.Cutscenes
 
         [Header("Hutan")]
         [SerializeField] private SpriteRenderer bgRenderer;
+        [Tooltip("BG jalan/explore hutan saat load. File: s5_explore_path_hutan_.png")]
         [SerializeField] private Sprite bgHutanMimpi;
         [SerializeField] private GameObject explorationRoot;
         [SerializeField] private RimbaWalker rimbaWalker;
@@ -40,6 +42,12 @@ namespace MainKarinding.Cutscenes
         [Tooltip("Toast kecil non-blocking pengganti bubble besar (bubble menghalangi layar saat cari bambu).")]
         [SerializeField] private Scene5Toast toast;
 
+        [Header("Claim (Beat 2 - tombol Ambil, tanpa PNG bambu)")]
+        [Tooltip("Tombol Ambil Bambu, muncul saat Rimba dalam radius titik yang belum di-claim.")]
+        [SerializeField] private CutsceneActionButton actionButton;
+        [Tooltip("Jarak X Rimba ke titik agar tombol Ambil muncul (gerak walker terkunci sumbu X).")]
+        [SerializeField] private float claimRadius = 1.4f;
+
         [Header("Audio")]
         [SerializeField] private CutsceneAudioManager audioManager;
         [SerializeField] private AudioClip ambienceHutan;
@@ -51,8 +59,10 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private float dialogueTimeoutSeconds = 12f;
 
         private bool walkHomePhase = false;
+        private bool searchDone = false;
+        private CraftingHotspot currentTarget;
 
-        private const string HintToast = "Milarian awi nu sae — ketuk rumpun bambu!";
+        private const string HintToast = "Susuri jalan hutan — tekan Ambil Bambu saat tombol muncul!";
         private const string HomeToast = "Tos kenging tilu — balik ka teras, ke kiri!";
 
         private void Start()
@@ -71,6 +81,14 @@ namespace MainKarinding.Cutscenes
                 audioManager.PlayAmbient(ambienceHutan, 0.6f);
 
             if (puzzleController != null) puzzleController.allCollected += OnAllCollected;
+
+            if (actionButton == null) actionButton = Object.FindFirstObjectByType<CutsceneActionButton>();
+            if (actionButton != null)
+            {
+                actionButton.Hide();
+                actionButton.pressed += OnClaimPressed;
+            }
+            else Debug.LogWarning("[Scene5Hutan] CutsceneActionButton belum di-setup! Tambah tombol Ambil Bambu di UI.");
 
             StartCoroutine(IntroRoutine());
         }
@@ -116,6 +134,50 @@ namespace MainKarinding.Cutscenes
         private void OnDestroy()
         {
             if (puzzleController != null) puzzleController.allCollected -= OnAllCollected;
+            if (actionButton != null) actionButton.pressed -= OnClaimPressed;
+        }
+
+        /// <summary>
+        /// Polling proximity tiap frame: titik tanpa visual, claim hanya lewat tombol.
+        /// Jarak X saja (gerak walker terkunci sumbu X, Y hotspot beda ~2.4 dari walker).
+        /// </summary>
+        private void Update()
+        {
+            if (searchDone || walkHomePhase) return;
+            if (puzzleController == null || rimbaWalker == null || actionButton == null) return;
+            var hotspots = puzzleController.Hotspots;
+            if (hotspots == null) return;
+            CraftingHotspot nearest = null;
+            float nearestDx = float.MaxValue;
+            float rimbaX = rimbaWalker.transform.position.x;
+            foreach (var h in hotspots)
+            {
+                if (h == null || h.Collected || !h.gameObject.activeInHierarchy) continue;
+                float dx = Mathf.Abs(h.transform.position.x - rimbaX);
+                if (dx <= claimRadius && dx < nearestDx) { nearestDx = dx; nearest = h; }
+            }
+            if (nearest != currentTarget)
+            {
+                currentTarget = nearest;
+                if (currentTarget != null) actionButton.Show();
+                else actionButton.Hide();
+            }
+        }
+
+        /// <summary>Tap tombol Ambil -> claim titik terdekat + toast isi tas.</summary>
+        private void OnClaimPressed()
+        {
+            if (currentTarget == null || currentTarget.Collected) return;
+            var t = currentTarget;
+            currentTarget = null;
+            if (actionButton != null) actionButton.Hide();
+            t.Collect();
+            int count = BambooInventory.Instance != null ? BambooInventory.Instance.Count : 0;
+            // Klaim ke-3: lewati toast claim supaya toast pulang (HomeToast dari
+            // OnAllCollected, sudah jalan duluan) tidak tertimpa ShowToast berikutnya.
+            if (count >= 3) return;
+            if (toast == null) toast = Object.FindFirstObjectByType<Scene5Toast>();
+            if (toast != null) toast.ShowToast($"Bambu {t.Tag} masuk tas ({count}/3)", 1.6f);
         }
 
         private void AutoFind()
@@ -151,9 +213,12 @@ namespace MainKarinding.Cutscenes
         private void OnAllCollected()
         {
             Debug.Log("[Scene5Hutan] 3/3 terkumpul -> mode jalan-pulang (ke KIRI).");
+            searchDone = true;
+            currentTarget = null;
+            if (actionButton != null) actionButton.Hide();
             if (toast == null) toast = Object.FindFirstObjectByType<Scene5Toast>();
-            if (toast != null) toast.ShowToast(HomeToast, 2.5f);
-            StartCoroutine(DelayedExecute(2.6f, StartWalkHomePhase));
+            if (toast != null) toast.ShowToast(HomeToast, 4f);
+            StartCoroutine(DelayedExecute(4f, StartWalkHomePhase));
         }
 
         private void StartWalkHomePhase()

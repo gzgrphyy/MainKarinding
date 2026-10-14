@@ -8,13 +8,17 @@ using MainKarinding.Exploration;
 namespace MainKarinding.Cutscenes
 {
     /// <summary>
-    /// Scene 5 — Teras side (PLAN E5 revisi).
-    /// Beat 1 S5_AjakHutan: dialog ajak 3 baris, Abah DIAM (tidak ikut jalan),
-    /// Rimba player-controlled jalan ke KANAN -> ujung -> blackscreen -> LoadScene(Ch1_Hutan).
+    /// Scene 5 — Teras side (PLAN E5 revisi + rombak asset berdiri S5).
+    /// Beat 1 S5_AjakHutan: dialog ajak 3 baris (BG wide establishing) dengan swap
+    ///   talk/idle/listen (Abah: stand_talk/stand_idle, Rimba: stand_talk/stand_listen),
+    ///   Abah DIAM (tidak ikut jalan). Rimba player-controlled jalan ke KANAN di atas
+    ///   BG wide yang sama -> ujung -> blackscreen -> LoadScene(Ch1_Hutan).
     /// Beat 3 S5_KembaliRumah: resume saat Teras di-load ulang (tas terbawa via BambooInventory)
-    ///   — fade-in dari hitam, Rimba masuk lagi dari KANAN lalu player jalan KIRI ke Abah,
-    ///   baru masuk handoff (jadi Rimba tidak langsung "sudah duduk" di depan Abah).
-    /// Beat 4 S5_HandoffBambu: drag ikon dari tas ke Abah (urutan bebas) -> reaksi per-tag.
+    ///   — fade-in dari hitam, Rimba masuk lagi dari KANAN lalu player jalan KIRI ke Abah
+    ///   (Abah menunggu pakai stand_idle). Saat Rimba sampai titik berhenti -> Abah
+    ///   ganti ke receivebamboo, Rimba ganti ke bringbamboo, baru masuk handoff.
+    /// Beat 4 S5_HandoffBambu: drag ikon dari tas ke Abah (urutan bebas) -> reaksi per-tag
+    ///   (Tua->reaksi_tua, Tipis->reaksi_muda, Pas->reaksi_pas).
     /// </summary>
     public class Scene5TerasController : MonoBehaviour
     {
@@ -28,6 +32,13 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private SpriteRenderer shotAbah;
         [SerializeField] private SpriteRenderer bgRenderer;
         [SerializeField] private Sprite bgTerasSiang;
+        [Header("BG Dialog + Walk (Beat 1)")]
+        [Tooltip("BG dialog awal + jalan ke hutan. File: s1_bg_wide_establishing2.png")]
+        [SerializeField] private Sprite bgDialogWide;
+
+        [Header("Walk Phase BG (Beat 1 - jalan di teras siang)")]
+        [Tooltip("Renderer BG di dalam explorationRoot (auto-find BG_teras-hutan_Walk kalau kosong). Sprite-nya ikut bgTerasSiang.")]
+        [SerializeField] private SpriteRenderer exploreBgRenderer;
 
         [Header("UI Components (reuse)")]
         [SerializeField] private CutsceneDialogueDisplay dialogueDisplay;
@@ -43,7 +54,9 @@ namespace MainKarinding.Cutscenes
         [Header("Beat 3 - Jalan Pulang ke Abah (setelah dari hutan)")]
         [Tooltip("X Rimba muncul lagi dari hutan (kanan). 7 = titik yang sama saat dia brangkat di Beat 1.")]
         [SerializeField] private float returnSpawnX = 7f;
-        [Tooltip("X Rimba dianggap sudah sampai di Abah (trigger handoff). Samakan dengan x Char_Rimba di shot (≈ -4) supaya posisinya nyambung saat tukar ke pose duduk.")]
+        [Tooltip("Titik berhenti Rimba (drag di Scene view). Kalau kosong, pakai Abah Arrival X di bawah.")]
+        [SerializeField] private Transform arrivalPoint;
+        [Tooltip("Fallback X Rimba dianggap sudah sampai di Abah (trigger handoff). Dipakai kalau Arrival Point kosong.")]
         [SerializeField] private float abahArrivalX = -4f;
         [Tooltip("Jeda setelah Rimba sampai sebelum tas handoff muncul (baca: Rimba berhenti dulu).")]
         [SerializeField] private float arrivalPause = 0.6f;
@@ -135,6 +148,23 @@ namespace MainKarinding.Cutscenes
             if (tasSlots.Count == 0 && tasPanel != null)
                 tasSlots.AddRange(tasPanel.GetComponentsInChildren<BambooSlotUI>(true));
             if (dropTarget == null) dropTarget = Object.FindFirstObjectByType<NPCHandoffDropTarget>();
+            if (arrivalPoint == null && explorationRoot != null)
+            {
+                var ap = explorationRoot.transform.Find("RimbaArrivalPoint");
+                if (ap != null) arrivalPoint = ap;
+            }
+            if (exploreBgRenderer == null && explorationRoot != null)
+            {
+                var bgT = explorationRoot.transform.Find("BG_teras-hutan_Walk");
+                if (bgT != null) exploreBgRenderer = bgT.GetComponent<SpriteRenderer>();
+                if (exploreBgRenderer == null)
+                {
+                    foreach (var sr in explorationRoot.GetComponentsInChildren<SpriteRenderer>(true))
+                    {
+                        if (sr.GetComponent<RimbaWalker>() == null) { exploreBgRenderer = sr; break; }
+                    }
+                }
+            }
         }
 
         private Transform ResolveAnchor(string speaker)
@@ -159,9 +189,9 @@ namespace MainKarinding.Cutscenes
             SetBeat(Ch1Beat.S5_AjakHutan);
 
             if (shotRoot != null) shotRoot.SetActive(true);
-            ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.ajakTeras : null, "AbahSpriteSet.ajakTeras");
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.duduk : null, "RimbaSpriteSet.duduk");
-            if (bgRenderer != null && bgTerasSiang != null) bgRenderer.sprite = bgTerasSiang;
+            ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.standIdle : null, "AbahSpriteSet.standIdle");
+            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.standListen : null, "RimbaSpriteSet.standListen");
+            if (bgRenderer != null && bgDialogWide != null) bgRenderer.sprite = bgDialogWide;
 
             if (audioManager != null && ambienceSiang != null)
                 audioManager.PlayAmbient(ambienceSiang, 0.6f);
@@ -181,6 +211,9 @@ namespace MainKarinding.Cutscenes
                 return;
             }
             explorationRoot.SetActive(true);
+            // Jalan ke hutan pakai BG wide establishing (sama kayak dialog awal).
+            if (exploreBgRenderer != null && bgDialogWide != null)
+                exploreBgRenderer.sprite = bgDialogWide;
             if (rimbaSpriteSet != null)
                 rimbaWalker.Configure(analogStick, rimbaSpriteSet.walkRight, rimbaSpriteSet.idleRight);
             walkTrigger.Configure(rimbaWalker.transform, OnWalkRightArrived);
@@ -255,7 +288,7 @@ namespace MainKarinding.Cutscenes
             Debug.Log($"[Scene5Teras] Walk pulang: Rimba masuk dari kanan (x={returnSpawnX}) -> jalan ke KIRI sampai Abah (x={abahArrivalX}).");
 
             if (shotRoot != null) shotRoot.SetActive(true);
-            ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.ajakTeras : null, "AbahSpriteSet.ajakTeras");
+            ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.standIdle : null, "AbahSpriteSet.standIdle");
             if (shotRimba != null) shotRimba.gameObject.SetActive(false);
             if (bgRenderer != null) bgRenderer.gameObject.SetActive(false);
 
@@ -278,7 +311,9 @@ namespace MainKarinding.Cutscenes
 
             if (rimbaSpriteSet != null)
                 rimbaWalker.Configure(analogStick, rimbaSpriteSet.walkRight, rimbaSpriteSet.idleRight);
-            walkTrigger.Configure(rimbaWalker.transform, OnWalkToAbahArrived, WalkOffTrigger.ExitDirection.Left, abahArrivalX);
+            float arrivalX = arrivalPoint != null ? arrivalPoint.position.x : abahArrivalX;
+            Debug.Log($"[Scene5Teras] Titik berhenti Rimba x={arrivalX} (point={(arrivalPoint != null ? "scene" : "fallback")}).");
+            walkTrigger.Configure(rimbaWalker.transform, OnWalkToAbahArrived, WalkOffTrigger.ExitDirection.Left, arrivalX);
             rimbaWalker.Locked = false;
             returnWalkPhase = true;
         }
@@ -290,15 +325,22 @@ namespace MainKarinding.Cutscenes
             returnWalkPhase = false;
             if (rimbaWalker != null) rimbaWalker.Locked = true;
             Debug.Log("[Scene5Teras] Rimba sampai di Abah -> mulai handoff bambu.");
+            ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.receiveBamboo : null, "AbahSpriteSet.receiveBamboo");
             StartCoroutine(HandoffAfterReturnRoutine());
         }
 
         private IEnumerator HandoffAfterReturnRoutine()
         {
-            // Rimba berhenti (idle) sejenak, baru "duduk" di posisi shot. Tidak ada lompatan
-            // posisi karena abahArrivalX disamakan dengan x Char_Rimba.
+            // Rimba berhenti (idle) sejenak di titik arrival. shotRimba digeser ke
+            // posisi berhenti walker supaya handoff tetap di posisi awal (tanpa teleport).
             yield return new WaitForSeconds(arrivalPause);
 
+            if (rimbaWalker != null && shotRimba != null)
+            {
+                Vector3 rp = shotRimba.transform.position;
+                rp.x = rimbaWalker.transform.position.x;
+                shotRimba.transform.position = rp;
+            }
             if (explorationRoot != null) explorationRoot.SetActive(false);
             if (shotRimba != null) shotRimba.gameObject.SetActive(true);
 
@@ -307,7 +349,8 @@ namespace MainKarinding.Cutscenes
         }
 
         /// <summary>
-        /// Framing shot teras siang: BG + Abah (ajakTeras) + Rimba duduk di tangga.
+        /// Framing handoff: BG awal (wide dialog) + Abah (receiveBamboo) + Rimba (bringBamboo).
+        /// Posisi tidak diubah di sini (shotRimba sudah digeser ke titik arrival).
         /// Dipakai saat walk pulang gagal disiapkan maupun saat Rimba sudah sampai di Abah.
         /// </summary>
         private void ShowHandoffShot()
@@ -316,11 +359,18 @@ namespace MainKarinding.Cutscenes
             if (bgRenderer != null)
             {
                 bgRenderer.gameObject.SetActive(true);
-                if (bgTerasSiang != null) bgRenderer.sprite = bgTerasSiang;
+                if (bgDialogWide != null) bgRenderer.sprite = bgDialogWide;
+                else if (bgTerasSiang != null) bgRenderer.sprite = bgTerasSiang;
             }
             if (shotRimba != null) shotRimba.gameObject.SetActive(true);
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.duduk : null, "RimbaSpriteSet.duduk");
-            ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.ajakTeras : null, "AbahSpriteSet.ajakTeras");
+            Sprite rimbaHandoff = rimbaSpriteSet != null
+                ? (rimbaSpriteSet.bringBamboo != null ? rimbaSpriteSet.bringBamboo : rimbaSpriteSet.standListen)
+                : null;
+            ApplyRimbaSprite(rimbaHandoff, "RimbaSpriteSet.bringBamboo");
+            Sprite abahHandoff = abahSpriteSet != null
+                ? (abahSpriteSet.receiveBamboo != null ? abahSpriteSet.receiveBamboo : abahSpriteSet.standIdle)
+                : null;
+            ApplyAbahSprite(abahHandoff, "AbahSpriteSet.receiveBamboo");
         }
 
         // ---- Beat 4: drag dari tas ke Abah ----
@@ -376,14 +426,18 @@ namespace MainKarinding.Cutscenes
                 BambooTag tag = reactionQueue.Dequeue();
                 // Sprite reaksi di-set saat giliran tag ini, bukan saat drop, supaya
                 // ekspresi Abah selalu cocok dengan dialog yang sedang tampil.
+                // Rombak S5: Tua->reaksi_tua, Tipis->reaksi_muda, Pas->reaksi_pas.
                 Sprite reaksi = tag switch
                 {
-                    BambooTag.Tua => abahSpriteSet != null ? abahSpriteSet.reaksiTua : null,
-                    BambooTag.Tipis => abahSpriteSet != null ? abahSpriteSet.reaksiTipis : null,
+                    BambooTag.Tua => abahSpriteSet != null
+                        ? (abahSpriteSet.reaksiTua != null ? abahSpriteSet.reaksiTua : abahSpriteSet.reaksiTipis) : null,
+                    BambooTag.Tipis => abahSpriteSet != null
+                        ? (abahSpriteSet.reaksiMuda != null ? abahSpriteSet.reaksiMuda : abahSpriteSet.reaksiTipis) : null,
                     _ => abahSpriteSet != null ? abahSpriteSet.reaksiPas : null,
                 };
                 ApplyAbahSprite(reaksi, $"AbahSpriteSet.reaksi{tag}");
-                yield return StartCoroutine(PlayDialogueSequence(new[] { ReactionLine(tag) }, null));
+                // swapTalkSprites=false: Abah tetap pakai sprite reaksi, Rimba tetap bringBamboo.
+                yield return StartCoroutine(PlayDialogueSequence(new[] { ReactionLine(tag) }, null, false));
             }
             reactionPlaying = false;
 
@@ -395,8 +449,8 @@ namespace MainKarinding.Cutscenes
         {
             return tag switch
             {
-                BambooTag.Tua => new DialogueLine("Abah", "Ieu mah tos kolot teuing, Ba. Atos garing, gampang peupeus.", "Ini mah udah terlalu tua, Ba. Udah kering, gampang pecah."),
-                BambooTag.Tipis => new DialogueLine("Abah", "Ieu ge ipis teuing, gampang belah.", "Ini juga terlalu tipis, gampang patah."),
+                BambooTag.Tua => new DialogueLine("Abah", "Ieu ge ipis teuing, gampang belah.", "Ini juga terlalu tipis, gampang patah."),
+                BambooTag.Tipis => new DialogueLine("Abah", "Ieu mah... acan cekap umurna, Ba. Masih keneh hejo.", "Ini mah... belum cukup umurnya, Ba. Masih hijau."),
                 _ => new DialogueLine("Abah", "Tah... ieu pas. Teu ngora teuing, teu kolot teuing, seseug deuih. Ieu nu rék dipake nyieun Karinding Rimba.", "Nah... ini pas. Nggak terlalu muda, nggak terlalu tua, padat juga. Ini yang bakal dipake bikin Karinding Rimba."),
             };
         }
@@ -439,7 +493,29 @@ namespace MainKarinding.Cutscenes
             return false;
         }
 
-        private IEnumerator PlayDialogueSequence(DialogueLine[] lines, System.Action onComplete)
+        /// <summary>
+        /// Abah ngomong -> Abah stand_talk + Rimba stand_listen.
+        /// Rimba ngomong -> Rimba stand_talk + Abah stand_idle.
+        /// Dilewati saat reaksi handoff (swapTalkSprites=false) supaya sprite
+        /// reaksi Abah dan bringBamboo Rimba tidak tertimpa.
+        /// </summary>
+        private void ApplyTalkSprites(string speaker)
+        {
+            if (rimbaSpriteSet == null || abahSpriteSet == null) return;
+            bool isRimba = speaker != null && speaker.ToLowerInvariant().Contains("rimba");
+            if (isRimba)
+            {
+                if (rimbaSpriteSet.standTalk != null) ApplyRimbaSprite(rimbaSpriteSet.standTalk, "RimbaSpriteSet.standTalk");
+                if (abahSpriteSet.standIdle != null) ApplyAbahSprite(abahSpriteSet.standIdle, "AbahSpriteSet.standIdle");
+            }
+            else
+            {
+                if (abahSpriteSet.standTalk != null) ApplyAbahSprite(abahSpriteSet.standTalk, "AbahSpriteSet.standTalk");
+                if (rimbaSpriteSet.standListen != null) ApplyRimbaSprite(rimbaSpriteSet.standListen, "RimbaSpriteSet.standListen");
+            }
+        }
+
+        private IEnumerator PlayDialogueSequence(DialogueLine[] lines, System.Action onComplete, bool swapTalkSprites = true)
         {
             foreach (var line in lines)
             {
@@ -448,6 +524,7 @@ namespace MainKarinding.Cutscenes
                     yield return new WaitForSeconds(0.8f);
                     continue;
                 }
+                if (swapTalkSprites) ApplyTalkSprites(line.speaker);
                 bool finished = false;
                 Transform anchor = ResolveAnchor(line.speaker);
                 if (floatingDialogue != null && anchor != null)

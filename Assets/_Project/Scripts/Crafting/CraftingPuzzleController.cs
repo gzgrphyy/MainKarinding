@@ -27,6 +27,7 @@ namespace MainKarinding.Crafting
         public CraftingMode Mode => mode;
         public int CollectedCount => collectedCount;
         public int TotalCount => hotspots.Count;
+        public IReadOnlyList<CraftingHotspot> Hotspots => hotspots;
 
         public event System.Action allCollected;
 

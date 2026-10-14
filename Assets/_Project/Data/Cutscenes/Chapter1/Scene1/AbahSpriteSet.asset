@@ -24,14 +24,18 @@ MonoBehaviour:
   sitTalk: {fileID: 21300000, guid: a24104183c2f9084d8eab6e7e433b1b6, type: 3}
   sitPlayKarinding: {fileID: 21300000, guid: a7efa2060fd5931448998f8bbf9057f0, type: 3}
   sitHoldKarinding: {fileID: 21300000, guid: dc6371868a96b3d4b8cfba7c33e45d75, type: 3}
-  senyumTipis: {fileID: 21300000, guid: ecac7b2e473338f42a571e57ac5948a9, type: 3}
   giveKarinding: {fileID: 21300000, guid: 73bcc675c3c779441837f29cc7f1f0c8, type: 3}
   idleS3: {fileID: 21300000, guid: f01b87c22f74cd14783e7a0dea283fa7, type: 3}
   smileS3: {fileID: 21300000, guid: 82a474230f4e87445b73c842c18f46f0, type: 3}
   talkingS3: {fileID: 21300000, guid: 6e96e626a36eae84cbcef89b6f0c31c7, type: 3}
+  senyumTipis: {fileID: 21300000, guid: ecac7b2e473338f42a571e57ac5948a9, type: 3}
   ajakTeras: {fileID: 21300000, guid: 8abcc028bb94e414da8fd7b3a00c48b3, type: 3}
-  reaksiTua: {fileID: 21300000, guid: 9703d92d6bd9c37498ba80b9d3d64d96, type: 3}
+  reaksiTua: {fileID: 21300000, guid: 699a048f9f9f53e49a346354bcbef04e, type: 3}
   reaksiTipis: {fileID: 21300000, guid: f513fcc5f3262fa44a752132674031d2, type: 3}
-  reaksiPas: {fileID: 21300000, guid: db99819d28a18f44395561224715bf29, type: 3}
+  reaksiPas: {fileID: 21300000, guid: 13cdc8ae328538e40ae7ab8c9ca51878, type: 3}
+  reaksiMuda: {fileID: 21300000, guid: 03af3a51d2e682f4db4fc152b3801c1f, type: 3}
+  standTalk: {fileID: 21300000, guid: bf163d697e38f9342a6f1f874c7731d9, type: 3}
+  standIdle: {fileID: 21300000, guid: c3fbf3e65660e4a498c97a339b1d661c, type: 3}
+  receiveBamboo: {fileID: 21300000, guid: 3efcf7826a67eaa45af845fd1986e5e1, type: 3}
   encourage: {fileID: 21300000, guid: 95ea108582fa4a74683b65d81e8abead, type: 3}
   koreksi: {fileID: 21300000, guid: 4afce58725480a44cb910654dcf8048c, type: 3}

@@ -38,14 +38,24 @@ namespace MainKarinding.Cutscenes
         public Sprite senyumTipis;
 
         [Header("Scene 5 - Ajak ke Hutan + Reaksi Bambu")]
-        [Tooltip("Abah mengajak ke hutan di teras. File: s5_abah_ajak_teras.png")]
+        [Tooltip("Abah mengajak ke hutan di teras. File: s5_abah_ajak_teras.png (legacy, diganti standTalk/standIdle)")]
         public Sprite ajakTeras;
-        [Tooltip("Reaksi bambu tua/kolot. File: s5_abah_reaksi_tua.png")]
+        [Tooltip("Reaksi bambu tua/kolot. File: abah_s5_reaksi_tua.png")]
         public Sprite reaksiTua;
-        [Tooltip("Reaksi bambu tipis/kopong. File: s5_abah_reaksi_tipis.png")]
+        [Tooltip("Reaksi bambu tipis/kopong. File: s5_abah_reaksi_tipis.png (legacy)")]
         public Sprite reaksiTipis;
-        [Tooltip("Reaksi bambu pas. File: s5_abah_reaksi_pas.png")]
+        [Tooltip("Reaksi bambu pas. File: abah_s5_reaksi_pas.png")]
         public Sprite reaksiPas;
+        [Tooltip("Reaksi bambu muda/ijo. File: abah_s5_reaksi_muda.png (dipakai untuk tag Tipis)")]
+        public Sprite reaksiMuda;
+
+        [Header("Scene 5 - Teras Siang (berdiri, rombak S5)")]
+        [Tooltip("Abah berbicara (berdiri). File: abah_s5_stand_talk.png")]
+        public Sprite standTalk;
+        [Tooltip("Abah diam (berdiri). File: abah_s5_stand_idle.png")]
+        public Sprite standIdle;
+        [Tooltip("Abah menerima bambu saat Rimba sampai titik berhenti. File: abah_s5_receivebamboo.png")]
+        public Sprite receiveBamboo;
 
         [Header("Scene 6 - Assembly Bark (tanpa bubble)")]
         [Tooltip("Bark lancar saat crossing Cut->Tap. File: s6_abah_encourage.png")]

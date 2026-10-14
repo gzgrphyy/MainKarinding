@@ -47,5 +47,13 @@ namespace MainKarinding.Cutscenes
         public Sprite merabaPinggang;
         [Tooltip("Rimba berdiri, End of Chapter 1. File: s9_rimba_berdiri.png")]
         public Sprite berdiri;
+
+        [Header("Scene 5 - Teras Siang (berdiri, rombak S5)")]
+        [Tooltip("Rimba berbicara (berdiri). File: rimba_s5_stand_talk.png")]
+        public Sprite standTalk;
+        [Tooltip("Rimba diam mendengarkan (berdiri). File: rimba_s5_stand_listen.png")]
+        public Sprite standListen;
+        [Tooltip("Rimba sampai titik berhenti membawa bambu. File: rimba_s5_bringbamboo.png")]
+        public Sprite bringBamboo;
     }
 }
