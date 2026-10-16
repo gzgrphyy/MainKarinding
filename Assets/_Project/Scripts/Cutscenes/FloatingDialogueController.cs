@@ -41,6 +41,10 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private Vector2 pointerOffsetAbah = new Vector2(40f, -10f);
         [Tooltip("Kalau true, BoxPointer flip X otomatis mengikuti sisi bubble vs kepala.")]
         [SerializeField] private bool autoFlipPointer = true;
+        [Tooltip("Kalau true, ujung ekor dijepit tepat di HeadAnchor pembicara tiap frame (abaikan offset X, Y dihitung dari ukuran ekor + pinGap). Khusus Scene 5.")]
+        [SerializeField] private bool pinPointerToHead = false;
+        [Tooltip("Jarak tambahan (px) antara ujung ekor dan kepala saat pin aktif.")]
+        [SerializeField] private float pinGap = 8f;
 
         [Header("Typewriter")]
         [SerializeField] private float typingSpeed = 0.03f;
@@ -239,22 +243,45 @@ namespace MainKarinding.Cutscenes
             if (currentAnchor == null || followCamera == null)
                 return;
 
-            Vector3 screen = followCamera.WorldToScreenPoint(currentAnchor.position);
-            if (screen.z < 0f)
+            Vector3 anchorScreen = followCamera.WorldToScreenPoint(currentAnchor.position);
+            if (anchorScreen.z < 0f)
                 return;
-
-            screen.x += currentOffset.x;
-            screen.y += currentOffset.y;
 
             RectTransform canvasRect = parentCanvas.transform as RectTransform;
             Camera cam = parentCanvas.renderMode == RenderMode.ScreenSpaceOverlay
                 ? null
                 : parentCanvas.worldCamera;
 
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screen, cam, out Vector2 local))
-                bubbleRect.anchoredPosition = local;
+            // Posisi layar bubble (untuk flip ekor): kepala + offset biasa.
+            Vector3 screen = anchorScreen;
+            screen.x += currentOffset.x;
+            screen.y += currentOffset.y;
+
+            if (pinPointerToHead)
+            {
+                // Ujung ekor tepat di kepala: bubble digeser supaya titik ujung ekor
+                // (posisi pointer + tinggi ekor ke bawah) berimpit dengan headanchor.
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, anchorScreen, cam, out Vector2 headLocal))
+                    bubbleRect.anchoredPosition = PinnedBubblePos(headLocal);
+            }
+            else
+            {
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvasRect, screen, cam, out Vector2 local))
+                    bubbleRect.anchoredPosition = local;
+            }
 
             UpdatePointerFlip(screen);
+        }
+
+        /// <summary>
+        /// Hitung posisi bubble supaya ujung ekor (bawah pointer) tepat di titik kepala.
+        /// headLocal = posisi headanchor dalam ruang lokal bubble.
+        /// </summary>
+        private Vector2 PinnedBubblePos(Vector2 headLocal)
+        {
+            float tailH = boxPointerRect != null ? boxPointerRect.rect.height : 0f;
+            Vector2 tip = new Vector2(currentPointerOffset.x, currentPointerOffset.y - tailH);
+            return headLocal - tip + new Vector2(0f, pinGap);
         }
 
         private void UpdatePointerFlip(Vector3 bubbleScreenPos)
