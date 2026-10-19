@@ -6,7 +6,7 @@ namespace MainKarinding.Cutscenes
 {
     /// <summary>
     /// Scene 6 — Teras side (PLAN E6).
-    /// Opening: dialog "Bagian-bagian na tos aya..." (reuse s2_abah_duduk) -> LoadScene(MinigameCrafting).
+    /// Opening: dialog "Bagian-bagian na tos aya..." (sprite dari SpriteRenderer di scene) -> LoadScene(MinigameCrafting).
     /// Resume (beat >= S6_Assembly, balik dari minigame): closing -> freeze ke Scene 7.
     /// Bark encourage/koreksi tampil DI DALAM MinigameCrafting via Scene6AbahBark (bukan di sini).
     /// </summary>
@@ -104,8 +104,6 @@ namespace MainKarinding.Cutscenes
         {
             Debug.Log("[Scene6Cutscene] Opening - S6_Assembly");
             if (shotRoot != null) shotRoot.SetActive(true);
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.duduk : null, "RimbaSpriteSet.duduk");
-            ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.duduk : null, "AbahSpriteSet.duduk (reuse kerja bareng)");
             if (bgRenderer != null && bgTerasSiang != null) bgRenderer.sprite = bgTerasSiang;
             if (audioManager != null && ambienceSiang != null)
                 audioManager.PlayAmbient(ambienceSiang, 0.6f);
@@ -116,8 +114,6 @@ namespace MainKarinding.Cutscenes
         {
             Debug.Log("[Scene6Cutscene] Closing - assembly selesai");
             if (shotRoot != null) shotRoot.SetActive(true);
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.duduk : null, "RimbaSpriteSet.duduk");
-            ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.duduk : null, "AbahSpriteSet.duduk");
             if (bgRenderer != null && bgTerasSiang != null) bgRenderer.sprite = bgTerasSiang;
             if (audioManager != null && ambienceSiang != null)
                 audioManager.PlayAmbient(ambienceSiang, 0.6f);
@@ -140,20 +136,6 @@ namespace MainKarinding.Cutscenes
             }
             Debug.Log($"[Scene6Cutscene] LoadScene({craftingSceneName}).");
             UnityEngine.SceneManagement.SceneManager.LoadScene(craftingSceneName);
-        }
-
-        private void ApplyRimbaSprite(Sprite sprite, string fieldName)
-        {
-            if (shotRimba == null) return;
-            if (sprite != null) shotRimba.sprite = sprite;
-            else Debug.LogWarning($"[Scene6Cutscene] {fieldName} belum di-assign!");
-        }
-
-        private void ApplyAbahSprite(Sprite sprite, string fieldName)
-        {
-            if (shotAbah == null) return;
-            if (sprite != null) shotAbah.sprite = sprite;
-            else Debug.LogWarning($"[Scene6Cutscene] {fieldName} belum di-assign!");
         }
 
         private static bool SceneExists(string name)
