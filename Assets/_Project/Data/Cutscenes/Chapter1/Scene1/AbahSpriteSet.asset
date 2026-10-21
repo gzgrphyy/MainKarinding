@@ -37,5 +37,5 @@ MonoBehaviour:
   standTalk: {fileID: 21300000, guid: bf163d697e38f9342a6f1f874c7731d9, type: 3}
   standIdle: {fileID: 21300000, guid: c3fbf3e65660e4a498c97a339b1d661c, type: 3}
   receiveBamboo: {fileID: 21300000, guid: 3efcf7826a67eaa45af845fd1986e5e1, type: 3}
-  encourage: {fileID: 21300000, guid: 95ea108582fa4a74683b65d81e8abead, type: 3}
-  koreksi: {fileID: 21300000, guid: 4afce58725480a44cb910654dcf8048c, type: 3}
+  encourage: {fileID: 21300000, guid: a4abe395100b26a408d74270f20d9fb2, type: 3}
+  koreksi: {fileID: 21300000, guid: aa3e4d9f215706d419e8676722b81a61, type: 3}

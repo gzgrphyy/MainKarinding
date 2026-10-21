@@ -117,7 +117,7 @@ namespace MainKarinding.Cutscenes
             if (bgRenderer != null && bgTerasSiang != null) bgRenderer.sprite = bgTerasSiang;
             if (audioManager != null && ambienceSiang != null)
                 audioManager.PlayAmbient(ambienceSiang, 0.6f);
-            StartCoroutine(DelayedExecute(openingDelay, () => StartCoroutine(PlayDialogueSequence(closingDialogue, OnScene6Complete))));
+            StartCoroutine(PlayDialogueSequence(closingDialogue, OnScene6Complete));
         }
 
         private void OnScene6Complete()

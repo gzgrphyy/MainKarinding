@@ -375,18 +375,11 @@ public class CraftingAssemblyProgressView : MonoBehaviour
         if (tapBgSprite == null) tapBgSprite = Resources.Load<Sprite>("bg_tapKarinding");
         if (tapStageSprite == null) tapStageSprite = Resources.Load<Sprite>("TapStageBG");
 
-        // TapArea: transparan + diperlebar biar muat gambar besar (raycast tetap jalan)
+        // TapArea: diperlebar biar muat gambar besar (raycast tetap jalan, warna ikut Inspector)
         tapAreaRect.anchorMin = new Vector2(0.05f, 0.14f);
         tapAreaRect.anchorMax = new Vector2(0.95f, 0.72f);
         tapAreaRect.offsetMin = Vector2.zero;
         tapAreaRect.offsetMax = Vector2.zero;
-        var areaImg = tapAreaRect.GetComponent<Image>();
-        if (areaImg != null)
-        {
-            var ac = areaImg.color;
-            ac.a = 0.03f;
-            areaImg.color = ac;
-        }
 
         // Background FULLSCREEN (anak AssemblyRoot, paling belakang, cover-fit ke layar)
         var rootRect = tapAreaRect.parent as RectTransform;
@@ -531,14 +524,7 @@ public class CraftingAssemblyProgressView : MonoBehaviour
             if (cutHandSprite == null) Debug.LogWarning("[CutVisual] hand-golok3 not found - assign cutHandSprite manually to hand-golok3");
         }
 
-        // CutArea: transparan tipis agar FullBG (bg_tapKarinding) terlihat
-        var areaImg = cutAreaRect.GetComponent<Image>();
-        if (areaImg != null)
-        {
-            var ac = areaImg.color;
-            ac.a = 0.03f;
-            areaImg.color = ac;
-        }
+        // CutArea: warna/alpha ikut Inspector
 
         // Outline hitam pada label CutArea
         var labelT = cutAreaRect.Find("Label");
@@ -563,8 +549,8 @@ public class CraftingAssemblyProgressView : MonoBehaviour
         var stageImg = stageT.GetComponent<Image>();
         if (stageImg != null)
         {
-            // Force ke karinding2d (main) - overwrite jika masih pisau Tap
-            if (cutStageSprite != null && stageImg.sprite != cutStageSprite) stageImg.sprite = cutStageSprite;
+            // Hanya isi bila kosong: hormati sprite yang sudah dipasang manual di scene
+            if (stageImg.sprite == null && cutStageSprite != null) stageImg.sprite = cutStageSprite;
             stageImg.preserveAspect = true;
             stageImg.raycastTarget = false;
         }
@@ -587,8 +573,7 @@ public class CraftingAssemblyProgressView : MonoBehaviour
         var handImg = cutHandRect.GetComponent<Image>();
         if (handImg != null)
         {
-            // Force ke hand-golok3 (sec) - overwrite pisau Tap jika masih nempel
-            if (cutHandSprite != null && handImg.sprite != cutHandSprite) handImg.sprite = cutHandSprite;
+            // Hanya isi bila kosong: hormati sprite yang sudah dipasang manual di scene
             if (handImg.sprite == null && cutHandSprite != null) handImg.sprite = cutHandSprite;
             handImg.preserveAspect = true;
             handImg.raycastTarget = false;
@@ -613,6 +598,11 @@ public class CraftingAssemblyProgressView : MonoBehaviour
         }
     }
 
+    private static Sprite ResolveSprite(Image img, Sprite fallback)
+    {
+        return img != null && img.sprite != null ? img.sprite : fallback;
+    }
+
     private void LayoutCover(RectTransform r, Sprite s)
     {
         if (r == null) return;
@@ -625,6 +615,7 @@ public class CraftingAssemblyProgressView : MonoBehaviour
         r.pivot = new Vector2(0.5f, 0.5f);
         r.anchoredPosition = Vector2.zero;
         float imgAspect = 16f / 9f;
+        s = ResolveSprite(r.GetComponent<Image>(), s);
         if (s != null && s.rect.height > 0f)
             imgAspect = s.rect.width / s.rect.height;
         float parentAspect = pw / ph;
@@ -642,8 +633,9 @@ public class CraftingAssemblyProgressView : MonoBehaviour
         if (areaH < 1f) return;
         float stageH = areaH * tapStageHeightNorm;
         float aspect = 1f;
-        if (tapStageSprite != null && tapStageSprite.rect.height > 0f)
-            aspect = tapStageSprite.rect.width / tapStageSprite.rect.height;
+        Sprite stageSprite = ResolveSprite(tapStageRect.GetComponent<Image>(), tapStageSprite);
+        if (stageSprite != null && stageSprite.rect.height > 0f)
+            aspect = stageSprite.rect.width / stageSprite.rect.height;
         tapStageRect.anchorMin = tapStageRect.anchorMax = new Vector2(0.5f, 0.5f);
         tapStageRect.pivot = new Vector2(0.5f, 0.5f);
         tapStageRect.sizeDelta = new Vector2(stageH * aspect, stageH);
@@ -661,8 +653,9 @@ public class CraftingAssemblyProgressView : MonoBehaviour
         if (areaH < 1f || areaW < 1f) return;
         float handH = areaH * tapHandHeightNorm;
         float aspect = 1f;
-        if (tapHandSprite != null && tapHandSprite.rect.height > 0f)
-            aspect = tapHandSprite.rect.width / tapHandSprite.rect.height;
+        Sprite handSprite = ResolveSprite(tapHandRect.GetComponent<Image>(), tapHandSprite);
+        if (handSprite != null && handSprite.rect.height > 0f)
+            aspect = handSprite.rect.width / handSprite.rect.height;
         tapHandRect.anchorMin = tapHandRect.anchorMax = new Vector2(0.5f, 0.5f);
         tapHandRect.pivot = new Vector2(0.5f, 0.5f);
         tapHandRect.sizeDelta = new Vector2(handH * aspect, handH);
@@ -675,8 +668,9 @@ public class CraftingAssemblyProgressView : MonoBehaviour
         if (areaH < 1f) return;
         float stageH = areaH * cutStageHeightNorm;
         float aspect = 1f;
-        if (cutStageSprite != null && cutStageSprite.rect.height > 0f)
-            aspect = cutStageSprite.rect.width / cutStageSprite.rect.height;
+        Sprite stageSprite = ResolveSprite(cutStageRect.GetComponent<Image>(), cutStageSprite);
+        if (stageSprite != null && stageSprite.rect.height > 0f)
+            aspect = stageSprite.rect.width / stageSprite.rect.height;
         cutStageRect.anchorMin = cutStageRect.anchorMax = new Vector2(0.5f, 0.5f);
         cutStageRect.pivot = new Vector2(0.5f, 0.5f);
         cutStageRect.sizeDelta = new Vector2(stageH * aspect, stageH);
@@ -694,8 +688,9 @@ public class CraftingAssemblyProgressView : MonoBehaviour
         if (areaH < 1f || areaW < 1f) return;
         float handH = areaH * cutHandHeightNorm;
         float aspect = 1f;
-        if (cutHandSprite != null && cutHandSprite.rect.height > 0f)
-            aspect = cutHandSprite.rect.width / cutHandSprite.rect.height;
+        Sprite handSprite = ResolveSprite(cutHandRect.GetComponent<Image>(), cutHandSprite);
+        if (handSprite != null && handSprite.rect.height > 0f)
+            aspect = handSprite.rect.width / handSprite.rect.height;
         cutHandRect.anchorMin = cutHandRect.anchorMax = new Vector2(0.5f, 0.5f);
         cutHandRect.pivot = new Vector2(0.5f, 0.5f);
         cutHandRect.sizeDelta = new Vector2(handH * aspect, handH);

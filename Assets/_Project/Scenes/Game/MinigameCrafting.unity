@@ -254,7 +254,7 @@ GameObject:
   m_Component:
   - component: {fileID: 59810812}
   - component: {fileID: 59810813}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: CutGuideLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -533,6 +533,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scene6AssemblyReturn
   terasSceneName: Ch1_TerasRumahKebun
+  continueButtonName: BtnLanjut
+  delayAfterClick: 0
   delayAfterComplete: 2.5
 --- !u!1 &223206117
 GameObject:
@@ -567,7 +569,7 @@ RectTransform:
   m_Children:
   - {fileID: 1363678550}
   - {fileID: 473404904}
-  m_Father: {fileID: 1995479364}
+  m_Father: {fileID: 2064786496}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -684,8 +686,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: TAP CEPAT!
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ecd012cd85d3f6f40b1e220107be130c, type: 2}
+  m_sharedMaterial: {fileID: 2303229652917039517, guid: ecd012cd85d3f6f40b1e220107be130c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 1576776465}
   m_fontMaterials: []
@@ -834,7 +836,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 845f75a8c4224cd468a5c394d5733990, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 31c02b80867922342bd12064927328bd, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -909,7 +911,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e6a1b858423640b6aece056acf4b2dd9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cdb4a585e3d3e7b498e6565445d636c5, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -1463,7 +1465,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.15, g: 0.25, b: 0.8, a: 0.03}
+  m_Color: {r: 0.15, g: 0.25, b: 0.8, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2401,7 +2403,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1149300494}
   - component: {fileID: 1149300495}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: CutTrailLine
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2672,7 +2674,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 95ea108582fa4a74683b65d81e8abead, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a4abe395100b26a408d74270f20d9fb2, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -2725,7 +2727,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1920, y: 1083.018}
+  m_SizeDelta: {x: 1920, y: 1080.5741}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1337770378
 MonoBehaviour:
@@ -2822,7 +2824,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e3c5f76bf28ef7b46bf89a27b15d0c41, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bfd95900973676745a6691de7c960030, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -3884,7 +3886,7 @@ Light:
   serializedVersion: 12
   m_Type: 2
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 6
+  m_Intensity: 0.7
   m_Range: 20
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -3979,7 +3981,7 @@ GameObject:
   - component: {fileID: 1927856825}
   - component: {fileID: 1927856824}
   - component: {fileID: 1927856826}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4027,8 +4029,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Geser Kebawah Untuk Memotong
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
-  m_sharedMaterial: {fileID: -3860578192364764687, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ecd012cd85d3f6f40b1e220107be130c, type: 2}
+  m_sharedMaterial: {fileID: 2303229652917039517, guid: ecd012cd85d3f6f40b1e220107be130c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4154,7 +4156,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 183, y: -27}
+  m_AnchoredPosition: {x: 183.8, y: -4.3}
   m_SizeDelta: {x: -186, y: -24}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &1943430969
@@ -4179,8 +4181,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Nya kitu, Ba. Titen jeung teu gagabah, eta nu disebat cermat teh.
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
-  m_sharedMaterial: {fileID: -3860578192364764687, guid: 9a89dc9ce37f6f44c8ad9fe29b93204d, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: ecd012cd85d3f6f40b1e220107be130c, type: 2}
+  m_sharedMaterial: {fileID: 2303229652917039517, guid: ecd012cd85d3f6f40b1e220107be130c, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4204,8 +4206,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 37
-  m_fontSizeBase: 37
+  m_fontSize: 33
+  m_fontSizeBase: 33
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -4291,7 +4293,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -119.65}
+  m_AnchoredPosition: {x: 8, y: -119.65}
   m_SizeDelta: {x: 626.4, y: 626.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1966107091
@@ -4403,7 +4405,6 @@ RectTransform:
   - {fileID: 1441474110}
   - {fileID: 538531004}
   - {fileID: 1454587581}
-  - {fileID: 223206118}
   - {fileID: 999754063}
   m_Father: {fileID: 2064786496}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4456,7 +4457,7 @@ Light:
   serializedVersion: 12
   m_Type: 2
   m_Color: {r: 1, g: 0.95, b: 0.88, a: 1}
-  m_Intensity: 8
+  m_Intensity: 1
   m_Range: 15
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -4572,6 +4573,7 @@ RectTransform:
   m_Children:
   - {fileID: 913036354}
   - {fileID: 1995479364}
+  - {fileID: 223206118}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
