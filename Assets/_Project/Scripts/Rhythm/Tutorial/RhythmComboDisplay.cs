@@ -1,9 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 public class RhythmComboDisplay : MonoBehaviour
 {
-    [SerializeField] private Text comboText;
+    [SerializeField] private TextMeshProUGUI comboText;
 
     private RhythmMinigameController _controller;
 

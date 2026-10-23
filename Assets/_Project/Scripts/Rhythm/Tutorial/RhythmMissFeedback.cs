@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using DG.Tweening;
 
 public class RhythmMissFeedback : MonoBehaviour
@@ -19,16 +20,16 @@ public class RhythmMissFeedback : MonoBehaviour
     [SerializeField] private CanvasGroup failOverlayRoot;
 
     [Tooltip("Teks GAGAL di dalam failOverlayRoot (opsional).")]
-    [SerializeField] private Text failText;
+    [SerializeField] private TextMeshProUGUI failText;
 
     [Tooltip("Overlay berhasil (CanvasGroup), harus inactive.")]
     [SerializeField] private CanvasGroup successOverlayRoot;
 
     [Tooltip("Teks BERHASIL di dalam successOverlayRoot (opsional).")]
-    [SerializeField] private Text successText;
+    [SerializeField] private TextMeshProUGUI successText;
 
     [Tooltip("Teks ringkasan skor di dalam successOverlayRoot (opsional).")]
-    [SerializeField] private Text resultSummaryText;
+    [SerializeField] private TextMeshProUGUI resultSummaryText;
 
     [Tooltip("Tombol COBA LAGI di dalam failOverlayRoot (opsional).")]
     [SerializeField] private Button retryButton;
@@ -215,7 +216,7 @@ public class RhythmMissFeedback : MonoBehaviour
         popup.localScale = Vector3.one * 0.6f;
 
         var group = popup.GetComponent<CanvasGroup>();
-        var text = popup.GetComponent<Text>();
+        var text = popup.GetComponent<TextMeshProUGUI>();
         if (text != null) text.text = "MISS!";
 
         popup.DOScale(Vector3.one, 0.18f).SetEase(Ease.OutBack);
@@ -315,7 +316,7 @@ public class RhythmMissFeedback : MonoBehaviour
         popup.localScale = Vector3.one * 0.6f;
 
         var group = popup.GetComponent<CanvasGroup>();
-        var text = popup.GetComponent<Text>();
+        var text = popup.GetComponent<TextMeshProUGUI>();
         if (text != null) text.text = label;
 
         popup.DOScale(Vector3.one, 0.18f).SetEase(Ease.OutBack);

@@ -514,8 +514,6 @@ public class KarindingTutorialOverlay : MonoBehaviour
             if (btnRect != null) btnRect.DOKill();
             if (_pulseTweens.TryGetValue(lane, out var t)) { t.Kill(); _pulseTweens.Remove(lane); }
             if (btnRect != null) btnRect.localScale = Vector3.one;
-            var img = btn.GetComponent<Image>();
-            if (img != null) { img.DOKill(); img.color = Color.white; }
         }
     }
 

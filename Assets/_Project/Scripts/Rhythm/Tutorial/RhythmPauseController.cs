@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using DG.Tweening;
 
 public class RhythmPauseController : MonoBehaviour
@@ -9,7 +10,7 @@ public class RhythmPauseController : MonoBehaviour
     [SerializeField] private CanvasGroup pauseOverlay;
     [SerializeField] private Button resumeButton;
     [SerializeField] private Button retryButtonPause;
-    [SerializeField] private Text pauseTitle;
+    [SerializeField] private TextMeshProUGUI pauseTitle;
 
     private RhythmMinigameController _controller;
 

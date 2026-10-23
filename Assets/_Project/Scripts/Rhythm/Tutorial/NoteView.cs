@@ -14,6 +14,9 @@ public class NoteView : MonoBehaviour
     [SerializeField] private Sprite iconDiamondSprite;
     [SerializeField] private Sprite iconWaveSprite;
 
+    [Header("Optional Lane Sprites (order: LeftOuter, LeftInner, RightInner, RightOuter)")]
+    [SerializeField] private Sprite[] laneSprites = new Sprite[4];
+
     public NoteData Data { get; private set; }
     public bool Judged { get; private set; }
     public float TravelDuration { get; private set; }
@@ -85,6 +88,18 @@ public class NoteView : MonoBehaviour
 
     private void ApplyLaneVisual(LaneSide lane)
     {
+        int laneIndex = (int)lane;
+        if (laneSprites != null && laneIndex >= 0 && laneIndex < laneSprites.Length && laneSprites[laneIndex] != null)
+        {
+            if (image != null)
+            {
+                image.sprite = laneSprites[laneIndex];
+                image.color = Color.white;
+            }
+            if (iconImage != null) iconImage.enabled = false;
+            return;
+        }
+
         // Pill color per lane (match btn_* baked colors but as tint if no pill sprite)
         if (image != null)
         {

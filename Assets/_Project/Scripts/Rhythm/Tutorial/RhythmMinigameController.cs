@@ -22,6 +22,19 @@ public class RhythmMinigameController : MonoBehaviour
     [Tooltip("Y (anchored) track — semua note jalan pada Y ini.")]
     [SerializeField] private float noteTrackY = 0f;
 
+    [Header("Vertical Falling Notes")]
+    [Tooltip("True = note jatuh dari atas ke bawah per lane (MinigameRhythm). False = horizontal lama (tutorial).")]
+    [SerializeField] private bool useVerticalNotes = false;
+
+    [Tooltip("X anchored per lane: LeftOuter, LeftInner, RightInner, RightOuter (relatif tengah canvas).")]
+    [SerializeField] private float[] laneXPositions = new float[] { -278f, -91.5f, 92.5f, 278.5f };
+
+    [Tooltip("Y anchored saat note spawn di atas canvas.")]
+    [SerializeField] private float noteSpawnY = 540f;
+
+    [Tooltip("Y anchored saat note mencapai ring hit di bawah.")]
+    [SerializeField] private float noteHitY = -415f;
+
     public event Action<NoteData> OnNoteSpawned;
     public event Action<NoteData, HitGrade> OnNoteJudged;
     public event Action<RhythmMinigameResult> OnMinigameComplete;
@@ -413,7 +426,19 @@ public class RhythmMinigameController : MonoBehaviour
 
         var view = Instantiate(noteViewPrefab, notesContainer != null ? notesContainer : transform);
         view.Setup(note, _activeConfig.noteTravelDuration, this);
-        view.BeginTravel(new Vector2(noteSpawnX, noteTrackY), new Vector2(noteHitX, noteTrackY));
+
+        Vector2 spawnPos = new Vector2(noteSpawnX, noteTrackY);
+        Vector2 hitPos = new Vector2(noteHitX, noteTrackY);
+        if (useVerticalNotes)
+        {
+            int laneIndex = (int)note.lane;
+            float laneX = (laneXPositions != null && laneIndex >= 0 && laneIndex < laneXPositions.Length)
+                ? laneXPositions[laneIndex]
+                : 0f;
+            spawnPos = new Vector2(laneX, noteSpawnY);
+            hitPos = new Vector2(laneX, noteHitY);
+        }
+        view.BeginTravel(spawnPos, hitPos);
         _activeNotes.Add(new ActiveNote { data = note, view = view });
 
         OnNoteSpawned?.Invoke(note);

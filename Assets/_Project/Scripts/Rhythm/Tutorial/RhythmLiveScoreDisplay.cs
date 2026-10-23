@@ -1,9 +1,9 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 public class RhythmLiveScoreDisplay : MonoBehaviour
 {
-    [SerializeField] private Text scoreText;
+    [SerializeField] private TextMeshProUGUI scoreText;
 
     private RhythmMinigameController _controller;
 

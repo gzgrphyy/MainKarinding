@@ -13,11 +13,12 @@ public class LaneButton : MonoBehaviour, IPointerClickHandler
     private void Awake()
     {
         if (buttonImage == null) buttonImage = GetComponent<Image>();
+        if (buttonImage != null) _baseColor = buttonImage.color;
     }
 
     private bool _isHighlighted;
     private Tween _highlightTween;
-    private Color _origColor = Color.white;
+    private Color _baseColor = new Color(1f, 1f, 1f, 0f);
 
     public void SetHighlight(bool on)
     {
@@ -26,7 +27,6 @@ public class LaneButton : MonoBehaviour, IPointerClickHandler
         if (buttonImage == null) buttonImage = GetComponent<Image>();
         if (on)
         {
-            if (buttonImage != null) _origColor = buttonImage.color;
             var rect = GetComponent<RectTransform>();
             if (rect != null)
             {
@@ -41,7 +41,7 @@ public class LaneButton : MonoBehaviour, IPointerClickHandler
             if (buttonImage != null)
             {
                 buttonImage.DOKill();
-                buttonImage.color = Color.white;
+                buttonImage.color = _baseColor;
             }
         }
     }
@@ -79,12 +79,22 @@ public class LaneButton : MonoBehaviour, IPointerClickHandler
         if (reason == TapResult.WrongLane)
         {
             rect.DOShakeAnchorPos(0.18f, 7f, 40, 90f, false);
-            if (buttonImage != null) buttonImage.DOColor(new Color(1f, 0.7f, 0.2f, 1f), 0.08f).OnComplete(() => buttonImage.DOColor(Color.white, 0.15f));
+            if (buttonImage != null)
+            {
+                buttonImage.DOKill();
+                buttonImage.DOColor(new Color(1f, 0.7f, 0.2f, 1f), 0.08f)
+                    .OnComplete(() => buttonImage.DOColor(_baseColor, 0.15f));
+            }
         }
         else
         {
             rect.DOShakeAnchorPos(0.12f, 6f, 30, 90f, false);
-            if (buttonImage != null) buttonImage.DOColor(new Color(0.85f, 0.85f, 0.85f, 1f), 0.06f).OnComplete(() => buttonImage.DOColor(Color.white, 0.12f));
+            if (buttonImage != null)
+            {
+                buttonImage.DOKill();
+                buttonImage.DOColor(new Color(0.85f, 0.85f, 0.85f, 1f), 0.06f)
+                    .OnComplete(() => buttonImage.DOColor(_baseColor, 0.12f));
+            }
         }
     }
 

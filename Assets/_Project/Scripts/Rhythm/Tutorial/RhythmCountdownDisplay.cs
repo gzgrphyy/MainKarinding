@@ -1,10 +1,10 @@
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 using DG.Tweening;
 
 public class RhythmCountdownDisplay : MonoBehaviour
 {
-    [SerializeField] private Text countdownText;
+    [SerializeField] private TextMeshProUGUI countdownText;
     [SerializeField] private CanvasGroup countdownGroup;
     [SerializeField] private float punchDuration = 0.35f;
 
@@ -13,7 +13,7 @@ public class RhythmCountdownDisplay : MonoBehaviour
 
     private void Awake()
     {
-        if (countdownText == null) countdownText = GetComponent<Text>();
+        if (countdownText == null) countdownText = GetComponent<TextMeshProUGUI>();
         if (countdownGroup == null) countdownGroup = GetComponent<CanvasGroup>();
         if (countdownText != null) countdownText.gameObject.SetActive(false);
         if (countdownGroup != null) countdownGroup.alpha = 0f;

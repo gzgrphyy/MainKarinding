@@ -20,7 +20,7 @@ namespace MainKarinding.Crafting
         [SerializeField] private AudioClip collectSfx;
         [SerializeField] private AudioSource audioSource;
 
-        public BambooTag Tag => bambuTag;
+        public BambooTag Tag => bambuTag; 
         public bool Collected { get; private set; }
 
         private CraftingPuzzleController controller;
