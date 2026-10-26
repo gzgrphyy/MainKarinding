@@ -6,13 +6,13 @@ using MainKarinding.Exploration;
 namespace MainKarinding.Cutscenes
 {
     /// <summary>
-    /// Scene 8 — Sore Hari Sebelum Abah Pergi (PLAN E8, revisi: duduk -> berdiri -> jalan).
-    /// Fase 1 DudukDialog: shot teras sore (BG s8), dialog 2 baris.
-    /// Fase 2 Berdiri: Abah berdiri DULUAN (keheningan sebagai jawaban), jeda, Rimba menyusul.
-    /// Fase 3 Jalan: blackscreen -> area exploration; Abah auto-jalan (Rimba terkunci) ->
-    /// tanya-jawab singkat -> "Moal Kataekan" TANPA terjemahan -> hening -> Abah fade out ->
+    /// Scene 8 — Sore Hari Sebelum Abah Pergi (PLAN E8, revisi: duduk dialog -> langsung jalan).
+    /// Fase 1 DudukDialog: shot teras siang (BG reuse s1_bg_wide_establishing2), dialog 2 baris.
+    /// Fase 2 Jalan: tanpa blackscreen — langsung area exploration (BG sama, mulus); Abah spawn
+    /// di bawah BG dulu, Rimba menyusul (rimbaJoinDelay); Abah auto-jalan (Rimba terkunci) ->
+    /// tanya-jawab singkat -> "Moal Kataekan" TANPA terjemahan -> hening -> Abah keluar frame ->
     /// Rimba dibuka (analog muncul) -> WalkOffTrigger ujung -> blackscreen -> freeze ke Scene 9.
-    /// Art: reuse duduk/idle/walk + s8_bg_teras_sore; path siang + tint hangat via kode.
+    /// Art: reuse duduk/idle/walk + s1_bg_wide_establishing2.
     /// </summary>
     public class Scene8CutsceneController : MonoBehaviour
     {
@@ -37,6 +37,13 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private Transform headAnchorRimba;
         [SerializeField] private Transform headAnchorAbah;
 
+        [Header("Head Anchors (area jalan)")]
+        [SerializeField] private Transform walkHeadAnchorRimba;
+        [SerializeField] private Transform walkHeadAnchorAbah;
+
+        [Header("Toast hint jalan")]
+        [SerializeField] private Scene5Toast followToast;
+
         [Header("Audio")]
         [SerializeField] private CutsceneAudioManager audioManager;
         [Tooltip("Placeholder: ambience siang. Swap ke ambience_sore.wav kalau sudah ada.")]
@@ -53,8 +60,9 @@ namespace MainKarinding.Cutscenes
 
         [Header("Timing")]
         [SerializeField] private float openingDelay = 1f;
-        [SerializeField] private float standStaggerDelay = 1f;
         [SerializeField] private float blackscreenDuration = 0.7f;
+        [Tooltip("Jeda Abah muncul di area jalan sebelum Rimba muncul menyusul.")]
+        [SerializeField] private float rimbaJoinDelay = 0.5f;
         [SerializeField] private float moalKataekanHoldSeconds = 1f;
         [Tooltip("X saat Abah dianggap keluar frame kanan (pojok layar ≈ ±8.3).")]
         [SerializeField] private float abahExitX = 10.5f;
@@ -132,16 +140,31 @@ namespace MainKarinding.Cutscenes
                 rimbaWalker = walkRimba != null ? walkRimba.GetComponent<RimbaWalker>() : null;
                 abahWalker = walkAbah != null ? walkAbah.GetComponent<AbahAutoWalker>() : null;
                 walkOffTrigger = explorationRoot.GetComponent<WalkOffTrigger>();
-                analogStick = uiAnalogRoot != null ? uiAnalogRoot.GetComponentInChildren<AnalogStickController>() : null;
+                analogStick = uiAnalogRoot != null ? uiAnalogRoot.GetComponentInChildren<AnalogStickController>(true) : null;
+                followToast = uiAnalogRoot != null ? uiAnalogRoot.GetComponentInChildren<Scene5Toast>(true) : null;
+                if (walkHeadAnchorRimba == null)
+                {
+                    var t = explorationRoot.transform.Find("WalkRimba/HeadAnchor");
+                    if (t != null) walkHeadAnchorRimba = t;
+                }
+                if (walkHeadAnchorAbah == null)
+                {
+                    var t = explorationRoot.transform.Find("WalkAbah/HeadAnchor");
+                    if (t != null) walkHeadAnchorAbah = t;
+                }
             }
         }
 
         private Transform ResolveAnchor(string speaker)
         {
             bool isRimba = speaker != null && speaker.ToLowerInvariant().Contains("rimba");
-            // Fase jalan: anchor = posisi walker; fase duduk: head anchor shot.
+            // Fase jalan: anchor = kepala walker; fase duduk: head anchor shot.
             if (walkPhaseActive)
+            {
+                var walkHead = isRimba ? walkHeadAnchorRimba : walkHeadAnchorAbah;
+                if (walkHead != null) return walkHead;
                 return isRimba ? walkRimba : walkAbah;
+            }
             Transform anchor = isRimba ? headAnchorRimba : headAnchorAbah;
             if (anchor == null)
                 Debug.LogError($"[Scene8Cutscene] Anchor NULL untuk '{speaker}'! Assign di Inspector.");
@@ -153,51 +176,46 @@ namespace MainKarinding.Cutscenes
             if (StoryState.Instance != null) StoryState.Instance.SetBeat(beat);
         }
 
+        private static bool IsRimbaLine(string speaker)
+        {
+            return speaker != null && speaker.ToLower().Contains("rimba");
+        }
+
+        private void SetRimbaSpeaking(bool speaking)
+        {
+            if (shotRimba == null || rimbaSpriteSet == null)
+                return;
+            Sprite s = speaking ? rimbaSpriteSet.sitTalk : rimbaSpriteSet.sitIdle;
+            if (s == null) s = rimbaSpriteSet.duduk;
+            if (s != null) shotRimba.sprite = s;
+            else Debug.LogWarning("[Scene8Cutscene] RimbaSpriteSet.sitTalk/sitIdle/duduk kosong!");
+        }
+
         // ---- Fase 1: duduk berdua, dialog 2 baris ----
         private void ExecuteDudukDialog()
         {
             Debug.Log("[Scene8Cutscene] Fase 1 - DudukDialog");
             if (shotRoot != null) shotRoot.SetActive(true);
             if (uiRoot != null) uiRoot.SetActive(true);
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.duduk : null, "RimbaSpriteSet.duduk");
+            SetRimbaSpeaking(false);
             ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.duduk : null, "AbahSpriteSet.duduk");
             if (bgRenderer != null && bgTerasSore != null) bgRenderer.sprite = bgTerasSore;
             if (audioManager != null && ambienceSore != null)
                 audioManager.PlayAmbient(ambienceSore, 0.6f);
-            StartCoroutine(PlayDialogueSequence(openingDialogue, ExecuteBerdiri));
+            StartCoroutine(PlayDialogueSequence(openingDialogue, () => StartCoroutine(BerangkatJalanRoutine())));
         }
 
-        // ---- Fase 2: Abah berdiri duluan, Rimba menyusul (saran 1) ----
-        private void ExecuteBerdiri()
-        {
-            Debug.Log("[Scene8Cutscene] Fase 2 - Berdiri (Abah dulu, Rimba menyusul)");
-            StartCoroutine(BerdiriRoutine());
-        }
-
-        private IEnumerator BerdiriRoutine()
-        {
-            // Keheningan sebagai jawaban atas "Maksudna kumaha, Bah?" — Abah berdiri duluan.
-            ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.idleTerasTalking : null, "AbahSpriteSet.idleTerasTalking (berdiri)");
-            yield return new WaitForSeconds(standStaggerDelay);
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.idlePintu : null, "RimbaSpriteSet.idlePintu (berdiri)");
-            yield return new WaitForSeconds(0.6f);
-            StartCoroutine(BerangkatJalanRoutine());
-        }
-
-        // ---- Fase 3: blackscreen -> area jalan ----
+        // ---- Fase 2: langsung ke area jalan (tanpa blackscreen) ----
         private IEnumerator BerangkatJalanRoutine()
         {
-            if (audioManager != null) audioManager.FadeOutAmbient(0.35f);
-            yield return StartCoroutine(FadeBlackscreen(true, blackscreenDuration));
-
             if (shotRoot != null) shotRoot.SetActive(false);
             if (explorationRoot != null) explorationRoot.SetActive(true);
             ApplyPathSoreTint();
+            if (walkRimba != null) walkRimba.gameObject.SetActive(false); // Rimba ikut menyusul
             ConfigureWalkers();
 
-            if (audioManager != null && ambienceSore != null)
-                audioManager.PlayAmbient(ambienceSore, 0.5f);
-            yield return StartCoroutine(FadeBlackscreen(false, blackscreenDuration));
+            yield return new WaitForSeconds(rimbaJoinDelay);
+            if (walkRimba != null) walkRimba.gameObject.SetActive(true);
 
             walkPhaseActive = true;
             // Tanya-jawab jalan (Abah tetap jalan selama dialog; trigger menoleh menunggu dialog + posisi).
@@ -279,6 +297,7 @@ namespace MainKarinding.Cutscenes
             Debug.Log("[Scene8Cutscene] Rimba dibuka — analog muncul sebagai sinyal kontrol kembali.");
             if (rimbaWalker != null) rimbaWalker.Locked = false;
             if (uiAnalogRoot != null) uiAnalogRoot.SetActive(true);
+            if (followToast != null) followToast.ShowToast("Ikuti Abah pakai analog!", 3f);
         }
 
         private void OnRimbaArrived()
@@ -295,13 +314,6 @@ namespace MainKarinding.Cutscenes
             StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene9);
             // Ch1_Hutan terdaftar di Build Settings. Whiteout dibuka di Scene 9 (mulai putih).
             UnityEngine.SceneManagement.SceneManager.LoadScene("Ch1_Hutan");
-        }
-
-        private void ApplyRimbaSprite(Sprite sprite, string fieldName)
-        {
-            if (shotRimba == null) return;
-            if (sprite != null) shotRimba.sprite = sprite;
-            else Debug.LogWarning($"[Scene8Cutscene] {fieldName} belum di-assign!");
         }
 
         private void ApplyAbahSprite(Sprite sprite, string fieldName)
@@ -321,6 +333,7 @@ namespace MainKarinding.Cutscenes
                     continue;
                 }
                 bool finished = false;
+                SetRimbaSpeaking(IsRimbaLine(line.speaker));
                 Transform anchor = ResolveAnchor(line.speaker);
                 if (floatingDialogue != null && anchor != null)
                     floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true);
@@ -336,6 +349,7 @@ namespace MainKarinding.Cutscenes
             }
             if (dialogueDisplay != null) dialogueDisplay.Hide();
             if (floatingDialogue != null) floatingDialogue.Hide();
+            SetRimbaSpeaking(false);
             onComplete?.Invoke();
         }
 
