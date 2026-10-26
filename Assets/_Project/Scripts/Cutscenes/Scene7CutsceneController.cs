@@ -112,7 +112,7 @@ namespace MainKarinding.Cutscenes
             if (shotRoot != null) shotRoot.SetActive(true);
             if (uiRoot != null) uiRoot.SetActive(true);
             // Reuse art S2: duduk berdua, santai sebelum minigame.
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.duduk : null, "RimbaSpriteSet.duduk");
+            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.sitIdle : null, "RimbaSpriteSet.sitIdle");
             ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.duduk : null, "AbahSpriteSet.duduk");
             if (bgRenderer != null && bgTerasSiang != null) bgRenderer.sprite = bgTerasSiang;
             if (audioManager != null && ambienceSiang != null)
@@ -127,7 +127,7 @@ namespace MainKarinding.Cutscenes
             if (shotRoot != null) shotRoot.SetActive(true);
             if (uiRoot != null) uiRoot.SetActive(true);
             // Reuse art S2: duduk berdua, santai setelah minigame.
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.duduk : null, "RimbaSpriteSet.duduk");
+            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.sitIdle : null, "RimbaSpriteSet.sitIdle");
             ApplyAbahSprite(abahSpriteSet != null ? abahSpriteSet.duduk : null, "AbahSpriteSet.duduk");
             if (bgRenderer != null && bgTerasSiang != null) bgRenderer.sprite = bgTerasSiang;
             if (audioManager != null && ambienceSiang != null)

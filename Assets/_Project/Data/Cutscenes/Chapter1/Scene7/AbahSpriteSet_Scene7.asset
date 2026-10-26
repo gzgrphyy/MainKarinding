@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd9980a40d4cfaf48a01ca8574a5e03a, type: 3}
+  m_Name: AbahSpriteSet_Scene7
+  m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Cutscenes.AbahSpriteSet
+  idleTerasTalking: {fileID: 21300000, guid: b9888a1502702844096343557401959a, type: 3}
+  lookoutFacingMountain: {fileID: 21300000, guid: 34d603badd87675498029e9bedf4b984, type: 3}
+  walkRight:
+  - {fileID: 21300000, guid: 937817172338a2447920bb7f41bc8132, type: 3}
+  - {fileID: 21300000, guid: 7f8575a7c0a8a564c8ee250e604962a2, type: 3}
+  - {fileID: 21300000, guid: 94f96e13555016b4f9a88db99f0d2ee9, type: 3}
+  - {fileID: 21300000, guid: fce874954fb13d14782038d297ded217, type: 3}
+  idleRight: {fileID: 21300000, guid: 937817172338a2447920bb7f41bc8132, type: 3}
+  duduk: {fileID: 21300000, guid: e202bf271f51c704e85fae9795242d70, type: 3}
+  sitTalk: {fileID: 21300000, guid: a24104183c2f9084d8eab6e7e433b1b6, type: 3}
+  sitPlayKarinding: {fileID: 21300000, guid: a7efa2060fd5931448998f8bbf9057f0, type: 3}
+  sitHoldKarinding: {fileID: 21300000, guid: dc6371868a96b3d4b8cfba7c33e45d75, type: 3}
+  giveKarinding: {fileID: 21300000, guid: 73bcc675c3c779441837f29cc7f1f0c8, type: 3}
+  idleS3: {fileID: 21300000, guid: f01b87c22f74cd14783e7a0dea283fa7, type: 3}
+  smileS3: {fileID: 21300000, guid: 82a474230f4e87445b73c842c18f46f0, type: 3}
+  talkingS3: {fileID: 21300000, guid: 6e96e626a36eae84cbcef89b6f0c31c7, type: 3}
+  senyumTipis: {fileID: 21300000, guid: ecac7b2e473338f42a571e57ac5948a9, type: 3}
+  ajakTeras: {fileID: 21300000, guid: 8abcc028bb94e414da8fd7b3a00c48b3, type: 3}
+  reaksiTua: {fileID: 21300000, guid: 699a048f9f9f53e49a346354bcbef04e, type: 3}
+  reaksiTipis: {fileID: 21300000, guid: f513fcc5f3262fa44a752132674031d2, type: 3}
+  reaksiPas: {fileID: 21300000, guid: 13cdc8ae328538e40ae7ab8c9ca51878, type: 3}
+  reaksiMuda: {fileID: 21300000, guid: 03af3a51d2e682f4db4fc152b3801c1f, type: 3}
+  standTalk: {fileID: 21300000, guid: bf163d697e38f9342a6f1f874c7731d9, type: 3}
+  standIdle: {fileID: 21300000, guid: c3fbf3e65660e4a498c97a339b1d661c, type: 3}
+  receiveBamboo: {fileID: 21300000, guid: 3efcf7826a67eaa45af845fd1986e5e1, type: 3}
+  encourage: {fileID: 21300000, guid: a4abe395100b26a408d74270f20d9fb2, type: 3}
+  koreksi: {fileID: 21300000, guid: aa3e4d9f215706d419e8676722b81a61, type: 3}
