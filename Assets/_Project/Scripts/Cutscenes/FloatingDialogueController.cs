@@ -45,6 +45,8 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private bool pinPointerToHead = false;
         [Tooltip("Jarak tambahan (px) antara ujung ekor dan kepala saat pin aktif.")]
         [SerializeField] private float pinGap = 8f;
+        [Tooltip("Pin mode: posisi BoxPointer diambil dari nilai authored inspector (bukan offset per-speaker). Opt-in per instance — dipakai Scene 9.")]
+        [SerializeField] private bool pinRespectInspector = false;
 
         [Header("Typewriter")]
         [SerializeField] private float typingSpeed = 0.03f;
@@ -280,7 +282,10 @@ namespace MainKarinding.Cutscenes
         private Vector2 PinnedBubblePos(Vector2 headLocal)
         {
             float tailH = boxPointerRect != null ? boxPointerRect.rect.height : 0f;
-            Vector2 tip = new Vector2(currentPointerOffset.x, currentPointerOffset.y - tailH);
+            Vector2 pointerPos = pinRespectInspector && boxPointerRect != null
+                ? boxPointerRect.anchoredPosition
+                : currentPointerOffset;
+            Vector2 tip = new Vector2(pointerPos.x, pointerPos.y - tailH);
             return headLocal - tip + new Vector2(0f, pinGap);
         }
 
@@ -289,7 +294,9 @@ namespace MainKarinding.Cutscenes
             if (boxPointerRect == null || currentAnchor == null || followCamera == null)
                 return;
 
-            boxPointerRect.anchoredPosition = currentPointerOffset;
+            // pinRespectInspector: posisi ekor = nilai authored inspector (jangan ditimpa kode).
+            if (!pinRespectInspector)
+                boxPointerRect.anchoredPosition = currentPointerOffset;
 
             if (!autoFlipPointer)
                 return;

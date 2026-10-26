@@ -5,12 +5,13 @@ using MainKarinding.Core;
 namespace MainKarinding.Cutscenes
 {
     /// <summary>
-    /// Scene 9 — Rimba Terbangun (PLAN E9): state "RealWorld" di Ch1_Hutan.unity.
-    /// Beat 1: mulai dari layar PUTIH -> fade out, hutan nyata terungkap.
-    /// Beat 2: wide-shot dingin, Rimba sendirian sandar pohon.
-    /// Beat 3: swap meraba pinggang (tangan meraba, kosong) + jeda.
-    /// Beat 4: Rimba bergumam "...Moal kataekan." (baru sadar itu mimpi).
-    /// Beat 5: swap berdiri -> freeze End of Chapter 1 (trigger Chapter 2 nanti).
+    /// Scene 9 — Rimba Terbangun (PLAN E9, rombak 2 shot): state "RealWorld" di Ch1_Hutan.unity.
+    /// Beat 1: mulai dari layar PUTIH -> fade out, hutan terungkap (bg authored: forest_night).
+    /// Beat 2: Shot 1 — flipbook bangun: 5 frame (sleep -> check_waist), tanpa dialog.
+    ///         Layout pos/scale = transform authored di scene (inspector).
+    /// Beat 3: Cut ke Shot 2 — shot 1 mati, shot 2 hidup (bg forest_wide + karakter ter-crop
+    ///         stand_back, layout authored di scene), jeda kecil, lalu Rimba bergumam
+    ///         "...Moal kataekan." (baru sadar itu mimpi) -> freeze End of Chapter 1.
     /// Framing WAJIB beda dari two-shot hangat mimpi: kamera di-reposition via kode.
     /// Audio SFX whiteout/transisi (sfx_whiteout.wav, sfx_transisi_hutan_nyata.wav) backlog —
     /// sementara visual saja + ambience reuse.
@@ -20,13 +21,27 @@ namespace MainKarinding.Cutscenes
         [Header("Sprite Set")]
         [SerializeField] private RimbaSpriteSet rimbaSpriteSet;
 
-        [Header("Shot - Hutan Nyata (milik Scene 9)")]
-        [SerializeField] private GameObject shotRoot;
-        [SerializeField] private SpriteRenderer shotRimba;
-        [SerializeField] private SpriteRenderer bgRenderer;
-        [SerializeField] private Sprite bgHutanNyata;
-        [Tooltip("Anchor di atas kepala Rimba untuk bubble dialog (kompromi 3 pose). Auto-find bila null.")]
-        [SerializeField] private Transform headAnchor;
+        [Header("Shot 1 - Flipbook bangun (layout dari inspector)")]
+        [SerializeField] private GameObject shot1Root;
+        [SerializeField] private SpriteRenderer shot1Rimba;
+
+        [Header("Shot 2 - Fullscreen stand_back (layout dari inspector)")]
+        [SerializeField] private GameObject shot2Root;
+        [SerializeField] private SpriteRenderer shot2Rimba;
+        [Tooltip("Anchor kepala Rimba stand_back untuk bubble gumam. Auto-find bila null.")]
+        [SerializeField] private Transform shot2HeadAnchor;
+        [Tooltip("Jeda setelah cut ke shot 2 sebelum bubble gumam muncul.")]
+        [SerializeField] private float dialogueDelayAfterCut = 2f;
+
+        [Header("Black Overlay (cut Shot1 -> Shot2)")]
+        [Tooltip("Canvas hitam fullscreen untuk transisi fade-hitam antar shot.")]
+        [SerializeField] private GameObject blackOverlay;
+        [Tooltip("Durasi shot 1 memudar ke hitam.")]
+        [SerializeField] private float blackFadeInSeconds = 0.3f;
+        [Tooltip("Durasi hitam penuh sebelum shot 2 terungkap.")]
+        [SerializeField] private float blackHoldSeconds = 0.5f;
+        [Tooltip("Durasi fade keluar dari hitam ke shot 2.")]
+        [SerializeField] private float blackFadeOutSeconds = 0.4f;
 
         [Header("UI Components (milik Scene 9)")]
         [SerializeField] private CutsceneDialogueDisplay dialogueDisplay;
@@ -48,7 +63,8 @@ namespace MainKarinding.Cutscenes
         [Header("Timing")]
         [SerializeField] private float openingDelay = 1f;
         [SerializeField] private float whiteFadeSeconds = 2f;
-        [SerializeField] private float merabaHoldSeconds = 1.5f;
+        [Tooltip("Detik per frame flipbook (0.2 x 5 frame = 1.0s).")]
+        [SerializeField] private float flipbookFrameSeconds = 0.2f;
         [SerializeField] private float dialogueTimeoutSeconds = 15f;
 
         private readonly DialogueLine[] gumamLine = new[]
@@ -58,14 +74,33 @@ namespace MainKarinding.Cutscenes
 
         private void Start()
         {
+            // Whitescreen WAJIB tampil dari frame pertama — nyala sebelum aksi apa pun.
+            if (whiteOverlay != null)
+            {
+                whiteOverlay.SetActive(true);
+                var whiteImage = whiteOverlay.GetComponent<UnityEngine.UI.Image>();
+                if (whiteImage != null)
+                {
+                    var whiteC = whiteImage.color;
+                    whiteC.a = 1f;
+                    whiteImage.color = whiteC;
+                }
+                var whiteCg = whiteOverlay.GetComponent<CanvasGroup>();
+                if (whiteCg != null) whiteCg.alpha = 1f;
+            }
             StoryState.EnsureExists();
             AutoFind();
             StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene9);
             SetBeat(Ch1Beat.S9_RimbaBangun);
-            if (shotRoot != null) shotRoot.SetActive(true);
+            // Mutual eksklusif: shot 1 hidup, shot 2 mati sampai cut Beat 3.
+            if (shot1Root != null) shot1Root.SetActive(true);
+            if (shot2Root != null) shot2Root.SetActive(false);
             ApplyColdCamera();
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.sandarPohon : null, "RimbaSpriteSet.sandarPohon");
-            if (bgRenderer != null && bgHutanNyata != null) bgRenderer.sprite = bgHutanNyata;
+            // Layout shot 1 (pos/scale Rimba) = transform authored di scene (inspector).
+            if (rimbaSpriteSet != null && rimbaSpriteSet.s9WakeSequence != null && rimbaSpriteSet.s9WakeSequence.Length > 0)
+                ApplyRimbaSprite(rimbaSpriteSet.s9WakeSequence[0], "RimbaSpriteSet.s9WakeSequence[0]");
+            else
+                Debug.LogWarning("[Scene9RealWorld] s9WakeSequence kosong — frame bangun belum di-wire!");
             if (audioManager != null && ambienceNyata != null)
                 audioManager.PlayAmbient(ambienceNyata, 0.5f);
             // Bubble tersimpan aktif di scene — sembunyikan sampai dialog pertama.
@@ -78,14 +113,15 @@ namespace MainKarinding.Cutscenes
             if (rimbaSpriteSet == null) Debug.LogWarning("[Scene9RealWorld] rimbaSpriteSet belum di-assign!");
             if (mainCamera == null) mainCamera = Camera.main;
             if (mainCamera == null) mainCamera = FindFirstObjectByType<Camera>();
-            if (headAnchor == null && shotRimba != null)
+            if (shot2HeadAnchor == null && shot2Rimba != null)
             {
-                var t = shotRimba.transform.Find("HeadAnchor");
-                if (t != null) headAnchor = t;
+                var t = shot2Rimba.transform.Find("HeadAnchor");
+                if (t != null) shot2HeadAnchor = t;
             }
-            if (headAnchor == null) Debug.LogWarning("[Scene9RealWorld] headAnchor belum di-assign/ketemu!");
+            if (shot2HeadAnchor == null) Debug.LogWarning("[Scene9RealWorld] shot2HeadAnchor belum di-assign/ketemu!");
+            if (shot1Rimba == null || shot2Rimba == null)
+                Debug.LogWarning("[Scene9RealWorld] Renderer shot 1/2 belum di-wire!");
         }
-
         private void SetBeat(Ch1Beat beat)
         {
             if (StoryState.Instance != null) StoryState.Instance.SetBeat(beat);
@@ -117,29 +153,44 @@ namespace MainKarinding.Cutscenes
 
         private IEnumerator ExecuteBeats()
         {
-            Debug.Log("[Scene9RealWorld] Beat 1 - whiteout fade, hutan nyata terungkap");
+            Debug.Log("[Scene9RealWorld] Beat 1 - whiteout fade, hutan terungkap");
             yield return StartCoroutine(FadeWhite(false, whiteFadeSeconds));
 
-            Debug.Log("[Scene9RealWorld] Beat 2 - wide-shot dingin, Rimba sandar pohon");
-            yield return new WaitForSeconds(1f);
+            Debug.Log("[Scene9RealWorld] Beat 2 - Shot 1: flipbook bangun (5 frame, senyap, layout dari scene)");
+            yield return StartCoroutine(PlayWakeFlipbook());
 
-            Debug.Log("[Scene9RealWorld] Beat 3 - meraba pinggang, kosong");
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.merabaPinggang : null, "RimbaSpriteSet.merabaPinggang");
-            yield return new WaitForSeconds(merabaHoldSeconds);
-
-            Debug.Log("[Scene9RealWorld] Beat 4 - gumam Moal kataekan");
+            Debug.Log("[Scene9RealWorld] Beat 3 - Cut fade-hitam, shot 2 wide terungkap, gumam Moal kataekan");
+            // Fade ke hitam di atas shot 1, swap shot di balik hitam, lalu fade keluar mengungkap shot 2.
+            yield return StartCoroutine(FadeBlack(true, blackFadeInSeconds));
+            if (shot1Root != null) shot1Root.SetActive(false);
+            if (shot2Root != null) shot2Root.SetActive(true);
+            yield return new WaitForSeconds(blackHoldSeconds);
+            yield return StartCoroutine(FadeBlack(false, blackFadeOutSeconds));
+            yield return new WaitForSeconds(dialogueDelayAfterCut);
             yield return StartCoroutine(PlayDialogueSequence(gumamLine, null));
 
-            Debug.Log("[Scene9RealWorld] Beat 5 - berdiri, End of Chapter 1");
-            ApplyRimbaSprite(rimbaSpriteSet != null ? rimbaSpriteSet.berdiri : null, "RimbaSpriteSet.berdiri");
             yield return new WaitForSeconds(1f);
             Debug.Log("[Scene9RealWorld] End of Chapter 1 — freeze sampai Chapter 2 dibangun.");
         }
 
+        private IEnumerator PlayWakeFlipbook()
+        {
+            if (rimbaSpriteSet == null || rimbaSpriteSet.s9WakeSequence == null || rimbaSpriteSet.s9WakeSequence.Length == 0)
+            {
+                Debug.LogWarning("[Scene9RealWorld] s9WakeSequence kosong — flipbook dilewati.");
+                yield break;
+            }
+            foreach (var frame in rimbaSpriteSet.s9WakeSequence)
+            {
+                if (frame != null && shot1Rimba != null) shot1Rimba.sprite = frame;
+                yield return new WaitForSeconds(flipbookFrameSeconds);
+            }
+        }
+
         private void ApplyRimbaSprite(Sprite sprite, string fieldName)
         {
-            if (shotRimba == null) return;
-            if (sprite != null) shotRimba.sprite = sprite;
+            if (shot1Rimba == null) return;
+            if (sprite != null) shot1Rimba.sprite = sprite;
             else Debug.LogWarning($"[Scene9RealWorld] {fieldName} belum di-assign!");
         }
 
@@ -153,7 +204,7 @@ namespace MainKarinding.Cutscenes
                     continue;
                 }
                 bool finished = false;
-                Transform anchor = headAnchor != null ? headAnchor : shotRimba.transform;
+                Transform anchor = shot2HeadAnchor != null ? shot2HeadAnchor : (shot2Rimba != null ? shot2Rimba.transform : null);
                 if (floatingDialogue != null && anchor != null)
                     floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true);
                 else if (dialogueDisplay != null)
@@ -200,6 +251,39 @@ namespace MainKarinding.Cutscenes
                 yield break;
             }
             whiteOverlay.SetActive(true);
+            float start = fadeIn ? 0f : 1f;
+            float end = fadeIn ? 1f : 0f;
+            float t = 0f;
+            while (t < duration)
+            {
+                t += Time.unscaledDeltaTime;
+                float a = Mathf.Lerp(start, end, Mathf.Clamp01(t / Mathf.Max(0.01f, duration)));
+                if (canvasGroup != null) canvasGroup.alpha = a;
+                if (image != null)
+                {
+                    var c = image.color;
+                    c.a = a;
+                    image.color = c;
+                }
+                yield return null;
+            }
+        }
+
+        private IEnumerator FadeBlack(bool fadeIn, float duration)
+        {
+            if (blackOverlay == null)
+            {
+                Debug.LogWarning("[Scene9RealWorld] blackOverlay belum di-wire — transisi hitam dilewati (hard cut).");
+                yield break;
+            }
+            var canvasGroup = blackOverlay.GetComponent<CanvasGroup>();
+            var image = blackOverlay.GetComponent<UnityEngine.UI.Image>();
+            if (canvasGroup == null && image == null)
+            {
+                Debug.LogWarning("[Scene9RealWorld] blackOverlay tidak punya CanvasGroup/Image — fade dilewati.");
+                yield break;
+            }
+            blackOverlay.SetActive(true);
             float start = fadeIn ? 0f : 1f;
             float end = fadeIn ? 1f : 0f;
             float t = 0f;
