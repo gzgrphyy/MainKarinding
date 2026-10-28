@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using MainKarinding.Core;
 using MainKarinding.Exploration;
 
 namespace MainKarinding.Cutscenes
@@ -67,10 +68,21 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private WalkOffTrigger walkTrigger;
         [SerializeField] private AnalogStickController analogStick;
 
+        [Header("Toast hint jalan")]
+        [SerializeField] private Scene5Toast followToast;
+
+        [Header("Beat 8 - Abah keluar frame & kedip analog")]
+        [Tooltip("Abah di-set inactive saat posisi X-nya lewat nilai ini (keluar frame kanan).")]
+        [SerializeField] private float abahExitX = 10.8f;
+        [Tooltip("Amplitudo kedip analog (0.1 = pulse 10% dari scale normal). Wajib diisi Scene1CutsceneController di Scene1.")]
+        [SerializeField] private float analogPulseAmount = 0.1f;
+        [Tooltip("Periode kedip analog (detik).")]
+        [SerializeField] private float analogPulsePeriod = 0.5f;
+
         [Header("Exploration - BATAS KANAN (USER ATUR)")]
-        [Tooltip("Spawn X Rimba saat Beat 8 dimulai (harus >= maxX RimbaWalker supaya dia MASUK dari kanan).")]
+        [Tooltip("Spawn X Rimba saat Beat 8 dimulai. Harus < endX WalkOffTrigger, dan < maxX RimbaWalker supaya tidak ter-clamp di luar frame.")]
         [SerializeField] private float spawnRimbaX = 8.5f;
-        [Tooltip("Spawn X Abah saat Beat 8 dimulai (harus >= spawn Rimba supaya Abah di depan).")]
+        [Tooltip("Spawn X Abah saat Beat 8 dimulai. Harus terlihat di frame (tepi layar ≈ ±8.3).")]
         [SerializeField] private float spawnAbahX = 10.2f;
 
         private Vector3 spawnRimbaPos;
@@ -82,8 +94,18 @@ namespace MainKarinding.Cutscenes
         [Tooltip("Kalau true, Beat 8 loop balik ke Beat 1 buat testing. Matikan kalau exploration sudah siap.")]
         [SerializeField] private bool loopForTesting = true;
 
+        [Header("Handoff ke Scene 2")]
+        [Tooltip("Drag Scene2_Cutscene. Diaktifkan otomatis setelah blackscreen Beat 8 (loopForTesting=false).")]
+        [SerializeField] private GameObject scene2Root;
+        [Tooltip("Jeda (detik) sebelum tirai Scene 1 dibuka setelah Scene 2 aktif. Scene 2 menampilkan blackscreen sendiri dulu.")]
+        [SerializeField] private float scene2HandoffDelay = 0.5f;
+
         private int currentBeat = 0;
         private bool cutsceneActive = false;
+
+        private Coroutine analogBlinkRoutine;
+        private Vector3 analogRestScale;
+        private bool analogRestCaptured;
 
         // Dialogue data for Beat 2 & Beat 7
         private readonly DialogueLine[] beat2Dialogue = new[]
@@ -111,6 +133,7 @@ namespace MainKarinding.Cutscenes
                 explorationRoot.SetActive(false);
 
             AutoFindHeadAnchors();
+            AutoFindFollowToast();
 
             // Subscribe Beat 5 sekali di sini (event permanen, anti callback-null)
             if (actionButton != null)
@@ -145,6 +168,16 @@ namespace MainKarinding.Cutscenes
                 if (tap != null)
                     tapDetector = tap.gameObject;
             }
+        }
+
+        private void AutoFindFollowToast()
+        {
+            if (followToast != null) return;
+            var uiAnalog = explorationRoot != null ? explorationRoot.transform.Find("UI_Analog") : null;
+            if (uiAnalog != null)
+                followToast = uiAnalog.GetComponentInChildren<Scene5Toast>(true);
+            if (followToast == null)
+                Debug.LogWarning("[Scene1Cutscene] ToastRoot belum di-setup di UI_Analog! Copy ToastRoot dari Scene8.");
         }
 
         private Transform ResolveAnchor(string speaker)
@@ -408,7 +441,79 @@ namespace MainKarinding.Cutscenes
             if (rimbaWalker != null)
                 rimbaWalker.Locked = false;
 
+            if (followToast != null)
+                followToast.ShowToast("Ikuti Abah pakai analog!", 3f);
+
+            StartAbahExit();
+            StartAnalogBlink();
+
             Debug.Log("[Scene1Cutscene] Walk off mulai - gerakkan Rimba dengan analog, ikuti Abah ke kanan");
+        }
+
+        private void StartAbahExit()
+        {
+            if (abahWalker == null)
+            {
+                Debug.LogWarning("[Scene1Cutscene] abahWalker belum di-assign! Abah tidak keluar frame otomatis.");
+                return;
+            }
+            abahWalker.ResumeWalking(abahExitX);
+            StartCoroutine(AbahExitRoutine());
+        }
+
+        private IEnumerator AbahExitRoutine()
+        {
+            if (abahWalker == null) yield break;
+            while (abahWalker != null && abahWalker.transform.position.x < abahExitX)
+                yield return null;
+            if (abahWalker != null)
+                abahWalker.gameObject.SetActive(false);
+        }
+
+        private void StartAnalogBlink()
+        {
+            StopAnalogBlink(false);
+            if (analogStick == null || rimbaWalker == null)
+            {
+                Debug.LogWarning("[Scene1Cutscene] analogStick/rimbaWalker belum di-assign! Kedip analog dilewati.");
+                return;
+            }
+            if (!analogRestCaptured)
+            {
+                analogRestScale = analogStick.transform.localScale;
+                analogRestCaptured = true;
+            }
+            analogStick.SetForceShow(true);
+            analogBlinkRoutine = StartCoroutine(AnalogBlinkRoutine());
+        }
+
+        private IEnumerator AnalogBlinkRoutine()
+        {
+            // Kedip jalan terus sampai analog BENAR-BENAR disentuh pertama kali —
+            // gerakan lewat keyboard tidak menghentikan hint.
+            float t = 0f;
+            while (analogStick != null && !analogStick.IsDragging)
+            {
+                t += Time.deltaTime;
+                float pulse = 1f + analogPulseAmount * Mathf.Sin(t / Mathf.Max(0.05f, analogPulsePeriod) * 2f * Mathf.PI);
+                analogStick.transform.localScale = analogRestScale * pulse;
+                yield return null;
+            }
+            StopAnalogBlink(true);
+        }
+
+        private void StopAnalogBlink(bool restoreScale)
+        {
+            if (analogBlinkRoutine != null)
+            {
+                StopCoroutine(analogBlinkRoutine);
+                analogBlinkRoutine = null;
+            }
+            if (restoreScale && analogRestCaptured && analogStick != null)
+            {
+                analogStick.transform.localScale = analogRestScale;
+                analogStick.SetForceShow(false);
+            }
         }
 
         private void OnWalkOffArrived()
@@ -427,6 +532,8 @@ namespace MainKarinding.Cutscenes
         /// </summary>
         private IEnumerator FinishWalkOff()
         {
+            StopAnalogBlink(true);
+
             if (blackscreenOverlay != null)
             {
                 Image blackImage = blackscreenOverlay.GetComponent<Image>();
@@ -446,7 +553,29 @@ namespace MainKarinding.Cutscenes
             if (!loopForTesting)
             {
                 cutsceneActive = false;
-                Debug.Log("[Scene1Cutscene] Scene 1 selesai - freeze di black (tunggu Scene 2)");
+                Debug.Log("[Scene1Cutscene] Scene 1 selesai - handoff ke Scene 2");
+
+                // EntryPoint HARUS diset SEBELUM Scene 2 aktif — SceneEntryGate Scene 2
+                // baru jalan saat aktivasi dan akan menutup lagi kalau entry belum Scene2.
+                if (StoryState.Instance != null)
+                    StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene2);
+
+                if (scene2Root != null)
+                    scene2Root.SetActive(true);
+                else
+                    Debug.LogError("[Scene1Cutscene] scene2Root belum di-assign! Drag Scene2_Cutscene di Inspector.");
+
+                // Beri waktu Scene 2 siap (Start + Beat 1) dengan blackscreen miliknya.
+                yield return new WaitForSeconds(scene2HandoffDelay);
+
+                // Dunia Scene 1 (termasuk UI_Analog) mati di balik hitam.
+                if (explorationRoot != null)
+                    explorationRoot.SetActive(false);
+
+                // Tirai Scene 1 ditutup; reveal pakai blackscreen milik Scene 2.
+                if (blackscreenOverlay != null)
+                    blackscreenOverlay.SetActive(false);
+
                 yield break;
             }
 

@@ -67,6 +67,8 @@ namespace MainKarinding.Cutscenes
         private string currentTriggerWord;
         private Action triggerCallback;
         private bool triggerFired;
+        private Vector3 continueBaseScale;
+        private bool continueBaseCaptured;
 
         public bool IsActive => dialogueBoxRoot != null && dialogueBoxRoot.activeSelf;
         public bool IsWaitingForInput => waitingForInput;
@@ -362,6 +364,14 @@ namespace MainKarinding.Cutscenes
         {
             if (continueIndicator == null) return;
             continueIndicator.SetActive(true);
+            RectTransform rt = continueIndicator.GetComponent<RectTransform>();
+            if (rt == null) return;
+            if (!continueBaseCaptured)
+            {
+                continueBaseScale = rt.localScale;
+                continueBaseCaptured = true;
+            }
+            rt.localScale = continueBaseScale;
             if (continueAnimCoroutine != null)
                 StopCoroutine(continueAnimCoroutine);
             continueAnimCoroutine = StartCoroutine(AnimateContinueIndicator());
@@ -375,7 +385,12 @@ namespace MainKarinding.Cutscenes
                 continueAnimCoroutine = null;
             }
             if (continueIndicator != null)
+            {
+                RectTransform rt = continueIndicator.GetComponent<RectTransform>();
+                if (rt != null && continueBaseCaptured)
+                    rt.localScale = continueBaseScale;
                 continueIndicator.SetActive(false);
+            }
         }
 
         private IEnumerator AnimateContinueIndicator()
@@ -383,11 +398,15 @@ namespace MainKarinding.Cutscenes
             if (continueIndicator == null) yield break;
             RectTransform rt = continueIndicator.GetComponent<RectTransform>();
             if (rt == null) yield break;
-            Vector3 baseScale = rt.localScale;
+            if (!continueBaseCaptured)
+            {
+                continueBaseScale = rt.localScale;
+                continueBaseCaptured = true;
+            }
             while (true)
             {
                 float k = 1f + Mathf.PingPong(Time.time * continueBounceSpeed, 0.2f);
-                rt.localScale = baseScale * k;
+                rt.localScale = continueBaseScale * k;
                 yield return null;
             }
         }

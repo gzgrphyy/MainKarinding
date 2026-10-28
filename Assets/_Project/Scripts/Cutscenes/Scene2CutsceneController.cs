@@ -93,8 +93,17 @@ namespace MainKarinding.Cutscenes
 
         private void Start()
         {
+            // Blackscreen dulu (opaque) — dipakai handoff dari Scene 1 maupun start langsung.
             if (blackscreenOverlay != null)
-                blackscreenOverlay.SetActive(false);
+            {
+                blackscreenOverlay.SetActive(true);
+                Image bi = blackscreenOverlay.GetComponent<Image>();
+                if (bi != null)
+                {
+                    Color c = bi.color;
+                    bi.color = new Color(c.r, c.g, c.b, 1f);
+                }
+            }
             AutoFind();
             if (highlightController != null)
                 highlightController.ClearAll();
@@ -244,7 +253,41 @@ namespace MainKarinding.Cutscenes
             // Loop sudah jalan di titik ini -> Abah = play_karinding.
             SetAbahForLine(false, false);
 
+            StartCoroutine(Beat1Reveal());
+        }
+
+        /// <summary>
+        /// Reveal Scene 2 dari hitam (blackscreen opaque pas handoff dari Scene 1),
+        /// lalu opening delay sebelum Beat 2.
+        /// </summary>
+        private IEnumerator Beat1Reveal()
+        {
+            Image bi = blackscreenOverlay != null ? blackscreenOverlay.GetComponent<Image>() : null;
+            if (bi != null)
+                yield return StartCoroutine(FadeImage(bi, 1f, 0f, 0.6f));
+            if (blackscreenOverlay != null)
+                blackscreenOverlay.SetActive(false);
+
             StartCoroutine(DelayedExecute(openingDelay, ExecuteBeat2));
+        }
+
+        /// <summary>
+        /// Fade alpha Image dari 'from' ke 'to' selama 'duration' detik.
+        /// </summary>
+        private IEnumerator FadeImage(Image image, float from, float to, float duration)
+        {
+            if (image == null) yield break;
+            Color c = image.color;
+            image.color = new Color(c.r, c.g, c.b, from);
+            float t = 0f;
+            while (t < duration)
+            {
+                t += Time.deltaTime;
+                float a = Mathf.Lerp(from, to, Mathf.Clamp01(t / duration));
+                image.color = new Color(c.r, c.g, c.b, a);
+                yield return null;
+            }
+            image.color = new Color(c.r, c.g, c.b, to);
         }
 
         // Beat 2 — intro dialog (backsound dimatikan biar sprite talk tampil — play menang selama loop bunyi)

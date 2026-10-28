@@ -32,6 +32,8 @@ namespace MainKarinding.Exploration
         [SerializeField] private bool hideWhenIdle = false;
         [Tooltip("Analog pindah ke titik jari/tap (floating). Kalau mati, tetap di posisi awal.")]
         [SerializeField] private bool appearAtPressPosition = false;
+        [Tooltip("Kalau aktif: analog tetap tampil di posisi awal selama BELUM PERNAH disentuh, walau hideWhenIdle aktif. Setelah sentuhan pertama dilepas, balik ke aturan hideWhenIdle.")]
+        [SerializeField] private bool visibleBeforeFirstTouch = false;
         [Tooltip("Area sentuh yang nerima tap/drag (mis. 1/2 layar kiri). Kosong = objek ini sendiri.")]
         [SerializeField] private RectTransform touchArea;
         [Tooltip("Analog ditahan supaya seluruh lingkaran tetap di dalam rect ini. Kosong = canvas-nya.")]
@@ -43,11 +45,16 @@ namespace MainKarinding.Exploration
 
         public Vector2 Value { get; private set; }
 
+        /// <summary>True selama jari menempel di area sentuh (dipencet belum dilepas).</summary>
+        public bool IsDragging => dragging;
+
         private bool dragging;
         private bool restCaptured;
         private Vector2 restPosition;
         private Camera uiCamera;
         private float targetAlpha = 1f;
+        private bool forcedShow;
+        private bool hasEverTouched;
 
         private void Awake()
         {
@@ -78,6 +85,15 @@ namespace MainKarinding.Exploration
         {
             // Fade show/hide. Komponen TETAP aktif (cuma alpha) supaya Value tetap
             // terbaca RimbaWalker walau analog sedang tidak kelihatan.
+            if (forcedShow)
+                targetAlpha = 1f;
+            else
+            {
+                bool wantVisible = dragging
+                    || !hideWhenIdle
+                    || (visibleBeforeFirstTouch && !hasEverTouched);
+                targetAlpha = wantVisible ? 1f : 0f;
+            }
             if (canvasGroup != null)
             {
                 if (fadeDuration <= 0f)
@@ -93,12 +109,29 @@ namespace MainKarinding.Exploration
                 Value = Vector2.zero;
         }
 
+        public void SetForceShow(bool on)
+        {
+            if (forcedShow == on) return;
+            forcedShow = on;
+            if (on)
+            {
+                if (!dragging && restCaptured && baseRect != null)
+                    baseRect.anchoredPosition = restPosition;
+                targetAlpha = 1f;
+            }
+            else
+            {
+                targetAlpha = hideWhenIdle ? 0f : 1f;
+            }
+        }
+
         /// <summary>Area sentuh dipencet: analog muncul (dan pindah ke titik jari kalau floating).</summary>
         public void BeginPress(PointerEventData eventData)
         {
             if (eventData == null) return;
 
             dragging = true;
+            hasEverTouched = true;
             targetAlpha = 1f;
 
             if (appearAtPressPosition)

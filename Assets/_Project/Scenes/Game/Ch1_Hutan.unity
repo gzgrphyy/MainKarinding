@@ -417,10 +417,17 @@ MonoBehaviour:
   rimbaSpriteSet: {fileID: 11400000, guid: b6ee632315245df4387d2c098cac3d10, type: 2}
   shot1Root: {fileID: 1860008842}
   shot1Rimba: {fileID: 1770434262}
+  shot1HeadAnchor: {fileID: 1677708222}
   shot2Root: {fileID: 758767461}
   shot2Rimba: {fileID: 1361272657}
   shot2HeadAnchor: {fileID: 1821763167}
-  dialogueDelayAfterCut: 2
+  shot2EndHoldSeconds: 0.5
+  dialogueDelayAfterFlipbook: 0.8
+  enableShot2ZoomOut: 1
+  shot2ZoomStartOrthoSize: 4.1
+  shot2ZoomOutDuration: 6
+  shot2BeforeClosingDelay: 1
+  shot2ClosingFadeSeconds: 0.8
   blackOverlay: {fileID: 859100312}
   blackFadeInSeconds: 0.3
   blackHoldSeconds: 0.5
@@ -435,7 +442,7 @@ MonoBehaviour:
   ambienceNyata: {fileID: 0}
   openingDelay: 1
   whiteFadeSeconds: 2
-  flipbookFrameSeconds: 1
+  flipbookFrameSeconds: 0.5
   dialogueTimeoutSeconds: 15
 --- !u!114 &193402844
 MonoBehaviour:
@@ -2564,7 +2571,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &758767462
 Transform:
   m_ObjectHideFlags: 0
@@ -2580,7 +2587,6 @@ Transform:
   m_Children:
   - {fileID: 1812130199}
   - {fileID: 1361272656}
-  - {fileID: 1268907087}
   m_Father: {fileID: 193402845}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &820078074
@@ -3253,7 +3259,7 @@ RectTransform:
   - {fileID: 451120664}
   - {fileID: 115763891}
   - {fileID: 698272402}
-  m_Father: {fileID: 758767462}
+  m_Father: {fileID: 1860008843}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -3999,7 +4005,7 @@ Transform:
   m_GameObject: {fileID: 1677708221}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.05, y: 0.25, z: 0}
+  m_LocalPosition: {x: -3.05, y: 7.7, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4736,7 +4742,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1860008843
 Transform:
   m_ObjectHideFlags: 0
@@ -4752,6 +4758,7 @@ Transform:
   m_Children:
   - {fileID: 1788046312}
   - {fileID: 1770434263}
+  - {fileID: 1268907087}
   m_Father: {fileID: 193402845}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1929633693

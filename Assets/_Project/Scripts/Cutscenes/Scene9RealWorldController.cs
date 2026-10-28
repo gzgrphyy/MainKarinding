@@ -7,11 +7,11 @@ namespace MainKarinding.Cutscenes
     /// <summary>
     /// Scene 9 — Rimba Terbangun (PLAN E9, rombak 2 shot): state "RealWorld" di Ch1_Hutan.unity.
     /// Beat 1: mulai dari layar PUTIH -> fade out, hutan terungkap (bg authored: forest_night).
-    /// Beat 2: Shot 1 — flipbook bangun: 5 frame (sleep -> check_waist), tanpa dialog.
-    ///         Layout pos/scale = transform authored di scene (inspector).
-    /// Beat 3: Cut ke Shot 2 — shot 1 mati, shot 2 hidup (bg forest_wide + karakter ter-crop
-    ///         stand_back, layout authored di scene), jeda kecil, lalu Rimba bergumam
-    ///         "...Moal kataekan." (baru sadar itu mimpi) -> freeze End of Chapter 1.
+    /// Beat 2: Shot 1 — flipbook bangun: 5 frame (sleep -> check_waist), lalu jeda kecil,
+    ///         Gumam "...Moal kataekan." muncul di Shot 1 (bubble anchored ke HeadAnchor Rimba Shot 1).
+    /// Beat 3: Cut ke Shot 2 — shot 1 mati, kamera di-set tight di balik hitam, shot 2 terungkap
+    ///         tight, zoom out ke wide (ortho 3.4 -> 4.7), lalu fade hitam penutup dan STAY hitam
+    ///         -> freeze End of Chapter 1 (di layar hitam, rendah Chapter 2).
     /// Framing WAJIB beda dari two-shot hangat mimpi: kamera di-reposition via kode.
     /// Audio SFX whiteout/transisi (sfx_whiteout.wav, sfx_transisi_hutan_nyata.wav) backlog —
     /// sementara visual saja + ambience reuse.
@@ -24,14 +24,30 @@ namespace MainKarinding.Cutscenes
         [Header("Shot 1 - Flipbook bangun (layout dari inspector)")]
         [SerializeField] private GameObject shot1Root;
         [SerializeField] private SpriteRenderer shot1Rimba;
+        [Tooltip("Anchor kepala Rimba Shot 1 untuk bubble gumam 'Moal kataekan'. Auto-find child 'HeadAnchor' bila null.")]
+        [SerializeField] private Transform shot1HeadAnchor;
 
         [Header("Shot 2 - Fullscreen stand_back (layout dari inspector)")]
         [SerializeField] private GameObject shot2Root;
         [SerializeField] private SpriteRenderer shot2Rimba;
-        [Tooltip("Anchor kepala Rimba stand_back untuk bubble gumam. Auto-find bila null.")]
+        [Tooltip("Anchor kepala Rimba stand_back. Auto-find bila null.")]
         [SerializeField] private Transform shot2HeadAnchor;
-        [Tooltip("Jeda setelah cut ke shot 2 sebelum bubble gumam muncul.")]
-        [SerializeField] private float dialogueDelayAfterCut = 2f;
+        [Tooltip("Jeda setelah shot 2 terungkap sebelum zoom out mulai.")]
+        [SerializeField] private float shot2EndHoldSeconds = 0.5f;
+        [Tooltip("Jeda setelah frame check_waist tayang sebelum bubble gumam muncul.")]
+        [SerializeField] private float dialogueDelayAfterFlipbook = 0.8f;
+
+        [Header("Shot 2 - Zoom Out penutup")]
+        [Tooltip("Kalau false, shot 2 langsung framing wide (perilaku lama).")]
+        [SerializeField] private bool enableShot2ZoomOut = true;
+        [Tooltip("Ortho size awal (tight) saat shot 2 terungkap, sebelum zoom out.")]
+        [SerializeField] private float shot2ZoomStartOrthoSize = 3.4f;
+        [Tooltip("Durasi zoom out dari tight ke cameraOrthoSize (wide).")]
+        [SerializeField] private float shot2ZoomOutDuration = 1.8f;
+        [Tooltip("Jeda setelah zoom out selesai sebelum fade hitam penutup.")]
+        [SerializeField] private float shot2BeforeClosingDelay = 0.5f;
+        [Tooltip("Durasi fade ke hitam penutup — freeze tetap di hitam sampai Chapter 2.")]
+        [SerializeField] private float shot2ClosingFadeSeconds = 0.8f;
 
         [Header("Black Overlay (cut Shot1 -> Shot2)")]
         [Tooltip("Canvas hitam fullscreen untuk transisi fade-hitam antar shot.")]
@@ -119,6 +135,12 @@ namespace MainKarinding.Cutscenes
                 if (t != null) shot2HeadAnchor = t;
             }
             if (shot2HeadAnchor == null) Debug.LogWarning("[Scene9RealWorld] shot2HeadAnchor belum di-assign/ketemu!");
+            if (shot1HeadAnchor == null && shot1Rimba != null)
+            {
+                var t1 = shot1Rimba.transform.Find("HeadAnchor");
+                if (t1 != null) shot1HeadAnchor = t1;
+            }
+            if (shot1HeadAnchor == null) Debug.LogWarning("[Scene9RealWorld] shot1HeadAnchor belum di-assign/ketemu!");
             if (shot1Rimba == null || shot2Rimba == null)
                 Debug.LogWarning("[Scene9RealWorld] Renderer shot 1/2 belum di-wire!");
         }
@@ -156,21 +178,58 @@ namespace MainKarinding.Cutscenes
             Debug.Log("[Scene9RealWorld] Beat 1 - whiteout fade, hutan terungkap");
             yield return StartCoroutine(FadeWhite(false, whiteFadeSeconds));
 
-            Debug.Log("[Scene9RealWorld] Beat 2 - Shot 1: flipbook bangun (5 frame, senyap, layout dari scene)");
+            Debug.Log("[Scene9RealWorld] Beat 2 - Shot 1: flipbook bangun (5 frame), lalu gumam Moal kataekan setelah check_waist");
             yield return StartCoroutine(PlayWakeFlipbook());
+            yield return new WaitForSeconds(dialogueDelayAfterFlipbook);
+            Transform shot1Anchor = shot1HeadAnchor != null
+                ? shot1HeadAnchor
+                : (shot1Rimba != null ? shot1Rimba.transform : null);
+            yield return StartCoroutine(PlayDialogueSequence(gumamLine, null, shot1Anchor));
 
-            Debug.Log("[Scene9RealWorld] Beat 3 - Cut fade-hitam, shot 2 wide terungkap, gumam Moal kataekan");
-            // Fade ke hitam di atas shot 1, swap shot di balik hitam, lalu fade keluar mengungkap shot 2.
+            Debug.Log("[Scene9RealWorld] Beat 3 - Cut fade-hitam, shot 2 terungkap tight, zoom out, fade hitam penutup");
+            // Fade ke hitam di atas shot 1, swap shot di balik hitam, set kamera tight sekarang
+            // supaya shot 2 terungkap tight, zoom out ke wide, lalu fade hitam penutup.
             yield return StartCoroutine(FadeBlack(true, blackFadeInSeconds));
             if (shot1Root != null) shot1Root.SetActive(false);
             if (shot2Root != null) shot2Root.SetActive(true);
+            if (enableShot2ZoomOut && mainCamera != null && mainCamera.orthographic)
+                mainCamera.orthographicSize = shot2ZoomStartOrthoSize;
             yield return new WaitForSeconds(blackHoldSeconds);
             yield return StartCoroutine(FadeBlack(false, blackFadeOutSeconds));
-            yield return new WaitForSeconds(dialogueDelayAfterCut);
-            yield return StartCoroutine(PlayDialogueSequence(gumamLine, null));
-
+            yield return new WaitForSeconds(shot2EndHoldSeconds);
+            if (enableShot2ZoomOut)
+                yield return StartCoroutine(ZoomOutShot2());
+            yield return new WaitForSeconds(shot2BeforeClosingDelay);
+            yield return StartCoroutine(FadeBlack(true, shot2ClosingFadeSeconds));
             yield return new WaitForSeconds(1f);
-            Debug.Log("[Scene9RealWorld] End of Chapter 1 — freeze sampai Chapter 2 dibangun.");
+            Debug.Log("[Scene9RealWorld] End of Chapter 1 — freeze di layar hitam sampai Chapter 2 dibangun.");
+        }
+
+        private IEnumerator ZoomOutShot2()
+        {
+            if (mainCamera == null)
+            {
+                Debug.LogWarning("[Scene9RealWorld] Zoom out dilewati — mainCamera belum di-wire.");
+                yield break;
+            }
+            if (!mainCamera.orthographic)
+            {
+                Debug.LogWarning("[Scene9RealWorld] Zoom out dilewati — kamera bukan orthographic.");
+                yield break;
+            }
+            float startOrtho = mainCamera.orthographicSize;
+            float endOrtho = cameraOrthoSize;
+            if (startOrtho >= endOrtho)
+                yield break;
+            float t = 0f;
+            while (t < shot2ZoomOutDuration)
+            {
+                t += Time.unscaledDeltaTime;
+                float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / Mathf.Max(0.01f, shot2ZoomOutDuration)));
+                mainCamera.orthographicSize = Mathf.Lerp(startOrtho, endOrtho, k);
+                yield return null;
+            }
+            mainCamera.orthographicSize = endOrtho;
         }
 
         private IEnumerator PlayWakeFlipbook()
@@ -194,7 +253,7 @@ namespace MainKarinding.Cutscenes
             else Debug.LogWarning($"[Scene9RealWorld] {fieldName} belum di-assign!");
         }
 
-        private IEnumerator PlayDialogueSequence(DialogueLine[] lines, System.Action onComplete)
+        private IEnumerator PlayDialogueSequence(DialogueLine[] lines, System.Action onComplete, Transform anchorOverride = null)
         {
             foreach (var line in lines)
             {
@@ -204,7 +263,9 @@ namespace MainKarinding.Cutscenes
                     continue;
                 }
                 bool finished = false;
-                Transform anchor = shot2HeadAnchor != null ? shot2HeadAnchor : (shot2Rimba != null ? shot2Rimba.transform : null);
+                Transform anchor = anchorOverride != null
+                    ? anchorOverride
+                    : (shot2HeadAnchor != null ? shot2HeadAnchor : (shot2Rimba != null ? shot2Rimba.transform : null));
                 if (floatingDialogue != null && anchor != null)
                     floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true);
                 else if (dialogueDisplay != null)

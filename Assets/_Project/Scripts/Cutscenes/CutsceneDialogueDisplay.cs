@@ -50,6 +50,8 @@ namespace MainKarinding.Cutscenes
         private bool triggerFired;
         private Vector2 boxPointerBasePos;
         private bool boxPointerBaseCaptured = false;
+        private Vector3 continueBaseScale;
+        private bool continueBaseCaptured;
 
         public bool IsActive => dialogueBoxRoot != null && dialogueBoxRoot.activeSelf;
         public bool IsWaitingForInput => waitingForInput;
@@ -334,6 +336,16 @@ namespace MainKarinding.Cutscenes
 
             continueIndicator.SetActive(true);
 
+            RectTransform rt = continueIndicator.GetComponent<RectTransform>();
+            if (rt == null) return;
+
+            if (!continueBaseCaptured)
+            {
+                continueBaseScale = rt.localScale;
+                continueBaseCaptured = true;
+            }
+            rt.localScale = continueBaseScale;
+
             if (continueAnimCoroutine != null)
                 StopCoroutine(continueAnimCoroutine);
 
@@ -349,7 +361,12 @@ namespace MainKarinding.Cutscenes
             }
 
             if (continueIndicator != null)
+            {
+                RectTransform rt = continueIndicator.GetComponent<RectTransform>();
+                if (rt != null && continueBaseCaptured)
+                    rt.localScale = continueBaseScale;
                 continueIndicator.SetActive(false);
+            }
         }
 
         private IEnumerator AnimateContinueIndicator()
@@ -359,13 +376,17 @@ namespace MainKarinding.Cutscenes
             RectTransform rt = continueIndicator.GetComponent<RectTransform>();
             if (rt == null) yield break;
 
-            Vector3 originalScale = rt.localScale;
+            if (!continueBaseCaptured)
+            {
+                continueBaseScale = rt.localScale;
+                continueBaseCaptured = true;
+            }
 
             while (true)
             {
                 // Bounce scale 1.0 → 1.2 → 1.0
                 float scale = 1f + Mathf.PingPong(Time.time * continueIndicatorBounceSpeed, 0.2f);
-            rt.localScale = originalScale * scale;
+            rt.localScale = continueBaseScale * scale;
             yield return null;
         }
     }
