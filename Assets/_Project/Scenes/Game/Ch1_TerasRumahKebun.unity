@@ -246,7 +246,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &66421800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3451,7 +3451,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 80, y: -70}
+  m_AnchoredPosition: {x: 63, y: -58}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &361359444
@@ -3540,7 +3540,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 20, y: 15, z: 60, w: 15}
+  m_margin: {x: 20, y: 68.41173, z: 215.02417, w: 71.017136}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -4573,7 +4573,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 80, y: -70}
+  m_AnchoredPosition: {x: 47, y: -37}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &432457606
@@ -4623,8 +4623,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 45
-  m_fontSizeBase: 45
+  m_fontSize: 40
+  m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -4662,7 +4662,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 20, y: 15, z: 60, w: 15}
+  m_margin: {x: 20, y: 82.60037, z: 193.552, w: 54.57094}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -5984,8 +5984,12 @@ MonoBehaviour:
   closingDelaySeconds: 2
   ambientFadeOutSeconds: 0.35
   blackscreenDuration: 0.7
+  revealSeconds: 0.6
   tutorialSceneName: TutorialMinigameRhythm
   dialogueTimeoutSeconds: 12
+  scene4Root: {fileID: 922263278}
+  uiRootsToHideOnHandoff:
+  - {fileID: 1327326257}
 --- !u!4 &553588571
 Transform:
   m_ObjectHideFlags: 0
@@ -8292,7 +8296,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 20, y: 15, z: 60, w: 15}
+  m_margin: {x: 20, y: 52.330536, z: 230.57263, w: 75.91879}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -9658,7 +9662,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &922263279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9694,6 +9698,7 @@ MonoBehaviour:
   dialogueTimeoutSeconds: 30
   endFadeSeconds: 1
   titleCardSeconds: 2.2
+  revealSeconds: 0.6
 --- !u!114 &922263280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10665,6 +10670,10 @@ MonoBehaviour:
   karindingLoopSource: {fileID: 0}
   sfxTapConfirm: {fileID: 8300000, guid: 4e53bf99c31631c4cb9ab6ab58606cc3, type: 3}
   openingDelay: 1
+  scene3Root: {fileID: 553588569}
+  uiRootsToHideOnHandoff:
+  - {fileID: 899331217}
+  handoffFadeSeconds: 1
   beat4DarkenFactor: 0.35
   partAutoAdvanceSeconds: 8
 --- !u!4 &1059921781
@@ -16662,7 +16671,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Core.StoryState
   currentBeat: 0
-  entryPoint: 0
+  entryPoint: 2
 --- !u!4 &1734499648
 Transform:
   m_ObjectHideFlags: 0
@@ -17636,8 +17645,8 @@ Transform:
   m_GameObject: {fileID: 1813584780}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: -0.0194, z: 20}
-  m_LocalScale: {x: 0.87506247, y: 0.8602556, z: 1}
+  m_LocalPosition: {x: -0, y: -0.0029, z: 20}
+  m_LocalScale: {x: 0.8692892, y: 0.86922264, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1684891794}
@@ -17659,7 +17668,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1829835895
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -61,7 +61,9 @@ namespace MainKarinding.Cutscenes
         [Tooltip("Durasi fade ke hitam di akhir scene.")]
         [SerializeField] private float endFadeSeconds = 1f;
         [Tooltip("Lama title card 'HARI KEDUA' tampil.")]
-        [SerializeField] private float titleCardSeconds = 2.2f;
+                [SerializeField] private float titleCardSeconds = 2.2f;
+        [Tooltip("Durasi reveal dari hitam di awal scene (pola Scene 3).")]
+        [SerializeField] private float revealSeconds = 0.6f;
 
         private bool cutsceneActive = false;
         private bool bledagFired = false;
@@ -89,7 +91,18 @@ namespace MainKarinding.Cutscenes
         private void Start()
         {
             StoryState.EnsureExists();
-            if (blackscreenOverlay != null) blackscreenOverlay.SetActive(false);
+                        if (blackscreenOverlay != null)
+            {
+                // Mulai OPAQUE: handoff dari Scene 3 terjadi di balik hitam, lalu reveal.
+                blackscreenOverlay.SetActive(true);
+                var bi = blackscreenOverlay.GetComponent<UnityEngine.UI.Image>();
+                if (bi != null)
+                {
+                    var bc = bi.color;
+                    bc.a = 1f;
+                    bi.color = bc;
+                }
+            }
             if (titleCardText != null) titleCardText.gameObject.SetActive(false);
             if (flashImage != null)
             {
@@ -157,7 +170,7 @@ namespace MainKarinding.Cutscenes
             if (audioManager != null && ambienceSiang != null)
                 audioManager.PlayAmbient(ambienceSiang, 0.6f);
 
-            StartCoroutine(DelayedExecute(openingDelay, () => StartCoroutine(PlayDialogueSequence(beatDialogue, () => StartCoroutine(EndSceneRoutine())))));
+                        StartCoroutine(RevealThen(openingDelay, () => StartCoroutine(PlayDialogueSequence(beatDialogue, () => StartCoroutine(EndSceneRoutine())))));
         }
 
         // Trigger tepat di kata "bledag!" — VFX/SFX/dropout, dialog box tidak terganggu
@@ -257,10 +270,26 @@ namespace MainKarinding.Cutscenes
                 Debug.Log("[Scene4Cutscene] Auto-lanjut (timeout, player tidak tap).");
         }
 
-        private IEnumerator DelayedExecute(float delay, System.Action action)
+                private IEnumerator DelayedExecute(float delay, System.Action action)
         {
             yield return new WaitForSeconds(delay);
             action?.Invoke();
+        }
+
+        // Reveal dari hitam (pola Scene 3): blackscreen opaque saat setup, lalu fade out.
+        private IEnumerator RevealThen(float delayAfter, System.Action after)
+        {
+            yield return StartCoroutine(RevealFromBlack());
+            yield return new WaitForSeconds(Mathf.Max(0f, delayAfter));
+            after?.Invoke();
+        }
+
+        private IEnumerator RevealFromBlack()
+        {
+            if (blackscreenOverlay == null) yield break;
+            blackscreenOverlay.SetActive(true);
+            yield return StartCoroutine(FadeBlackscreen(false, revealSeconds));
+            blackscreenOverlay.SetActive(false);
         }
 
         private IEnumerator FlashRoutine()

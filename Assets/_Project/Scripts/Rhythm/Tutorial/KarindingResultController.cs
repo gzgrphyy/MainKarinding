@@ -275,6 +275,12 @@ public class KarindingResultController : MonoBehaviour
             }
             if (exists)
             {
+                if (FindFirstObjectByType<StoryProgressListener>() != null)
+                {
+                    MainKarinding.Core.StoryState.EnsureExists();
+                    if (MainKarinding.Core.StoryState.Instance != null)
+                        MainKarinding.Core.StoryState.Instance.SetEntryPoint(MainKarinding.Core.Ch1EntryPoint.Scene3);
+                }
                 SceneManager.LoadScene(nextSceneName);
                 return;
             }

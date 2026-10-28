@@ -54,8 +54,17 @@ namespace MainKarinding.Cutscenes
         [Header("Settings")]
         [SerializeField] private float openingDelay = 1f;
 
+        [Header("Handoff ke Scene 3")]
+        [Tooltip("Drag Scene3_Cutscene. Diaktifkan otomatis setelah fade ke hitam (EntryPoint Scene3 diset lebih dulu).")]
+        [SerializeField] private GameObject scene3Root;
+        [Tooltip("UI root milik Scene 2 (UI_Choice, UI_Cutscene) yang dimatikan di balik hitam saat handoff.")]
+        [SerializeField] private GameObject[] uiRootsToHideOnHandoff = new GameObject[0];
+        [Tooltip("Durasi fade ke hitam di akhir Scene 2 (blackscreen bersama Scene 3).")]
+        [SerializeField] private float handoffFadeSeconds = 1f;
+
         private int currentBeat = 0;
         private bool cutsceneActive = false;
+        private bool handedOff = false;
 
         // ---- Dialog verbatim PLAN E2 ----
         private readonly DialogueLine[] introDialogue = new[]
@@ -442,13 +451,63 @@ namespace MainKarinding.Cutscenes
 
         private void OnScene2Complete()
         {
+            // Anti trigger ganda: handoff cuma sekali.
+            if (handedOff) return;
+            handedOff = true;
             cutsceneActive = false;
             StopKarindingLoop();
             // Posisi diam akhir: Rimba idle, Abah talk.
             SetRimbaSpeaking(false);
             SetAbahForLine(false, false);
-            Debug.Log("[Scene2Cutscene] Scene 2 selesai — lanjut Scene 3 (S3_Handoff). Freeze di sini sampai Scene 3 dibangun.");
-            // Tidak auto-load scene lain; StoryState.CurrentBeat = S2_ClosingFilosofi jadi acuan Scene 3.
+            Debug.Log("[Scene2Cutscene] Scene 2 selesai — fade ke hitam, handoff ke Scene 3 (S3_Handoff).");
+            StartCoroutine(FinishScene2());
+        }
+
+        /// <summary>
+        /// Fade ke hitam memakai blackscreen bersama Scene 3, lalu handoff in-scene
+        /// (pola S1->S2): EntryPoint Scene3 diset SEBELUM Scene 3 aktif —
+        /// SceneEntryGate Scene 3 baru jalan saat aktivasi. Konten Scene 2 dimatikan
+        /// di balik hitam; reveal dari hitam dilakukan Scene 3 sendiri.
+        /// </summary>
+        private IEnumerator FinishScene2()
+        {
+            if (audioManager != null)
+                audioManager.FadeOutAmbient(handoffFadeSeconds);
+
+            // 1) Fade out ke hitam (blackscreen dipakai bersama Scene 3).
+            Image bi = blackscreenOverlay != null ? blackscreenOverlay.GetComponent<Image>() : null;
+            if (bi != null)
+            {
+                blackscreenOverlay.SetActive(true);
+                yield return StartCoroutine(FadeImage(bi, bi.color.a, 1f, handoffFadeSeconds));
+            }
+            else
+            {
+                Debug.LogWarning("[Scene2Cutscene] blackscreenOverlay kosong — handoff tanpa fade.");
+                yield return new WaitForSeconds(handoffFadeSeconds);
+            }
+
+            // 2) EntryPoint HARUS diset SEBELUM Scene 3 aktif — SceneEntryGate Scene 3
+            //    baru jalan saat aktivasi dan akan menutup lagi kalau belum Scene3.
+            if (StoryState.Instance != null)
+                StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene3);
+
+            // 3) Aktifkan Scene 3 (Start() miliknya jalan: blackscreen tetap opaque lalu reveal).
+            if (scene3Root != null)
+                scene3Root.SetActive(true);
+            else
+                Debug.LogError("[Scene2Cutscene] scene3Root belum di-assign! Drag Scene3_Cutscene di Inspector.");
+
+            // 4) Dunia Scene 2 dimatikan di balik hitam.
+            if (shotRoot != null) shotRoot.SetActive(false);
+            if (karindingRoot != null) karindingRoot.SetActive(false);
+            if (karinding2DRoot != null) karinding2DRoot.SetActive(false);
+            if (uiRootsToHideOnHandoff != null)
+            {
+                for (int i = 0; i < uiRootsToHideOnHandoff.Length; i++)
+                    if (uiRootsToHideOnHandoff[i] != null)
+                        uiRootsToHideOnHandoff[i].SetActive(false);
+            }
         }
 
         #region Helpers (mirip Scene 1)

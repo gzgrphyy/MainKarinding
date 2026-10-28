@@ -56,10 +56,18 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private float ambientFadeOutSeconds = 0.35f;
         [Tooltip("Durasi blackscreen sebelum LoadScene.")]
         [SerializeField] private float blackscreenDuration = 0.7f;
+        [Tooltip("Durasi reveal dari hitam (blackscreen opaque pas handoff dari Scene 2 / start langsung).")]
+        [SerializeField] private float revealSeconds = 0.6f;
         [Tooltip("Nama scene minigame. Harus ada di Build Settings.")]
         [SerializeField] private string tutorialSceneName = "TutorialMinigameRhythm";
         [Tooltip("Anti-stuck: player dianggap selesai beat dialog meski tidak tap.")]
-        [SerializeField] private float dialogueTimeoutSeconds = 12f;
+                [SerializeField] private float dialogueTimeoutSeconds = 12f;
+
+        [Header("Handoff Scene 4")]
+        [Tooltip("Drag Scene4_Cutscene. Diaktifkan otomatis setelah fade ke hitam (EntryPoint Scene4 diset lebih dulu).")]
+        [SerializeField] private GameObject scene4Root;
+        [Tooltip("UI milik scene ini yang disembunyikan saat handoff ke Scene 4 (pola S2->S3).")]
+        [SerializeField] private GameObject[] uiRootsToHideOnHandoff = new GameObject[0];
 
         private int currentBeat = 0;
         private bool cutsceneActive = false;
@@ -87,18 +95,19 @@ namespace MainKarinding.Cutscenes
         private void Start()
         {
             StoryState.EnsureExists();
-            if (blackscreenOverlay != null) blackscreenOverlay.SetActive(false);
             AutoFind();
 
             // Tandai entry point supaya gate Scene 1/2 tetap menutup saat scene ini di-load ulang.
             StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene3);
 
             cutsceneActive = true;
+            // Reveal dari hitam dilakukan di Beat 1/3 via RevealFromBlack
+            // (blackscreen opaque pas handoff dari Scene 2 / start langsung).
             // Beat 3 kalau tutorial sudah pernah selesai (currentBeat >= S3_TutorialRhythm).
             if (StoryState.Instance.HasReached(Ch1Beat.S3_TutorialRhythm))
             {
                 Debug.Log("[Scene3Cutscene] Resume: tutorial sudah selesai -> langsung Beat 3");
-                StartCoroutine(DelayedExecute(openingDelay, ExecuteBeat3));
+                ExecuteBeat3();
             }
             else
             {
@@ -179,7 +188,9 @@ namespace MainKarinding.Cutscenes
                 Debug.LogWarning("[Scene3Cutscene] dengungLow belum di-assign! Assign sfx_karinding_dengung_low.wav");
             }
 
-            StartCoroutine(DelayedExecute(openingDelay, () => StartCoroutine(PlayDialogueSequence(beat1Dialogue, ExecuteBeat2))));
+            // Reveal dari hitam dulu (blackscreen opaque pas handoff dari Scene 2),
+            // lalu opening delay sebelum dialog Beat 1.
+            StartCoroutine(RevealThen(openingDelay, () => StartCoroutine(PlayDialogueSequence(beat1Dialogue, ExecuteBeat2))));
         }
 
         // Beat 2 — pose idle/hold beberapa detik, lalu play beberapa detik, lalu LoadScene tutorial.
@@ -228,6 +239,9 @@ namespace MainKarinding.Cutscenes
                 karindingLoopSource.volume = 0.22f;
                 if (!karindingLoopSource.isPlaying) karindingLoopSource.Play();
             }
+
+            // Reveal dari hitam dulu (juga jalur resume), lalu jeda closing sebelum dialog Omat.
+            yield return StartCoroutine(RevealFromBlack());
 
             yield return new WaitForSeconds(Mathf.Max(0f, closingDelaySeconds));
 
@@ -338,9 +352,33 @@ namespace MainKarinding.Cutscenes
 
             yield return StartCoroutine(FadeBlackscreen(true, blackscreenDuration));
 
-            if (MainKarinding.Core.StoryState.Instance != null)
+            // Lanjut ke Scene 4 hanya kalau StoryState masih berada di Scene 3.
+            if (MainKarinding.Core.StoryState.Instance != null
+                && MainKarinding.Core.StoryState.Instance.EntryPoint == MainKarinding.Core.Ch1EntryPoint.Scene3)
+            {
+                // EntryPoint HARUS diset SEBELUM Scene 4 aktif - SceneEntryGate Scene 4
+                // baru jalan saat aktivasi dan akan menutup lagi kalau belum Scene4.
                 MainKarinding.Core.StoryState.Instance.SetEntryPoint(MainKarinding.Core.Ch1EntryPoint.Scene4);
-            Debug.Log("[Scene3Cutscene] Scene 3 selesai + blackscreen — lanjut Scene 4 (S4_FilosofiBigBang).");
+
+                if (scene4Root != null)
+                    scene4Root.SetActive(true);
+                else
+                    Debug.LogError("[Scene3Cutscene] scene4Root belum di-assign! Drag Scene4_Cutscene di Inspector.");
+
+                // Dunia Scene 3 dimatikan di balik hitam (pola S2->S3).
+                if (shotRoot != null) shotRoot.SetActive(false);
+                if (uiRootsToHideOnHandoff != null)
+                {
+                    for (int i = 0; i < uiRootsToHideOnHandoff.Length; i++)
+                        if (uiRootsToHideOnHandoff[i] != null)
+                            uiRootsToHideOnHandoff[i].SetActive(false);
+                }
+                Debug.Log("[Scene3Cutscene] Scene 3 selesai + blackscreen - lanjut Scene 4 (S4_FilosofiBigBang).");
+            }
+            else
+            {
+                Debug.Log("[Scene3Cutscene] StoryState bukan Scene3 - handoff ke Scene 4 dilewati.");
+            }
         }
 
         #region Helpers (pola Scene 1 & 2)
@@ -398,6 +436,28 @@ namespace MainKarinding.Cutscenes
         {
             yield return new WaitForSeconds(delay);
             action?.Invoke();
+        }
+
+        /// <summary>
+        /// Reveal Scene 3 dari hitam (blackscreen opaque pas handoff Scene 2 / start langsung),
+        /// lalu lanjut ke aksi berikutnya setelah 'delayAfter' detik.
+        /// </summary>
+        private IEnumerator RevealThen(float delayAfter, System.Action after)
+        {
+            yield return StartCoroutine(RevealFromBlack());
+            yield return new WaitForSeconds(Mathf.Max(0f, delayAfter));
+            after?.Invoke();
+        }
+
+        /// <summary>
+        /// Blackscreen ON + fade alpha 1 -> 0 (reuse FadeBlackscreen), lalu mati lagi.
+        /// </summary>
+        private IEnumerator RevealFromBlack()
+        {
+            if (blackscreenOverlay == null) yield break;
+            blackscreenOverlay.SetActive(true);
+            yield return StartCoroutine(FadeBlackscreen(false, revealSeconds));
+            blackscreenOverlay.SetActive(false);
         }
 
         private IEnumerator FadeBlackscreen(bool fadeIn, float duration)
