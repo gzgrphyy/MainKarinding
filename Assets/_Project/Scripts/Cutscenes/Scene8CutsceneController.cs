@@ -149,7 +149,9 @@ namespace MainKarinding.Cutscenes
                 abahWalker = walkAbah != null ? walkAbah.GetComponent<AbahAutoWalker>() : null;
                 walkOffTrigger = explorationRoot.GetComponent<WalkOffTrigger>();
                 analogStick = uiAnalogRoot != null ? uiAnalogRoot.GetComponentInChildren<AnalogStickController>(true) : null;
-                followToast = uiAnalogRoot != null ? uiAnalogRoot.GetComponentInChildren<Scene5Toast>(true) : null;
+                // Respect assign Inspector: hanya auto-find kalau kosong (pola sama dgn Scene 1/5).
+                if (followToast == null)
+                    followToast = uiAnalogRoot != null ? uiAnalogRoot.GetComponentInChildren<Scene5Toast>(true) : null;
                 if (walkHeadAnchorRimba == null)
                 {
                     var t = explorationRoot.transform.Find("WalkRimba/HeadAnchor");
@@ -313,6 +315,7 @@ namespace MainKarinding.Cutscenes
             if (rimbaWalker != null) rimbaWalker.Locked = false;
             if (uiAnalogRoot != null) uiAnalogRoot.SetActive(true);
             if (followToast != null) followToast.ShowToast("Ikuti Abah pakai analog!", 3f);
+            else Debug.LogWarning("[Scene8Cutscene] followToast belum ter-wire — hint toast dilewati.");
         }
 
         private void OnRimbaArrived()
