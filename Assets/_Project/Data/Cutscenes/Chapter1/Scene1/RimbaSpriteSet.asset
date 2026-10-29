@@ -19,11 +19,16 @@ MonoBehaviour:
   lookoutNoleh2: {fileID: 21300000, guid: 1ace57579bc52fe49a6510e8bd86f646, type: 3}
   lookoutFacingMountain: {fileID: 21300000, guid: 86c86677b53e7f44a932edcdeeb2d447, type: 3}
   walkRight:
-  - {fileID: 21300000, guid: 874470f19769dc34f9084807d2f97c22, type: 3}
-  - {fileID: 21300000, guid: 17b451d09efbec549924d66dd55a2142, type: 3}
-  - {fileID: 21300000, guid: 2a68f2c22e332474485d65767fe2a1c4, type: 3}
-  - {fileID: 21300000, guid: b849f48155a7891469febea71525f718, type: 3}
-  idleRight: {fileID: 21300000, guid: 874470f19769dc34f9084807d2f97c22, type: 3}
+  - {fileID: -145756061, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -1538439234, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: 1220042191, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -636337155, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -1747765422, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: 1232051428, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -1966137693, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: 1848463065, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -1270514227, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  idleRight: {fileID: -145756061, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
   duduk: {fileID: 21300000, guid: cdee679445f5d114eae8fd60e313b7a4, type: 3}
   sitTalk: {fileID: 21300000, guid: 265a11bf17bbdf7458930465ddb4caea, type: 3}
   sitIdle: {fileID: 21300000, guid: 65bf62bbe4c9c2941854a864441cfa41, type: 3}

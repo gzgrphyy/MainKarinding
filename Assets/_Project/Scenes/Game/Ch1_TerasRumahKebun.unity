@@ -664,8 +664,8 @@ Transform:
   m_GameObject: {fileID: 77899694}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -5.3, y: -2.54, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -6.86, y: -2, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1531973928}
@@ -719,7 +719,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: -10
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 874470f19769dc34f9084807d2f97c22, type: 3}
+  m_Sprite: {fileID: -145756061, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -747,9 +747,18 @@ MonoBehaviour:
   minY: -3.4
   maxY: -0.6
   frameTime: 0.12
-  analog: {fileID: 0}
-  walkFrames: []
-  idleSprite: {fileID: 0}
+  analog: {fileID: 1061356698}
+  walkFrames:
+  - {fileID: -145756061, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -1538439234, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: 1220042191, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -636337155, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -1747765422, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: 1232051428, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -1966137693, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: 1848463065, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -1270514227, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  idleSprite: {fileID: -145756061, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
 --- !u!1 &91176944
 GameObject:
   m_ObjectHideFlags: 0
@@ -11610,7 +11619,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1096292017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14627,8 +14636,8 @@ Transform:
   m_GameObject: {fileID: 1516053997}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -4, y: -2.6, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -2.63, y: -1.97, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1531973928}
@@ -14680,9 +14689,9 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: -10
+  m_SortingOrder: -1
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 937817172338a2447920bb7f41bc8132, type: 3}
+  m_Sprite: {fileID: -34268829, guid: 889695fcfe060e944a26221a133db204, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -14707,8 +14716,16 @@ MonoBehaviour:
   speed: 2.1
   stopX: 6
   frameTime: 0.14
-  walkFrames: []
-  idleSprite: {fileID: 0}
+  walkFrames:
+  - {fileID: -34268829, guid: 889695fcfe060e944a26221a133db204, type: 3}
+  - {fileID: 1947474667, guid: 889695fcfe060e944a26221a133db204, type: 3}
+  - {fileID: -537494990, guid: 889695fcfe060e944a26221a133db204, type: 3}
+  - {fileID: 1949838446, guid: 889695fcfe060e944a26221a133db204, type: 3}
+  - {fileID: -1453149911, guid: 889695fcfe060e944a26221a133db204, type: 3}
+  - {fileID: -386695125, guid: 889695fcfe060e944a26221a133db204, type: 3}
+  - {fileID: 1649854824, guid: 889695fcfe060e944a26221a133db204, type: 3}
+  - {fileID: 948245867, guid: 889695fcfe060e944a26221a133db204, type: 3}
+  idleSprite: {fileID: -34268829, guid: 889695fcfe060e944a26221a133db204, type: 3}
 --- !u!1 &1520139329
 GameObject:
   m_ObjectHideFlags: 0
@@ -15012,8 +15029,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 77899695}
   - {fileID: 1516053998}
+  - {fileID: 77899695}
   - {fileID: 2040807777}
   - {fileID: 1363835445}
   - {fileID: 518588090}
@@ -17157,7 +17174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Core.StoryState
   currentBeat: 0
-  entryPoint: 4
+  entryPoint: 0
 --- !u!4 &1734499648
 Transform:
   m_ObjectHideFlags: 0
@@ -18154,7 +18171,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1829835895
 MonoBehaviour:
   m_ObjectHideFlags: 0
