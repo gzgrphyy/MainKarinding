@@ -443,6 +443,12 @@ MonoBehaviour:
   openingDelay: 1
   whiteFadeSeconds: 2
   flipbookFrameSeconds: 0.5
+  flipbookFrameDurations:
+  - 3
+  - 2
+  - 2
+  - 4
+  - 5
   dialogueTimeoutSeconds: 15
 --- !u!114 &193402844
 MonoBehaviour:
@@ -1266,14 +1272,14 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -1305,7 +1311,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: -47.81012, y: 22.494385, z: 64.7301, w: 20.049316}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1335,7 +1341,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 70, y: -8.9}
+  m_AnchoredPosition: {x: 62.2, y: -6.9}
   m_SizeDelta: {x: -2.9, y: 2.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &439761547
@@ -1833,6 +1839,7 @@ MonoBehaviour:
   keyboardFallback: 1
   hideWhenIdle: 1
   appearAtPressPosition: 1
+  visibleBeforeFirstTouch: 0
   touchArea: {fileID: 1968773057}
   keepInsideRect: {fileID: 2049966619}
   fadeDuration: 0.12
@@ -5701,8 +5708,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -25.2, y: 28.4}
-  m_SizeDelta: {x: 33, y: 33}
+  m_AnchoredPosition: {x: -29.6, y: 32.3}
+  m_SizeDelta: {x: 40, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2141305107
 GameObject:

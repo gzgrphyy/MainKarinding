@@ -49,7 +49,7 @@ namespace MainKarinding.Cutscenes
         public Sprite berdiri;
 
         [Header("Scene 9 - Flipbook bangun + stand back (rombak S9)")]
-        [Tooltip("5 frame bangun urut: sleep, wake_up, sit_confused, sit_realization, check_waist. Kanvas 1800x1800 pivot center.")]
+        [Tooltip("5 frame bangun urut: sleep, wake_up, sit_confused, check_waist, sit_realization. Kanvas 1800x1800 pivot center.")]
         public Sprite[] s9WakeSequence = new Sprite[0];
         [Tooltip("Rimba berdiri membelakangi kamera (layer ter-crop via Sprite Editor, overlay bg 1920x1080). File: 6rimba_s9_stand_back.png")]
         public Sprite s9StandBack;

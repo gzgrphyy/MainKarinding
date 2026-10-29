@@ -79,8 +79,11 @@ namespace MainKarinding.Cutscenes
         [Header("Timing")]
         [SerializeField] private float openingDelay = 1f;
         [SerializeField] private float whiteFadeSeconds = 2f;
-        [Tooltip("Detik per frame flipbook (0.2 x 5 frame = 1.0s).")]
+        [Tooltip("Durasi fallback per frame kalau flipbookFrameDurations kosong/lebih pendek.")]
         [SerializeField] private float flipbookFrameSeconds = 0.2f;
+        [Tooltip("Durasi per frame flipbook (detik). Index 0 = frame pertama tayang (sleep), index 4 = frame terakhir (sit_realization). " +
+                 "Isi 0 atau array lebih pendek -> frame itu pakai flipbookFrameSeconds.")]
+        [SerializeField] private float[] flipbookFrameDurations = new float[0];
         [SerializeField] private float dialogueTimeoutSeconds = 15f;
 
         private readonly DialogueLine[] gumamLine = new[]
@@ -239,10 +242,16 @@ namespace MainKarinding.Cutscenes
                 Debug.LogWarning("[Scene9RealWorld] s9WakeSequence kosong — flipbook dilewati.");
                 yield break;
             }
-            foreach (var frame in rimbaSpriteSet.s9WakeSequence)
+            for (int i = 0; i < rimbaSpriteSet.s9WakeSequence.Length; i++)
             {
+                var frame = rimbaSpriteSet.s9WakeSequence[i];
                 if (frame != null && shot1Rimba != null) shot1Rimba.sprite = frame;
-                yield return new WaitForSeconds(flipbookFrameSeconds);
+                float duration = flipbookFrameDurations != null
+                    && i < flipbookFrameDurations.Length
+                    && flipbookFrameDurations[i] > 0f
+                    ? flipbookFrameDurations[i]
+                    : flipbookFrameSeconds;
+                yield return new WaitForSeconds(duration);
             }
         }
 
