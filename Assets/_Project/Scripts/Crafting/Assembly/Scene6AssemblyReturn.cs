@@ -5,7 +5,7 @@ using MainKarinding.Core;
 
 /// <summary>
 /// Scene 6 — kembali ke Teras setelah assembly selesai.
-/// Menunggu player klik tombol lanjut (SuccessOverlay/Panel/BtnLanjut), baru LoadScene Teras (EntryPoint Scene6 -> closing).
+/// Menunggu player klik tombol lanjut (SuccessOverlay/Panel/BtnLanjut), baru LoadScene Teras (EntryPoint Scene7 -> opening S7, closing S6 dilewati).
 /// </summary>
 [AddComponentMenu("Main Karinding/Crafting/Scene6 Assembly Return")]
 public class Scene6AssemblyReturn : MonoBehaviour
@@ -88,7 +88,7 @@ public class Scene6AssemblyReturn : MonoBehaviour
     private void ReturnToTeras()
     {
         StoryState.EnsureExists();
-        if (StoryState.Instance != null) StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene6);
+        if (StoryState.Instance != null) StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene7);
         int count = UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings;
         bool exists = false;
         for (int i = 0; i < count; i++)
@@ -101,7 +101,7 @@ public class Scene6AssemblyReturn : MonoBehaviour
             Debug.LogError($"[Scene6Return] Scene '{terasSceneName}' tidak ada di Build Settings!");
             return;
         }
-        Debug.Log("[Scene6Return] Lanjut diklik -> balik Teras (closing S6).");
+        Debug.Log("[Scene6Return] Lanjut diklik -> balik Teras (lanjut Scene 7, closing S6 dilewati).");
         UnityEngine.SceneManagement.SceneManager.LoadScene(terasSceneName);
     }
 }

@@ -41,6 +41,13 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private float blackscreenDuration = 0.7f;
         [SerializeField] private string craftingSceneName = "MinigameCrafting";
         [SerializeField] private float dialogueTimeoutSeconds = 12f;
+        [Header("Handoff Scene 7")]
+        [SerializeField] private GameObject scene7Root;
+        [Tooltip("Controller Scene 7 — gate-nya menonaktifkannya saat load (entry != 6); harus diaktifkan kembali di handoff.")]
+        [SerializeField] private Behaviour scene7Controller;
+
+        [SerializeField] private GameObject[] uiRootsToHideOnHandoff;
+
 
         private readonly DialogueLine[] openingDialogue = new[]
         {
@@ -55,8 +62,7 @@ namespace MainKarinding.Cutscenes
         private void Start()
         {
             StoryState.EnsureExists();
-            if (blackscreenOverlay != null) blackscreenOverlay.SetActive(false);
-            AutoFind();
+                        AutoFind();
             StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene6);
 
             if (StoryState.Instance.HasReached(Ch1Beat.S6_Assembly))
@@ -107,7 +113,7 @@ namespace MainKarinding.Cutscenes
             if (bgRenderer != null && bgTerasSiang != null) bgRenderer.sprite = bgTerasSiang;
             if (audioManager != null && ambienceSiang != null)
                 audioManager.PlayAmbient(ambienceSiang, 0.6f);
-            StartCoroutine(DelayedExecute(openingDelay, () => StartCoroutine(PlayDialogueSequence(openingDialogue, () => StartCoroutine(LoadCraftingRoutine())))));
+            StartCoroutine(RevealThen(openingDelay, () => StartCoroutine(PlayDialogueSequence(openingDialogue, () => StartCoroutine(LoadCraftingRoutine())))));
         }
 
         private void ExecuteClosing()
@@ -122,8 +128,49 @@ namespace MainKarinding.Cutscenes
 
         private void OnScene6Complete()
         {
-            Debug.Log("[Scene6Cutscene] Scene 6 selesai — lanjut Scene 7 (S7_RhythmKedua). Freeze sampai Scene 7 dibangun.");
+            Debug.Log("[Scene6Cutscene] Scene 6 selesai — handoff ke Scene 7 (S7_RhythmKedua).");
+            StartCoroutine(OnScene6CompleteRoutine());
         }
+
+        private IEnumerator OnScene6CompleteRoutine()
+        {
+            if (audioManager != null) audioManager.FadeOutAmbient(0.35f);
+            yield return StartCoroutine(FadeBlackscreen(true, blackscreenDuration));
+            var story = StoryState.Instance;
+            if (story == null || story.EntryPoint != Ch1EntryPoint.Scene6)
+            {
+                Debug.Log("[Scene6Cutscene] Handoff Scene 7 dilewati (EntryPoint bukan Scene6).");
+                yield break;
+            }
+            story.SetEntryPoint(Ch1EntryPoint.Scene7);
+            if (scene7Root != null)
+            {
+                scene7Root.SetActive(true);
+                Debug.Log("[Scene6Cutscene] Handoff: Scene7_Cutscene aktif.");
+            }
+            else
+            {
+                                Debug.LogError("[Scene6Cutscene] scene7Root belum di-assign!");
+            }
+            if (scene7Controller != null)
+            {
+                scene7Controller.enabled = true;
+                Debug.Log("[Scene6Cutscene] Scene7 controller diaktifkan kembali.");
+            }
+            else
+            {
+                Debug.LogError("[Scene6Cutscene] scene7Controller belum di-assign! Start Scene 7 tidak akan jalan.");
+            }
+            if (shotRoot != null) shotRoot.SetActive(false);
+            if (uiRootsToHideOnHandoff != null)
+            {
+                for (int i = 0; i < uiRootsToHideOnHandoff.Length; i++)
+                {
+                    if (uiRootsToHideOnHandoff[i] != null) uiRootsToHideOnHandoff[i].SetActive(false);
+                }
+            }
+        }
+
 
         private IEnumerator LoadCraftingRoutine()
         {
@@ -194,6 +241,23 @@ namespace MainKarinding.Cutscenes
             yield return new WaitForSeconds(delay);
             action?.Invoke();
         }
+
+        // Reveal dari hitam (pola Scene 3/4/5): blackscreen opaque saat handoff, lalu fade out.
+        private IEnumerator RevealThen(float delayAfter, System.Action after)
+        {
+            yield return StartCoroutine(RevealFromBlack());
+            yield return new WaitForSeconds(Mathf.Max(0f, delayAfter));
+            after?.Invoke();
+        }
+
+        private IEnumerator RevealFromBlack()
+        {
+            if (blackscreenOverlay == null) yield break;
+            blackscreenOverlay.SetActive(true);
+            yield return StartCoroutine(FadeBlackscreen(false, blackscreenDuration));
+            blackscreenOverlay.SetActive(false);
+        }
+
 
         private IEnumerator FadeBlackscreen(bool fadeIn, float duration)
         {

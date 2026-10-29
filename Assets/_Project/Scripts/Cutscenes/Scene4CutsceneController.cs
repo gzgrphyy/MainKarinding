@@ -63,7 +63,13 @@ namespace MainKarinding.Cutscenes
         [Tooltip("Lama title card 'HARI KEDUA' tampil.")]
                 [SerializeField] private float titleCardSeconds = 2.2f;
         [Tooltip("Durasi reveal dari hitam di awal scene (pola Scene 3).")]
-        [SerializeField] private float revealSeconds = 0.6f;
+                [SerializeField] private float revealSeconds = 0.6f;
+
+        [Header("Handoff Scene 5")]
+        [Tooltip("Drag Scene5_Cutscene. Diaktifkan otomatis setelah fade + title card (EntryPoint Scene5 diset lebih dulu).")]
+        [SerializeField] private GameObject scene5Root;
+        [Tooltip("UI milik scene ini yang disembunyikan saat handoff ke Scene 5 (pola S2->S3).")]
+        [SerializeField] private GameObject[] uiRootsToHideOnHandoff = new GameObject[0];
 
         private bool cutsceneActive = false;
         private bool bledagFired = false;
@@ -208,7 +214,7 @@ namespace MainKarinding.Cutscenes
         private IEnumerator EndSceneRoutine()
         {
             cutsceneActive = false;
-            Debug.Log("[Scene4Cutscene] Dialog selesai — fade + HARI KEDUA");
+            Debug.Log("[Scene4Cutscene] Dialog selesai - fade + HARI KEDUA");
 
             yield return StartCoroutine(FadeBlackscreen(true, endFadeSeconds));
 
@@ -218,9 +224,35 @@ namespace MainKarinding.Cutscenes
                 titleCardText.text = "HARI KEDUA";
             }
             yield return new WaitForSeconds(titleCardSeconds);
+            if (titleCardText != null) titleCardText.gameObject.SetActive(false);
 
-            if (StoryState.Instance != null) StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene5);
-            Debug.Log("[Scene4Cutscene] Scene 4 selesai — lanjut Scene 5 (S5_AjakHutan). Freeze di sini sampai Ch1_Hutan dibangun.");
+            // Lanjut ke Scene 5 hanya kalau StoryState masih berada di Scene 4.
+            if (MainKarinding.Core.StoryState.Instance != null
+                && MainKarinding.Core.StoryState.Instance.EntryPoint == MainKarinding.Core.Ch1EntryPoint.Scene4)
+            {
+                // EntryPoint HARUS diset SEBELUM Scene 5 aktif - SceneEntryGate Scene 5
+                // baru jalan saat aktivasi dan akan menutup lagi kalau belum Scene5.
+                MainKarinding.Core.StoryState.Instance.SetEntryPoint(MainKarinding.Core.Ch1EntryPoint.Scene5);
+
+                if (scene5Root != null)
+                    scene5Root.SetActive(true);
+                else
+                    Debug.LogError("[Scene4Cutscene] scene5Root belum di-assign! Drag Scene5_Cutscene di Inspector.");
+
+                // Dunia Scene 4 dimatikan di balik hitam (pola S2->S3).
+                if (shotRoot != null) shotRoot.SetActive(false);
+                if (uiRootsToHideOnHandoff != null)
+                {
+                    for (int i = 0; i < uiRootsToHideOnHandoff.Length; i++)
+                        if (uiRootsToHideOnHandoff[i] != null)
+                            uiRootsToHideOnHandoff[i].SetActive(false);
+                }
+                Debug.Log("[Scene4Cutscene] Scene 4 selesai + blackscreen - lanjut Scene 5 (S5_AjakHutan).");
+            }
+            else
+            {
+                Debug.Log("[Scene4Cutscene] StoryState bukan Scene4 - handoff ke Scene 5 dilewati.");
+            }
         }
 
         #region Helpers (pola Scene 1–3)

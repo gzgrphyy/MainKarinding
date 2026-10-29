@@ -32,6 +32,9 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private CutsceneDialogueDisplay dialogueDisplay;
         [SerializeField] private FloatingDialogueController floatingDialogue;
         [SerializeField] private GameObject blackscreenOverlay;
+        [Tooltip("Overlay PUTIH fullscreen (overlay canvas, order 101) - dipakai INSTANT saat Rimba sampai ujung, whiteout ke Scene 9.")]
+        [SerializeField] private GameObject whitescreenOverlay;
+
 
         [Header("Head Anchors (shot Scene 8)")]
         [SerializeField] private Transform headAnchorRimba;
@@ -61,6 +64,9 @@ namespace MainKarinding.Cutscenes
         [Header("Timing")]
         [SerializeField] private float openingDelay = 1f;
         [SerializeField] private float blackscreenDuration = 0.7f;
+        [Tooltip("Durasi fade PELAN ke whitescreen saat Rimba sampai ujung (mulai seketika, tanpa jeda). Atur di Inspector.")]
+        [SerializeField] private float whiteFadeSeconds = 1.2f;
+
         [Tooltip("Jeda Abah muncul di area jalan sebelum Rimba muncul menyusul.")]
         [SerializeField] private float rimbaJoinDelay = 0.5f;
         [SerializeField] private float moalKataekanHoldSeconds = 1f;
@@ -97,13 +103,15 @@ namespace MainKarinding.Cutscenes
         private void Start()
         {
             StoryState.EnsureExists();
-            if (blackscreenOverlay != null) blackscreenOverlay.SetActive(false);
+            SetBlackscreenOpaque();
             AutoFind();
             StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene8);
             SetBeat(Ch1Beat.S8_SoreAbahPergi);
             if (explorationRoot != null) explorationRoot.SetActive(false);
             if (uiAnalogRoot != null) uiAnalogRoot.SetActive(false);
-            StartCoroutine(DelayedExecute(openingDelay, ExecuteDudukDialog));
+            // Konten duduk disiapkan DI BELAKANG blackscreen opaque supaya reveal memperlihatkan shot sore.
+            PrepareDudukShot();
+            StartCoroutine(RevealThen(openingDelay, ExecuteDudukDialog));
         }
 
         private void AutoFind()
@@ -192,9 +200,16 @@ namespace MainKarinding.Cutscenes
         }
 
         // ---- Fase 1: duduk berdua, dialog 2 baris ----
+        // ---- Fase 1: duduk berdua, dialog 2 baris (konten disiapkan di Start via PrepareDudukShot) ----
         private void ExecuteDudukDialog()
         {
             Debug.Log("[Scene8Cutscene] Fase 1 - DudukDialog");
+            StartCoroutine(PlayDialogueSequence(openingDialogue, () => StartCoroutine(BerangkatJalanRoutine())));
+        }
+
+        // Konten duduk disiapkan SEBELUM RevealThen — fade memperlihatkan shot sore utuh (pola S6/S7).
+        private void PrepareDudukShot()
+        {
             if (shotRoot != null) shotRoot.SetActive(true);
             if (uiRoot != null) uiRoot.SetActive(true);
             SetRimbaSpeaking(false);
@@ -202,8 +217,8 @@ namespace MainKarinding.Cutscenes
             if (bgRenderer != null && bgTerasSore != null) bgRenderer.sprite = bgTerasSore;
             if (audioManager != null && ambienceSore != null)
                 audioManager.PlayAmbient(ambienceSore, 0.6f);
-            StartCoroutine(PlayDialogueSequence(openingDialogue, () => StartCoroutine(BerangkatJalanRoutine())));
         }
+
 
         // ---- Fase 2: langsung ke area jalan (tanpa blackscreen) ----
         private IEnumerator BerangkatJalanRoutine()
@@ -308,13 +323,45 @@ namespace MainKarinding.Cutscenes
 
         private IEnumerator EndSceneRoutine()
         {
-            if (audioManager != null) audioManager.FadeOutAmbient(0.5f);
-            yield return StartCoroutine(FadeBlackscreen(true, blackscreenDuration + 0.5f));
-            Debug.Log("[Scene8Cutscene] Scene 8 selesai — whiteout ke Scene 9 (S9_RimbaBangun).");
+            // Whiteout PELAN tanpa delay: fade putih mulai seketika saat Rimba sampai ujung.
+            if (audioManager != null) audioManager.FadeOutAmbient(whiteFadeSeconds);
+            yield return StartCoroutine(FadeWhitescreen(true, whiteFadeSeconds));
+            Debug.Log("[Scene8Cutscene] Scene 8 selesai — whitescreen penuh -> Scene 9 (S9_RimbaBangun).");
             StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene9);
             // Ch1_Hutan terdaftar di Build Settings. Whiteout dibuka di Scene 9 (mulai putih).
             UnityEngine.SceneManagement.SceneManager.LoadScene("Ch1_Hutan");
         }
+
+        // Sama pola FadeBlackscreen tapi untuk whitescreenOverlay (fade 0 -> 1).
+        private IEnumerator FadeWhitescreen(bool fadeIn, float duration)
+        {
+            if (whitescreenOverlay == null) yield break;
+            var canvasGroup = whitescreenOverlay.GetComponent<CanvasGroup>();
+            var image = whitescreenOverlay.GetComponent<UnityEngine.UI.Image>();
+            if (canvasGroup == null && image == null)
+            {
+                Debug.LogWarning("[Scene8Cutscene] whitescreenOverlay tidak punya CanvasGroup/Image — fade dilewati.");
+                yield break;
+            }
+            whitescreenOverlay.SetActive(true);
+            float start = fadeIn ? 0f : 1f;
+            float end = fadeIn ? 1f : 0f;
+            float t = 0f;
+            while (t < duration)
+            {
+                t += Time.unscaledDeltaTime;
+                float a = Mathf.Lerp(start, end, Mathf.Clamp01(t / Mathf.Max(0.01f, duration)));
+                if (canvasGroup != null) canvasGroup.alpha = a;
+                if (image != null)
+                {
+                    var c = image.color;
+                    c.a = a;
+                    image.color = c;
+                }
+                yield return null;
+            }
+        }
+
 
         private void ApplyAbahSprite(Sprite sprite, string fieldName)
         {
@@ -365,7 +412,39 @@ namespace MainKarinding.Cutscenes
                 Debug.Log("[Scene8Cutscene] Auto-lanjut (timeout, player tidak tap).");
         }
 
-        private IEnumerator DelayedExecute(float delay, System.Action action)
+                // Layar ditahan hitam sejak frame pertama (pola Scene 6/7), lalu reveal saat siap.
+        private void SetBlackscreenOpaque()
+        {
+            if (blackscreenOverlay == null) return;
+            blackscreenOverlay.SetActive(true);
+            var canvasGroup = blackscreenOverlay.GetComponent<CanvasGroup>();
+            if (canvasGroup != null) canvasGroup.alpha = 1f;
+            var image = blackscreenOverlay.GetComponent<UnityEngine.UI.Image>();
+            if (image != null)
+            {
+                var c = image.color;
+                c.a = 1f;
+                image.color = c;
+            }
+        }
+
+        // Reveal dari hitam (pola Scene 3/4/5/6/7): blackscreen opaque saat handoff, lalu fade out.
+        private IEnumerator RevealThen(float delayAfter, System.Action after)
+        {
+            yield return StartCoroutine(RevealFromBlack());
+            yield return new WaitForSeconds(Mathf.Max(0f, delayAfter));
+            after?.Invoke();
+        }
+
+        private IEnumerator RevealFromBlack()
+        {
+            if (blackscreenOverlay == null) yield break;
+            blackscreenOverlay.SetActive(true);
+            yield return StartCoroutine(FadeBlackscreen(false, blackscreenDuration));
+            blackscreenOverlay.SetActive(false);
+        }
+
+private IEnumerator DelayedExecute(float delay, System.Action action)
         {
             yield return new WaitForSeconds(delay);
             action?.Invoke();

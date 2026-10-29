@@ -50,6 +50,9 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private RimbaWalker rimbaWalker;
         [SerializeField] private WalkOffTrigger walkTrigger;
         [SerializeField] private AnalogStickController analogStick;
+        [Header("Toast hint jalan")]
+        [SerializeField] private Scene5Toast walkToast;
+
 
         [Header("Beat 3 - Jalan Pulang ke Abah (setelah dari hutan)")]
         [Tooltip("X Rimba muncul lagi dari hutan (kanan). 7 = titik yang sama saat dia brangkat di Beat 1.")]
@@ -84,6 +87,14 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private string hutanSceneName = "Ch1_Hutan";
         [SerializeField] private float dialogueTimeoutSeconds = 12f;
 
+        [Header("Handoff Scene 6")]
+        [SerializeField] private GameObject scene6Root;
+        [Tooltip("Controller Scene 6 — gate-nya menonaktifkannya saat load (entry != 5); harus diaktifkan kembali di handoff.")]
+        [SerializeField] private Behaviour scene6Controller;
+
+        [SerializeField] private GameObject[] uiRootsToHideOnHandoff;
+
+
         private int deliveredCount = 0;
         private bool walkPhase = false;
         private bool returnWalkPhase = false;
@@ -102,9 +113,8 @@ namespace MainKarinding.Cutscenes
 
         private void Start()
         {
-            StoryState.EnsureExists();
+                        StoryState.EnsureExists();
             BambooInventory.EnsureExists();
-            if (blackscreenOverlay != null) blackscreenOverlay.SetActive(false);
             if (tasPanel != null) tasPanel.SetActive(false);
             if (explorationRoot != null) explorationRoot.SetActive(false);
             AutoFind();
@@ -148,6 +158,14 @@ namespace MainKarinding.Cutscenes
             if (tasSlots.Count == 0 && tasPanel != null)
                 tasSlots.AddRange(tasPanel.GetComponentsInChildren<BambooSlotUI>(true));
             if (dropTarget == null) dropTarget = Object.FindFirstObjectByType<NPCHandoffDropTarget>();
+            if (walkToast == null && explorationRoot != null)
+            {
+                var uiA = explorationRoot.transform.Find("UI_Analog5");
+                if (uiA != null) walkToast = uiA.GetComponentInChildren<Scene5Toast>(true);
+                if (walkToast == null)
+                    Debug.LogWarning("[Scene5Teras] ToastRoot belum di-setup di UI_Analog5! Copy ToastRoot dari Scene1/Scene8.");
+            }
+
             if (arrivalPoint == null && explorationRoot != null)
             {
                 var ap = explorationRoot.transform.Find("RimbaArrivalPoint");
@@ -196,7 +214,7 @@ namespace MainKarinding.Cutscenes
             if (audioManager != null && ambienceSiang != null)
                 audioManager.PlayAmbient(ambienceSiang, 0.6f);
 
-            StartCoroutine(DelayedExecute(openingDelay, () => StartCoroutine(PlayDialogueSequence(beat1Dialogue, StartWalkPhase))));
+                        StartCoroutine(RevealThen(openingDelay, () => StartCoroutine(PlayDialogueSequence(beat1Dialogue, StartWalkPhase))));
         }
 
         private void StartWalkPhase()
@@ -219,6 +237,8 @@ namespace MainKarinding.Cutscenes
             walkTrigger.Configure(rimbaWalker.transform, OnWalkRightArrived);
             rimbaWalker.Locked = false;
             walkPhase = true;
+            if (walkToast != null)
+                walkToast.ShowToast("Jalan ke KANAN menuju hutan!", 3f);
         }
 
         private void OnWalkRightArrived()
@@ -316,6 +336,8 @@ namespace MainKarinding.Cutscenes
             walkTrigger.Configure(rimbaWalker.transform, OnWalkToAbahArrived, WalkOffTrigger.ExitDirection.Left, arrivalX);
             rimbaWalker.Locked = false;
             returnWalkPhase = true;
+            if (walkToast != null)
+                walkToast.ShowToast("Dekati Abah (ke kiri) untuk memberikan bambu!", 4f);
         }
 
         /// <summary>Trigger Left: Rimba sudah sampai di posisi Abah -> stop & masuk handoff.</summary>
@@ -463,8 +485,57 @@ namespace MainKarinding.Cutscenes
             // Tas sudah kosong (3/3) — sembunyikan supaya bingkai akhir bersih,
             // bukan 3 kotak putih (iconEmpty belum di-assign).
             if (tasPanel != null) tasPanel.SetActive(false);
-            Debug.Log("[Scene5Teras] Scene 5 selesai — lanjut Scene 6 (S6_Assembly). Freeze di sini sampai Scene 6 dibangun.");
+            Debug.Log("[Scene5Teras] Scene 5 selesai — lanjut Scene 6 (S6_Assembly).");
+            StartCoroutine(OnScene5CompleteRoutine());
         }
+
+        // Handoff in-scene ke Scene 6 (pola S2->S3 / S3->S4 / S4->S5):
+        // fade out ambient -> fade ke hitam -> aktifkan Scene 6 -> sembunyikan dunia
+        // Scene 5 di balik hitam. Scene6CutsceneController.Start lalu reveal dari hitam.
+        private IEnumerator OnScene5CompleteRoutine()
+        {
+            if (audioManager != null) audioManager.FadeOutAmbient(0.35f);
+            yield return StartCoroutine(FadeBlackscreen(true, blackscreenDuration));
+
+            // Lanjut ke Scene 6 hanya kalau StoryState masih berada di Scene 5.
+            if (StoryState.Instance != null
+                && StoryState.Instance.EntryPoint == Ch1EntryPoint.Scene5)
+            {
+                // EntryPoint HARUS diset SEBELUM Scene 6 aktif - SceneEntryGate Scene 6
+                // baru jalan saat aktivasi dan akan menutup lagi kalau belum Scene6.
+                StoryState.Instance.SetEntryPoint(Ch1EntryPoint.Scene6);
+
+                if (scene6Root != null)
+                    scene6Root.SetActive(true);
+                else
+                                        Debug.LogError("[Scene5Teras] scene6Root belum di-assign! Drag Scene6_Cutscene di Inspector.");
+
+                if (scene6Controller != null)
+                {
+                    scene6Controller.enabled = true;
+                    Debug.Log("[Scene5Teras] Scene6 controller diaktifkan kembali.");
+                }
+                else
+                {
+                    Debug.LogError("[Scene5Teras] scene6Controller belum di-assign! Start Scene 6 tidak akan jalan.");
+                }
+
+                // Dunia Scene 5 dimatikan di balik hitam (pola S3->S4).
+                if (shotRoot != null) shotRoot.SetActive(false);
+                if (uiRootsToHideOnHandoff != null)
+                {
+                    for (int i = 0; i < uiRootsToHideOnHandoff.Length; i++)
+                        if (uiRootsToHideOnHandoff[i] != null)
+                            uiRootsToHideOnHandoff[i].SetActive(false);
+                }
+                Debug.Log("[Scene5Teras] Scene 5 selesai + blackscreen - lanjut Scene 6 (S6_Assembly).");
+            }
+            else
+            {
+                Debug.Log("[Scene5Teras] StoryState bukan Scene5 - handoff ke Scene 6 dilewati.");
+            }
+        }
+
 
         #region Helpers (pola Scene 1-4)
 
@@ -575,10 +646,26 @@ namespace MainKarinding.Cutscenes
             }
         }
 
-        private IEnumerator DelayedExecute(float delay, System.Action action)
+                private IEnumerator DelayedExecute(float delay, System.Action action)
         {
             yield return new WaitForSeconds(delay);
             action?.Invoke();
+        }
+
+        // Reveal dari hitam (pola Scene 3/4): blackscreen opaque saat handoff, lalu fade out.
+        private IEnumerator RevealThen(float delayAfter, System.Action after)
+        {
+            yield return StartCoroutine(RevealFromBlack());
+            yield return new WaitForSeconds(Mathf.Max(0f, delayAfter));
+            after?.Invoke();
+        }
+
+        private IEnumerator RevealFromBlack()
+        {
+            if (blackscreenOverlay == null) yield break;
+            blackscreenOverlay.SetActive(true);
+            yield return StartCoroutine(FadeBlackscreen(false, blackscreenDuration));
+            blackscreenOverlay.SetActive(false);
         }
 
         private IEnumerator FadeBlackscreen(bool fadeIn, float duration)
