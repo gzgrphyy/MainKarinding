@@ -4790,8 +4790,8 @@ Transform:
   m_GameObject: {fileID: 434212028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -6.02, y: -3.01, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -6.04, y: -2.99, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1459145580}
@@ -4845,7 +4845,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 874470f19769dc34f9084807d2f97c22, type: 3}
+  m_Sprite: {fileID: -145756061, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4873,9 +4873,18 @@ MonoBehaviour:
   minY: -3.4
   maxY: -0.6
   frameTime: 0.12
-  analog: {fileID: 0}
-  walkFrames: []
-  idleSprite: {fileID: 0}
+  analog: {fileID: 565946661}
+  walkFrames:
+  - {fileID: -145756061, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -1538439234, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: 1220042191, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -636337155, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -1747765422, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: 1232051428, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -1966137693, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: 1848463065, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  - {fileID: -1270514227, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
+  idleSprite: {fileID: -145756061, guid: eb983f22a48d0cd4693082272e4f3667, type: 3}
 --- !u!1 &467629829
 GameObject:
   m_ObjectHideFlags: 0
@@ -11619,7 +11628,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1096292017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17174,7 +17183,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Core.StoryState
   currentBeat: 0
-  entryPoint: 0
+  entryPoint: 4
 --- !u!4 &1734499648
 Transform:
   m_ObjectHideFlags: 0
@@ -18171,7 +18180,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1829835895
 MonoBehaviour:
   m_ObjectHideFlags: 0
