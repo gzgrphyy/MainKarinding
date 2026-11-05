@@ -111,8 +111,25 @@ namespace MainKarinding.Cutscenes
             new DialogueLine("Abah", "Awi nu sae teh nu tos cekap umur na. teu ngora teuing, teu kolot teuing. Batang na ge kudu seseug, ulah nu ipis.", "Bambu yang bagus itu yang udah cukup umurnya. Nggak terlalu muda, nggak terlalu tua. Batangnya juga harus padat, jangan kopong."),
         };
 
+        [Header("Voice per Baris (file rekam: REKAMAN-CHECKLIST.txt)")]
+        [SerializeField] private AudioClip v_S5T_beat1_00;
+        [SerializeField] private AudioClip v_S5T_beat1_01;
+        [SerializeField] private AudioClip v_S5T_beat1_02;
+        [SerializeField] private AudioClip v_S5T_reactTua;
+        [SerializeField] private AudioClip v_S5T_reactTipis;
+        [SerializeField] private AudioClip v_S5T_reactPas;
+
+        /// <summary>Isi field voice tiap baris SEBELUM coroutine dialog jalan (reaksi di-attach di ReactionLine).</summary>
+        private void AssignVoices()
+        {
+            beat1Dialogue[0].voice = v_S5T_beat1_00;
+            beat1Dialogue[1].voice = v_S5T_beat1_01;
+            beat1Dialogue[2].voice = v_S5T_beat1_02;
+        }
+
         private void Start()
         {
+            AssignVoices();
                         StoryState.EnsureExists();
             BambooInventory.EnsureExists();
             if (tasPanel != null) tasPanel.SetActive(false);
@@ -471,9 +488,9 @@ namespace MainKarinding.Cutscenes
         {
             return tag switch
             {
-                BambooTag.Tua => new DialogueLine("Abah", "Ieu ge ipis teuing, gampang belah.", "Ini juga terlalu tipis, gampang patah."),
-                BambooTag.Tipis => new DialogueLine("Abah", "Ieu mah... acan cekap umurna, Ba. Masih keneh hejo.", "Ini mah... belum cukup umurnya, Ba. Masih hijau."),
-                _ => new DialogueLine("Abah", "Tah... ieu pas. Teu ngora teuing, teu kolot teuing, seseug deuih. Ieu nu rék dipake nyieun Karinding Rimba.", "Nah... ini pas. Nggak terlalu muda, nggak terlalu tua, padat juga. Ini yang bakal dipake bikin Karinding Rimba."),
+                BambooTag.Tua => new DialogueLine("Abah", "Ieu ge ipis teuing, gampang belah.", "Ini juga terlalu tipis, gampang patah.", v_S5T_reactTua),
+                BambooTag.Tipis => new DialogueLine("Abah", "Ieu mah... acan cekap umurna, Ba. Masih keneh hejo.", "Ini mah... belum cukup umurnya, Ba. Masih hijau.", v_S5T_reactTipis),
+                _ => new DialogueLine("Abah", "Tah... ieu pas. Teu ngora teuing, teu kolot teuing, seseug deuih. Ieu nu rék dipake nyieun Karinding Rimba.", "Nah... ini pas. Nggak terlalu muda, nggak terlalu tua, padat juga. Ini yang bakal dipake bikin Karinding Rimba.", v_S5T_reactPas),
             };
         }
 
@@ -599,9 +616,9 @@ namespace MainKarinding.Cutscenes
                 bool finished = false;
                 Transform anchor = ResolveAnchor(line.speaker);
                 if (floatingDialogue != null && anchor != null)
-                    floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true);
+                    floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true, null, null, line.voice);
                 else if (dialogueDisplay != null)
-                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true);
+                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true, line.voice);
                 else
                 {
                     Debug.LogWarning("[Scene5Teras] Tidak ada dialogue display! Skip: " + line.textSunda);
@@ -703,11 +720,13 @@ namespace MainKarinding.Cutscenes
             public string speaker;
             public string textSunda;
             public string textIndo;
-            public DialogueLine(string speaker, string sunda, string indo)
+            public AudioClip voice;
+            public DialogueLine(string speaker, string sunda, string indo, AudioClip voice = null)
             {
                 this.speaker = speaker;
                 this.textSunda = sunda;
                 this.textIndo = indo;
+                this.voice = voice;
             }
         }
 

@@ -100,8 +100,35 @@ namespace MainKarinding.Cutscenes
             new DialogueLine("Abah", "Unggal bagian aya hartina, Baba. Sami oge sareng kahirupan, kudu yakin, kudu sabar, jeung kudu sadar lamun arurang tos menang hasil tina naon nu dilakonan.", "Setiap bagian ada artinya, Baba. Sama juga dengan kehidupan, harus percaya, harus sabar, dan sadar kalau kita udah dapat hasil dari yang dijalani."),
         };
 
+        [Header("Voice per Baris (file rekam: REKAMAN-CHECKLIST.txt)")]
+        [SerializeField] private AudioClip v_S2_intro_00;
+        [SerializeField] private AudioClip v_S2_intro_01;
+        [SerializeField] private AudioClip v_S2_jawaban_00;
+        [SerializeField] private AudioClip v_S2_jawaban_01;
+        [SerializeField] private AudioClip v_S2_jawaban_02;
+        [SerializeField] private AudioClip v_S2_part_00;
+        [SerializeField] private AudioClip v_S2_part_01;
+        [SerializeField] private AudioClip v_S2_part_02;
+        [SerializeField] private AudioClip v_S2_closing_00;
+
+        /// <summary>Isi field voice tiap baris SEBELUM coroutine dialog jalan.</summary>
+        private void AssignVoices()
+        {
+            introDialogue[0].voice = v_S2_intro_00;
+            introDialogue[1].voice = v_S2_intro_01;
+            jawabanAbah[0].voice = v_S2_jawaban_00;
+            jawabanAbah[1].voice = v_S2_jawaban_01;
+            jawabanAbah[2].voice = v_S2_jawaban_02;
+            partLines[0].voice = v_S2_part_00;
+            partLines[1].voice = v_S2_part_01;
+            partLines[2].voice = v_S2_part_02;
+            closingDialogue[0].voice = v_S2_closing_00;
+        }
+
         private void Start()
         {
+            AssignVoices();
+
             // Blackscreen dulu (opaque) — dipakai handoff dari Scene 1 maupun start langsung.
             if (blackscreenOverlay != null)
             {
@@ -374,7 +401,7 @@ namespace MainKarinding.Cutscenes
             ApplyLineSprites("Abah", true);
             bool done = false;
             if (dialogueDisplay != null)
-                dialogueDisplay.ShowDialogue(part.barissunda, "Abah", () => done = true);
+                dialogueDisplay.ShowDialogue(part.barissunda, "Abah", () => done = true, part.voice);
             else
             {
                 Debug.LogWarning("[Scene2Cutscene] dialogueDisplay belum di-assign! Skip: " + part.barissunda);
@@ -526,7 +553,7 @@ namespace MainKarinding.Cutscenes
                 ApplyLineSprites(line.speaker, false);
                 bool finished = false;
                 if (dialogueDisplay != null)
-                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true);
+                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true, line.voice);
                 else
                 {
                     Debug.LogWarning("[Scene2Cutscene] dialogueDisplay belum di-assign! Skip: " + line.textSunda);
@@ -552,11 +579,13 @@ namespace MainKarinding.Cutscenes
             public string speaker;
             public string textSunda;
             public string textIndo;
-            public DialogueLine(string speaker, string sunda, string indo)
+            public AudioClip voice;
+            public DialogueLine(string speaker, string sunda, string indo, AudioClip voice = null)
             {
                 this.speaker = speaker;
                 this.textSunda = sunda;
                 this.textIndo = indo;
+                this.voice = voice;
             }
         }
 
@@ -566,11 +595,13 @@ namespace MainKarinding.Cutscenes
             public string partName;
             public string barissunda;
             public string makna;
-            public PartLine(string part, string sunda, string makna)
+            public AudioClip voice;
+            public PartLine(string part, string sunda, string makna, AudioClip voice = null)
             {
                 this.partName = part;
                 this.barissunda = sunda;
                 this.makna = makna;
+                this.voice = voice;
             }
         }
 

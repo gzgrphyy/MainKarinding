@@ -273,9 +273,9 @@ namespace MainKarinding.Cutscenes
                 }
                 bool finished = false;
                 if (floatingDialogue != null && headAnchorRimba != null)
-                    floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, headAnchorRimba, () => finished = true);
+                    floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, headAnchorRimba, () => finished = true, null, null, line.voice);
                 else if (dialogueDisplay != null)
-                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true);
+                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true, line.voice);
                 else
                 {
                     Debug.LogWarning("[Scene5Hutan] Tidak ada dialogue display! Skip: " + line.textSunda);
@@ -331,11 +331,13 @@ namespace MainKarinding.Cutscenes
             public string speaker;
             public string textSunda;
             public string textIndo;
-            public DialogueLine(string speaker, string sunda, string indo)
+            public AudioClip voice;
+            public DialogueLine(string speaker, string sunda, string indo, AudioClip voice = null)
             {
                 this.speaker = speaker;
                 this.textSunda = sunda;
                 this.textIndo = indo;
+                this.voice = voice;
             }
         }
 

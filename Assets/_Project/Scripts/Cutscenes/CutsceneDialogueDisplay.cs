@@ -36,6 +36,19 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private float typingSpeed = 0.05f;
         [SerializeField] private bool canSkipTyping = true;
 
+        [Header("Voice (beat audio sinkron teks)")]
+        [Tooltip("Clip voice default — dipakai kalau baris tidak punya clip sendiri.")]
+        [SerializeField] private AudioClip defaultVoiceClip;
+        [Tooltip("Batas bawah kecepatan typewriter saat ada voice (detik/karakter). 0 = bebas.")]
+        [SerializeField] private float voiceMinCharDelay = 0f;
+        [Tooltip("Batas atas kecepatan typewriter saat ada voice (detik/karakter). 0 = bebas.")]
+        [SerializeField] private float voiceMaxCharDelay = 0f;
+        [Tooltip("Volume voice. 0-1.")]
+        [SerializeField, Range(0f, 1f)] private float voiceVolume = 1f;
+        [Tooltip("Kalau true, kecepatan ngetik mengikuti durasi clip voice (audio-driven). Kalau false (default), pakai typingSpeed dari Inspector.")]
+        [SerializeField] private bool syncTypingToVoice = false;
+        private AudioSource voiceSource;
+
         [Header("Continue Indicator Animation")]
         [SerializeField] private float continueIndicatorBounceSpeed = 2f;
 
@@ -43,6 +56,7 @@ namespace MainKarinding.Cutscenes
         private Coroutine continueAnimCoroutine;
         private bool isTyping = false;
         private bool waitingForInput = false;
+        private bool skipRequested = false;
         private string currentFullText = "";
         private string currentSpeaker = "";
         private string currentTriggerWord;
@@ -59,6 +73,7 @@ namespace MainKarinding.Cutscenes
     private void Awake()
     {
         EnsureVisualRoot();
+        EnsureVoiceSource();
 
         if (dialogueBoxRoot != null && dialogueBoxRoot != gameObject)
             dialogueBoxRoot.SetActive(false);
@@ -72,6 +87,31 @@ namespace MainKarinding.Cutscenes
             fullScreenTapButton.onClick.AddListener(OnTap);
             fullScreenTapButton.gameObject.SetActive(false);
         }
+    }
+
+    private void EnsureVoiceSource()
+    {
+        if (voiceSource == null)
+            voiceSource = GetComponent<AudioSource>();
+        if (voiceSource == null)
+        {
+            GameObject src = new GameObject("VoiceSource");
+            src.transform.SetParent(transform, false);
+            voiceSource = src.AddComponent<AudioSource>();
+        }
+        voiceSource.playOnAwake = false;
+        voiceSource.loop = false;
+        voiceSource.spatialBlend = 0f;
+        voiceSource.volume = voiceVolume;
+        voiceSource.Stop();
+    }
+
+    private void StopVoice()
+    {
+        if (voiceSource != null && voiceSource.isPlaying)
+            voiceSource.Stop();
+        if (voiceSource != null)
+            voiceSource.clip = null;
     }
 
     private void EnsureVisualRoot()
@@ -107,6 +147,12 @@ namespace MainKarinding.Cutscenes
             ShowDialogue(text, "", onComplete);
         }
 
+        /// <summary>Show dialogue dengan clip voice per-baris (null = pakai defaultVoiceClip).</summary>
+        public void ShowDialogue(string text, System.Action onComplete, AudioClip voice)
+        {
+            ShowDialogue(text, "", onComplete, null, null, voice);
+        }
+
         /// <summary>
         /// Show dialogue dengan info speaker ("Abah"/"Rimba").
         /// Layout BoxPointer tetap bisa diatur manual di Inspector — autoFlipPointer hanya set scale.x.
@@ -116,25 +162,37 @@ namespace MainKarinding.Cutscenes
             ShowDialogue(text, speaker, onComplete, null, null);
         }
 
+        /// <summary>Show dialogue per speaker + clip voice per-baris (null = pakai defaultVoiceClip).</summary>
+        public void ShowDialogue(string text, string speaker, System.Action onComplete, AudioClip voice)
+        {
+            ShowDialogue(text, speaker, onComplete, null, null, voice);
+        }
+
         /// <summary>
         /// Show dialogue dengan trigger kata opsional (dipakai Scene 4 "bledag!").
         /// Trigger fire sekali saat teks terketik berakhiran triggerWord (case-insensitive).
+        /// voice: clip audio per-baris (null = pakai defaultVoiceClip).
         /// </summary>
-        public void ShowDialogue(string text, string speaker, System.Action onComplete, string triggerWord, System.Action onTrigger)
+        public void ShowDialogue(string text, string speaker, System.Action onComplete, string triggerWord, System.Action onTrigger, AudioClip voice = null)
         {
             currentSpeaker = speaker ?? "";
+
+            // Nyalakan + isi label nama speaker dinamis per baris
+            // (ShowStandby mematikan label, jadi WAJIB dihidupkan lagi di sini).
+            if (speakerNameText != null)
+            {
+                bool hasName = !string.IsNullOrEmpty(speaker);
+                speakerNameText.gameObject.SetActive(hasName);
+                speakerNameText.text = hasName ? speaker : "";
+            }
+
             currentTriggerWord = triggerWord;
             triggerCallback = onTrigger;
             triggerFired = false;
 
-            if (speakerNameText != null)
-            {
-                speakerNameText.text = currentSpeaker;
-                speakerNameText.gameObject.SetActive(!string.IsNullOrEmpty(currentSpeaker));
-            }
-
             if (!gameObject.activeInHierarchy)
                 gameObject.SetActive(true);
+            EnsureVoiceSource();
             SetVisualActive(true);
             if (fullScreenTapButton != null)
                 fullScreenTapButton.gameObject.SetActive(true);
@@ -148,7 +206,8 @@ namespace MainKarinding.Cutscenes
 
             HideContinueIndicator();
 
-            typingCoroutine = StartCoroutine(TypeText(text, onComplete));
+            AudioClip resolvedVoice = voice != null ? voice : defaultVoiceClip;
+            typingCoroutine = StartCoroutine(TypeText(text, onComplete, resolvedVoice));
         }
 
         /// <summary>
@@ -178,6 +237,7 @@ namespace MainKarinding.Cutscenes
                 typingCoroutine = null;
             }
 
+            StopVoice();
             HideContinueIndicator();
 
             if (dialogueText != null)
@@ -251,6 +311,7 @@ namespace MainKarinding.Cutscenes
                 typingCoroutine = null;
             }
 
+            StopVoice();
             HideContinueIndicator();
 
             // Cegah trigger basi fire setelah Hide.
@@ -274,21 +335,53 @@ namespace MainKarinding.Cutscenes
         /// </summary>
         public void OnTap()
         {
-            // Tap selama teks masih mengetik diabaikan total.
-            // Dulu ada skip-typing di sini, tapi itu membunuh coroutine
-            // pemilik onComplete sehingga dialog macet dan tidak lanjut.
+            // Skip aman (tidak StopCoroutine — onComplete pemilik coroutine tetap hidup):
+            // teks langsung penuh + audio langsung berhenti (dialog berhenti = sfx ikut berhenti).
+            if (isTyping)
+            {
+                if (canSkipTyping) skipRequested = true;
+                return;
+            }
             if (!waitingForInput)
                 return;
             waitingForInput = false;
         }
 
-        private IEnumerator TypeText(string text, System.Action onComplete)
+        private IEnumerator TypeText(string text, System.Action onComplete, AudioClip voice)
         {
             isTyping = true;
             waitingForInput = false;
+            skipRequested = false;
+
+            // Audio-driven sync (opsional): ngetik selesai (hampir) bareng audio selesai.
+            // Default: kecepatan mengikuti typingSpeed dari Inspector.
+            float charDelay = typingSpeed;
+            if (syncTypingToVoice && voice != null && text.Length > 0)
+            {
+                charDelay = voice.length / text.Length;
+                if (voiceMinCharDelay > 0f && charDelay < voiceMinCharDelay)
+                    charDelay = voiceMinCharDelay;
+                if (voiceMaxCharDelay > 0f && charDelay > voiceMaxCharDelay)
+                    charDelay = voiceMaxCharDelay;
+            }
 
             if (dialogueText != null)
                 dialogueText.text = "";
+
+            // Play voice sekali di awal; indikator "tap" muncul setelah teks + audio dua-duanya selesai.
+            float voiceLength = 0f;
+            float voiceStartTime = Time.time;
+            if (voice != null)
+            {
+                EnsureVoiceSource();
+                if (voiceSource != null)
+                {
+                    voiceSource.volume = voiceVolume;
+                    voiceSource.clip = voice;
+                    voiceSource.Play();
+                    voiceLength = voice.length;
+                }
+            }
 
             // Type text with typewriter effect
             foreach (char c in text)
@@ -297,13 +390,30 @@ namespace MainKarinding.Cutscenes
                     dialogueText.text += c;
 
                 CheckTrigger();
-                yield return new WaitForSeconds(typingSpeed);
+                if (skipRequested) break;
+                yield return new WaitForSeconds(charDelay);
             }
 
-            isTyping = false;
+            // Skip: isi sisa teks langsung + audio langsung berhenti (dialog berhenti = sfx berhenti).
+            if (skipRequested)
+            {
+                if (dialogueText != null)
+                    dialogueText.text = text;
+                CheckTrigger();
+                isTyping = false;
+                StopVoice();
+            }
+            else
+            {
+                isTyping = false;
+
+                // Dialog beres = sfx beres: voice langsung di-Stop tepat saat ngetik kelar.
+                StopVoice();
+            }
+
             waitingForInput = true;
 
-            // Show continue indicator after typing finishes
+            // Show continue indicator after typing + voice finish
             ShowContinueIndicator();
 
             // Wait for player tap to continue

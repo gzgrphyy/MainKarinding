@@ -91,8 +91,19 @@ namespace MainKarinding.Cutscenes
             new DialogueLine("Rimba", "...Moal kataekan.", "...Tidak akan sampai."),
         };
 
+        [Header("Voice per Baris (file rekam: REKAMAN-CHECKLIST.txt)")]
+        [SerializeField] private AudioClip v_S9_gumam_00;
+
+        /// <summary>Isi field voice tiap baris SEBELUM coroutine dialog jalan.</summary>
+        private void AssignVoices()
+        {
+            gumamLine[0].voice = v_S9_gumam_00;
+        }
+
         private void Start()
         {
+            AssignVoices();
+
             // Whitescreen WAJIB tampil dari frame pertama — nyala sebelum aksi apa pun.
             if (whiteOverlay != null)
             {
@@ -276,9 +287,9 @@ namespace MainKarinding.Cutscenes
                     ? anchorOverride
                     : (shot2HeadAnchor != null ? shot2HeadAnchor : (shot2Rimba != null ? shot2Rimba.transform : null));
                 if (floatingDialogue != null && anchor != null)
-                    floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true);
+                    floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true, null, null, line.voice);
                 else if (dialogueDisplay != null)
-                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true);
+                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true, line.voice);
                 else
                 {
                     Debug.LogWarning("[Scene9RealWorld] Tidak ada dialogue display! Skip: " + line.textSunda);
@@ -378,11 +389,13 @@ namespace MainKarinding.Cutscenes
             public string speaker;
             public string textSunda;
             public string textIndo;
-            public DialogueLine(string speaker, string sunda, string indo)
+            public AudioClip voice;
+            public DialogueLine(string speaker, string sunda, string indo, AudioClip voice = null)
             {
                 this.speaker = speaker;
                 this.textSunda = sunda;
                 this.textIndo = indo;
+                this.voice = voice;
             }
         }
     }

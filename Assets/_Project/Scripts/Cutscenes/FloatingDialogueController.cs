@@ -53,6 +53,19 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private bool canSkipTyping = true;
         [SerializeField] private float continueBounceSpeed = 2f;
 
+        [Header("Voice (beat audio sinkron teks)")]
+        [Tooltip("Clip voice default — dipakai kalau baris tidak punya clip sendiri.")]
+        [SerializeField] private AudioClip defaultVoiceClip;
+        [Tooltip("Batas bawah kecepatan typewriter saat ada voice (detik/karakter). 0 = bebas.")]
+        [SerializeField] private float voiceMinCharDelay = 0f;
+        [Tooltip("Batas atas kecepatan typewriter saat ada voice (detik/karakter). 0 = bebas.")]
+        [SerializeField] private float voiceMaxCharDelay = 0f;
+        [Tooltip("Volume voice. 0-1.")]
+        [SerializeField, Range(0f, 1f)] private float voiceVolume = 1f;
+        [Tooltip("Kalau true, kecepatan ngetik mengikuti durasi clip voice (audio-driven). Kalau false (default), pakai typingSpeed dari Inspector.")]
+        [SerializeField] private bool syncTypingToVoice = false;
+        private AudioSource voiceSource;
+
         private Transform currentAnchor;
         private string currentSpeaker = "";
         private Vector2 currentOffset;
@@ -62,6 +75,7 @@ namespace MainKarinding.Cutscenes
         private Coroutine followCoroutine;
         private bool isTyping;
         private bool waitingForInput;
+        private bool skipRequested;
         private string currentFullSunda = "";
         private string currentFullIndo = "";
         private string currentTriggerWord;
@@ -77,6 +91,7 @@ namespace MainKarinding.Cutscenes
         private void Awake()
         {
             EnsureVisualRoot();
+            EnsureVoiceSource();
 
             if (bubbleRect == null && dialogueBoxRoot != null)
                 bubbleRect = dialogueBoxRoot.GetComponent<RectTransform>();
@@ -134,6 +149,31 @@ namespace MainKarinding.Cutscenes
             dialogueBoxRoot.SetActive(active);
         }
 
+        private void EnsureVoiceSource()
+        {
+            if (voiceSource == null)
+                voiceSource = GetComponent<AudioSource>();
+            if (voiceSource == null)
+            {
+                GameObject src = new GameObject("VoiceSource");
+                src.transform.SetParent(transform, false);
+                voiceSource = src.AddComponent<AudioSource>();
+            }
+            voiceSource.playOnAwake = false;
+            voiceSource.loop = false;
+            voiceSource.spatialBlend = 0f;
+            voiceSource.volume = voiceVolume;
+            voiceSource.Stop();
+        }
+
+        private void StopVoice()
+        {
+            if (voiceSource != null && voiceSource.isPlaying)
+                voiceSource.Stop();
+            if (voiceSource != null)
+                voiceSource.clip = null;
+        }
+
         private void OnDestroy()
         {
             if (fullScreenTapButton != null)
@@ -146,7 +186,7 @@ namespace MainKarinding.Cutscenes
         /// triggerWord opsional: kalau teks terketik berakhiran kata itu (case-insensitive),
         /// onTrigger dipanggil sekali — dipakai Scene 4 ("bledag!").
         /// </summary>
-        public void Show(string speaker, string sunda, string indo, Transform anchor, Action onComplete = null, string triggerWord = null, Action onTrigger = null)
+        public void Show(string speaker, string sunda, string indo, Transform anchor, Action onComplete = null, string triggerWord = null, Action onTrigger = null, AudioClip voice = null)
         {
             currentSpeaker = speaker ?? "";
             currentAnchor = anchor;
@@ -187,7 +227,8 @@ namespace MainKarinding.Cutscenes
                 StopCoroutine(typingCoroutine);
             HideContinueIndicator();
 
-            typingCoroutine = StartCoroutine(TypeText(currentFullSunda, currentFullIndo, onComplete));
+            AudioClip resolvedVoice = voice != null ? voice : defaultVoiceClip;
+            typingCoroutine = StartCoroutine(TypeText(currentFullSunda, currentFullIndo, onComplete, resolvedVoice));
         }
 
         /// <summary>Backward-compat: tanpa speaker/anchor (bubble diam di tempat terakhir).</summary>
@@ -212,6 +253,7 @@ namespace MainKarinding.Cutscenes
             triggerFired = true;
             triggerCallback = null;
             currentTriggerWord = null;
+            StopVoice();
             HideContinueIndicator();
             isTyping = false;
             waitingForInput = false;
@@ -223,9 +265,13 @@ namespace MainKarinding.Cutscenes
 
         public void OnTap()
         {
-            // Tap selama teks masih mengetik diabaikan total.
-            // Skip-typing dihapus: StopCoroutine membunuh pemilik onComplete
-            // sehingga sequence macet (teks penuh tapi dialog tidak lanjut).
+            // Skip aman (tidak StopCoroutine — onComplete pemilik coroutine tetap hidup):
+            // teks langsung penuh + audio langsung berhenti (dialog berhenti = sfx ikut berhenti).
+            if (isTyping)
+            {
+                if (canSkipTyping) skipRequested = true;
+                return;
+            }
             if (!waitingForInput)
                 return;
             waitingForInput = false;
@@ -313,28 +359,75 @@ namespace MainKarinding.Cutscenes
             boxPointerRect.localScale = s;
         }
 
-        private IEnumerator TypeText(string sunda, string indo, Action onComplete)
+        private IEnumerator TypeText(string sunda, string indo, Action onComplete, AudioClip voice)
         {
             isTyping = true;
             waitingForInput = false;
+            skipRequested = false;
+
+            // Audio-driven sync (opsional): ngetik selesai (hampir) bareng audio selesai.
+            // Default: kecepatan mengikuti typingSpeed dari Inspector.
+            float charDelay = typingSpeed;
+            if (syncTypingToVoice && voice != null && sunda != null && sunda.Length > 0)
+            {
+                charDelay = voice.length / sunda.Length;
+                if (voiceMinCharDelay > 0f && charDelay < voiceMinCharDelay)
+                    charDelay = voiceMinCharDelay;
+                if (voiceMaxCharDelay > 0f && charDelay > voiceMaxCharDelay)
+                    charDelay = voiceMaxCharDelay;
+            }
 
             if (dialogueText != null)
                 dialogueText.text = "";
             if (translationText != null)
                 translationText.text = "";
 
+            // Play voice sekali di awal; indikator "tap" muncul setelah teks + audio dua-duanya selesai.
+            float voiceLength = 0f;
+            float voiceStartTime = Time.time;
+            if (voice != null)
+            {
+                EnsureVoiceSource();
+                if (voiceSource != null)
+                {
+                    voiceSource.volume = voiceVolume;
+                    voiceSource.clip = voice;
+                    voiceSource.Play();
+                    voiceLength = voice.length;
+                }
+            }
+
             foreach (char c in sunda)
             {
                 if (dialogueText != null)
                     dialogueText.text += c;
                 CheckTrigger();
-                yield return new WaitForSeconds(typingSpeed);
+                if (skipRequested) break;
+                yield return new WaitForSeconds(charDelay);
             }
 
-            if (translationText != null)
-                translationText.text = indo;
+            // Skip: isi sisa teks + terjemahan langsung, audio langsung berhenti (dialog berhenti = sfx berhenti).
+            if (skipRequested)
+            {
+                if (dialogueText != null)
+                    dialogueText.text = sunda ?? "";
+                if (translationText != null)
+                    translationText.text = indo;
+                CheckTrigger();
+                isTyping = false;
+                StopVoice();
+            }
+            else
+            {
+                if (translationText != null)
+                    translationText.text = indo;
 
-            isTyping = false;
+                isTyping = false;
+
+                // Dialog beres = sfx beres: voice langsung di-Stop tepat saat ngetik kelar.
+                StopVoice();
+            }
+
             waitingForInput = true;
             ShowContinueIndicator();
 

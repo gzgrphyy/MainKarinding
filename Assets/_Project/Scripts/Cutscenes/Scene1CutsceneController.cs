@@ -123,8 +123,29 @@ namespace MainKarinding.Cutscenes
             new DialogueLine("Rimba", "Muhun bah, Hayu", "Iya bah, Ayo")
         };
 
+        [Header("Voice per Baris (file rekam: REKAMAN-CHECKLIST.txt)")]
+        [SerializeField] private AudioClip v_S1_beat2_00;
+        [SerializeField] private AudioClip v_S1_beat7_00;
+        [SerializeField] private AudioClip v_S1_beat7_01;
+        [SerializeField] private AudioClip v_S1_beat7_03;
+        [SerializeField] private AudioClip v_S1_beat7_04;
+        [SerializeField] private AudioClip v_S1_beat7_05;
+
+        /// <summary>Isi field voice tiap baris SEBELUM coroutine dialog jalan (index = urutan line di array).</summary>
+        private void AssignVoices()
+        {
+            beat2Dialogue[0].voice = v_S1_beat2_00;
+            beat7Dialogue[0].voice = v_S1_beat7_00;
+            beat7Dialogue[1].voice = v_S1_beat7_01;
+            beat7Dialogue[3].voice = v_S1_beat7_03;
+            beat7Dialogue[4].voice = v_S1_beat7_04;
+            beat7Dialogue[5].voice = v_S1_beat7_05;
+        }
+
         private void Start()
         {
+            AssignVoices();
+
             // Initial setup
             if (blackscreenOverlay != null)
                 blackscreenOverlay.SetActive(false);
@@ -671,19 +692,19 @@ namespace MainKarinding.Cutscenes
 
                 if (isShot1 && floating != null && anchor != null)
                 {
-                    floating.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => dialogueFinished = true);
+                    floating.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => dialogueFinished = true, null, null, line.voice);
                 }
                 else if (!isShot1 && display != null)
                 {
-                    display.ShowDialogue(line.textSunda, line.speaker, () => dialogueFinished = true);
+                    display.ShowDialogue(line.textSunda, line.speaker, () => dialogueFinished = true, line.voice);
                 }
                 else if (floatingDialogue != null && anchor != null)
                 {
-                    floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => dialogueFinished = true);
+                    floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => dialogueFinished = true, null, null, line.voice);
                 }
                 else if (dialogueDisplay != null)
                 {
-                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => dialogueFinished = true);
+                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => dialogueFinished = true, line.voice);
                 }
                 else
                 {
@@ -859,12 +880,14 @@ namespace MainKarinding.Cutscenes
             public string speaker;
             public string textSunda;
             public string textIndo;
+            public AudioClip voice;
 
-            public DialogueLine(string speaker, string sunda, string indo)
+            public DialogueLine(string speaker, string sunda, string indo, AudioClip voice = null)
             {
                 this.speaker = speaker;
                 this.textSunda = sunda;
                 this.textIndo = indo;
+                this.voice = voice;
             }
         }
 

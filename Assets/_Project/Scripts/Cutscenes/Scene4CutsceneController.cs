@@ -94,8 +94,22 @@ namespace MainKarinding.Cutscenes
                 ""),
         };
 
+        [Header("Voice per Baris (file rekam: REKAMAN-CHECKLIST.txt)")]
+        [SerializeField] private AudioClip v_S4_beat_00;
+        [SerializeField] private AudioClip v_S4_beat_01;
+        [SerializeField] private AudioClip v_S4_beat_02;
+
+        /// <summary>Isi field voice tiap baris SEBELUM coroutine dialog jalan.</summary>
+        private void AssignVoices()
+        {
+            beatDialogue[0].voice = v_S4_beat_00;
+            beatDialogue[1].voice = v_S4_beat_01;
+            beatDialogue[2].voice = v_S4_beat_02;
+        }
+
         private void Start()
         {
+            AssignVoices();
             StoryState.EnsureExists();
                         if (blackscreenOverlay != null)
             {
@@ -268,12 +282,12 @@ namespace MainKarinding.Cutscenes
                 }
                 bool finished = false;
                 if (dialogueDisplay != null)
-                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true, TriggerWord, OnBledag);
+                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true, TriggerWord, OnBledag, line.voice);
                 else if (floatingDialogue != null)
                 {
                     Transform anchor = ResolveAnchor(line.speaker);
                     if (anchor != null)
-                        floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true, TriggerWord, OnBledag);
+                        floatingDialogue.Show(line.speaker, line.textSunda, line.textIndo, anchor, () => finished = true, TriggerWord, OnBledag, line.voice);
                     else
                         finished = true;
                 }
@@ -395,11 +409,13 @@ namespace MainKarinding.Cutscenes
             public string speaker;
             public string textSunda;
             public string textIndo;
-            public DialogueLine(string speaker, string sunda, string indo)
+            public AudioClip voice;
+            public DialogueLine(string speaker, string sunda, string indo, AudioClip voice = null)
             {
                 this.speaker = speaker;
                 this.textSunda = sunda;
                 this.textIndo = indo;
+                this.voice = voice;
             }
         }
 

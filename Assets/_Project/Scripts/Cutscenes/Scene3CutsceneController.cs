@@ -92,8 +92,20 @@ namespace MainKarinding.Cutscenes
             new DialogueLine("Abah", "Omat eta lain sora Rimba, tapi hasil tina getaran nu di barengan ku resonansi.", "Ingat, itu bukan suara Rimba, tapi hasil dari getaran yang dibarengi dengan resonansi."),
         };
 
+        [Header("Voice per Baris (file rekam: REKAMAN-CHECKLIST.txt)")]
+        [SerializeField] private AudioClip v_S3_beat1_00;
+        [SerializeField] private AudioClip v_S3_beat3_01;
+
+        /// <summary>Isi field voice tiap baris SEBELUM coroutine dialog jalan.</summary>
+        private void AssignVoices()
+        {
+            beat1Dialogue[0].voice = v_S3_beat1_00;
+            beat3Dialogue[1].voice = v_S3_beat3_01;
+        }
+
         private void Start()
         {
+            AssignVoices();
             StoryState.EnsureExists();
             AutoFind();
 
@@ -406,7 +418,7 @@ namespace MainKarinding.Cutscenes
                 bool finished = false;
                 // Disamakan Scene 2: selalu box statis bawah via dialogueDisplay.
                 if (dialogueDisplay != null)
-                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true);
+                    dialogueDisplay.ShowDialogue(line.textSunda, line.speaker, () => finished = true, line.voice);
                 else
                 {
                     Debug.LogWarning("[Scene3Cutscene] Tidak ada dialogue display! Skip: " + line.textSunda);
@@ -498,11 +510,13 @@ namespace MainKarinding.Cutscenes
             public string speaker;
             public string textSunda;
             public string textIndo;
-            public DialogueLine(string speaker, string sunda, string indo)
+            public AudioClip voice;
+            public DialogueLine(string speaker, string sunda, string indo, AudioClip voice = null)
             {
                 this.speaker = speaker;
                 this.textSunda = sunda;
                 this.textIndo = indo;
+                this.voice = voice;
             }
         }
 
