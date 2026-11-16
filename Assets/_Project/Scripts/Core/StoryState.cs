@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace MainKarinding.Core
 {
@@ -98,6 +99,39 @@ namespace MainKarinding.Core
             }
             Instance = this;
             DontDestroyOnLoad(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void OnDisable()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        /// <summary>
+        /// Buka root cutscene yang cocok dengan EntryPoint saat scene ter-load.
+        /// Root cutscene biasanya tersimpan inactive di file scene (diaktifkan manual oleh
+        /// handoff scene sebelumnya). Saat masuk langsung — balik dari tutorial/minigame
+        /// via LoadScene — tidak ada yang mengaktifkannya, sehingga SceneEntryGate di root
+        /// itu tidak pernah jalan dan dialog resume tidak dimainkan. Handler ini mengambil
+        /// peran handoff: aktifkan root milik EntryPoint supaya gate (isMine -> open) dan
+        /// Start() controller-nya jalan otomatis.
+        /// </summary>
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            var gates = Object.FindObjectsByType<SceneEntryGate>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (var gate in gates)
+            {
+                if (gate.OwnEntry != entryPoint) continue;
+                GameObject root = gate.TargetRoot;
+                if (root == null || root.activeSelf) continue;
+                Debug.Log($"[StoryState] Auto-open root '{root.name}' untuk EntryPoint {entryPoint}");
+                root.SetActive(true);
+            }
         }
 
         public void SetBeat(Ch1Beat beat)

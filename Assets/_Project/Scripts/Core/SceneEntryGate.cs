@@ -39,6 +39,12 @@ namespace MainKarinding.Core
         [Header("Debug")]
         [SerializeField] private bool logOnGate = true;
 
+        /// <summary>EntryPoint milik gate ini (dipakai auto-opener StoryState).</summary>
+        public Ch1EntryPoint OwnEntry => ownEntry;
+
+        /// <summary>Root yang dikelola gate: targetRoot bila diisi, else GO gate sendiri.</summary>
+        public GameObject TargetRoot => targetRoot != null ? targetRoot : gameObject;
+
         private void Awake()
         {
             StoryState.EnsureExists();

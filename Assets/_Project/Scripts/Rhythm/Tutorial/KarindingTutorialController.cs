@@ -179,7 +179,6 @@ public class KarindingTutorialController : MonoBehaviour
             _waitingForHandTap = false;
             // Clear highlight quickly
             overlay?.ClearHighlight(lane);
-            overlay?.ShowHand(false);
             overlay?.HideInstruction(0.15f);
         }
         else
@@ -298,8 +297,6 @@ public class KarindingTutorialController : MonoBehaviour
             _expectedHandLane = target;
             _waitingForHandTap = true;
             overlay?.HighlightLane(target, true);
-            if (_handIndex == 0) overlay?.ShowHand(target);
-            else overlay?.MoveHandTo(target, 0.35f); // smooth left→right, tidak teleport - menarik & cepat paham
             // Wait for correct tap
             yield return new WaitUntil(() => !_waitingForHandTap);
             // Success feedback - dot punch + toast + quick scale
@@ -309,7 +306,6 @@ public class KarindingTutorialController : MonoBehaviour
             yield return new WaitForSeconds(0.45f);
         }
         overlay?.ClearAllHighlights();
-        overlay?.ShowHand(false);
         overlay?.UpdateProgressDots(4, 4);
         // Menarik: semua tombol pulse bersama setelah 4 selesai
         foreach (var ls in handSequence) overlay?.HighlightLane(ls, true);
@@ -354,8 +350,6 @@ public class KarindingTutorialController : MonoBehaviour
                     string colored = $"<color=#{ColorUtility.ToHtmlStringRGB(c)}>{LaneToDisplayAndroid(note.lane).ToUpper()}</color>";
                     overlay?.ShowInstruction($"Tap {colored} saat di lingkaran", -1);
                     overlay?.HighlightLane(note.lane, true);
-                    if (guidedCount == 0) overlay?.ShowHand(note.lane);
-                    else overlay?.MoveHandTo(note.lane, 0.3f);
                     guidedCount++;
                 }
             };
@@ -378,7 +372,6 @@ public class KarindingTutorialController : MonoBehaviour
             rhythmController.OnNoteJudged -= onJudged;
             rhythmController.OnMinigameComplete -= onComplete;
             overlay?.HideInstruction(0.2f);
-            overlay?.ShowHand(false);
             overlay?.ClearAllHighlights();
 
             int hits = lastResult != null ? (lastResult.perfectCount + lastResult.goodCount) : 0;

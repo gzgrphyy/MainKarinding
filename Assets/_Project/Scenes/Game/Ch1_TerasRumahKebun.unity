@@ -957,7 +957,7 @@ Transform:
   m_GameObject: {fileID: 115318290}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.82, y: -1.64, z: 0}
+  m_LocalPosition: {x: 3.24, y: -1.88, z: 0}
   m_LocalScale: {x: 0.36, y: 0.35, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5576,7 +5576,7 @@ Transform:
   m_GameObject: {fileID: 518588089}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.27, z: 0}
+  m_LocalPosition: {x: -0.11, y: -0.25, z: 0}
   m_LocalScale: {x: 0.8657292, y: 0.8086737, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9767,7 +9767,7 @@ Transform:
   m_GameObject: {fileID: 924271666}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.82, y: -0.82, z: 0}
+  m_LocalPosition: {x: 4.2, y: -1.12, z: 0}
   m_LocalScale: {x: 0.42, y: 0.42, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11417,7 +11417,7 @@ Transform:
   m_GameObject: {fileID: 1078893597}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.8, y: 4.58, z: 0}
+  m_LocalPosition: {x: -1.05, y: 4.9, z: 0}
   m_LocalScale: {x: 0.8043308, y: 0.7701535, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11565,7 +11565,7 @@ Transform:
   m_GameObject: {fileID: 1098647539}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.4, y: 8, z: 0}
+  m_LocalPosition: {x: 0.14, y: 7.09, z: 0}
   m_LocalScale: {x: 0.845809, y: 0.84530854, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12846,7 +12846,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -12874,13 +12874,13 @@ MonoBehaviour:
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
-  m_ActiveFontFeatures: 00000000
+  m_ActiveFontFeatures: 
   m_enableExtraPadding: 0
   checkPaddingRequired: 0
   m_isRichText: 1
   m_EmojiFallbackSupport: 1
   m_parseCtrlCharacters: 1
-  m_isOrthographic: 0
+  m_isOrthographic: 1
   m_isCullingEnabled: 0
   m_horizontalMapping: 0
   m_verticalMapping: 0
@@ -13123,7 +13123,7 @@ Transform:
   m_GameObject: {fileID: 1359644078}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -3.29, y: -0.99, z: 0}
+  m_LocalPosition: {x: -3.11, y: -1.1, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -13436,7 +13436,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1376633909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14887,7 +14887,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1531973928
 Transform:
   m_ObjectHideFlags: 0
@@ -17047,7 +17047,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Core.StoryState
   currentBeat: 0
-  entryPoint: 0
+  entryPoint: 5
 --- !u!4 &1734499648
 Transform:
   m_ObjectHideFlags: 0
@@ -18049,7 +18049,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1829835895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18836,8 +18836,8 @@ Transform:
   m_GameObject: {fileID: 1984757259}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 10}
-  m_LocalScale: {x: 1.05, y: 1.05, z: 1}
+  m_LocalPosition: {x: -0.0014, y: -0.4839, z: 10}
+  m_LocalScale: {x: 0.869967, y: 0.9603536, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2016068338}
@@ -19376,7 +19376,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2016068338
 Transform:
   m_ObjectHideFlags: 0

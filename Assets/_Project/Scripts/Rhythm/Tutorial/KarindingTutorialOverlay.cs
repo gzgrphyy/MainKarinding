@@ -5,7 +5,7 @@ using TMPro;
 using DG.Tweening;
 
 /// <summary>
-/// Overlay tutorial: dim background + highlight lane + hand pointer + arrow pulse.
+/// Overlay tutorial: dim background + highlight lane pulse.
 /// Dibuat runtime seperti DialogueSystem, bisa di-drag sebagai prefab modular.
 /// SortingOrder 150 di atas DialoguePanel (100).
 /// </summary>
@@ -23,9 +23,6 @@ public class KarindingTutorialOverlay : MonoBehaviour
     private GameObject _rootObject;
     private readonly Dictionary<LaneSide, Image> _laneOverlays = new Dictionary<LaneSide, Image>();
     private readonly Dictionary<LaneSide, Tween> _pulseTweens = new Dictionary<LaneSide, Tween>();
-    private RectTransform _handRect;
-    private Image _handImage;
-    private RectTransform _arrowRect;
     private TextMeshProUGUI _instructionText;
     private CanvasGroup _instructionGroup;
     private GameObject _instructionObj;
@@ -99,48 +96,6 @@ public class KarindingTutorialOverlay : MonoBehaviour
         _dimImage = dimObj.AddComponent<Image>();
         _dimImage.color = new Color(0f, 0f, 0f, 0f);
         _dimImage.raycastTarget = false;
-
-        // Hand pointer - use TapHand sprite if available, fallback to white dot
-        GameObject handObj = new GameObject("HandPointer");
-        handObj.transform.SetParent(_rootObject.transform, false);
-        _handRect = handObj.GetComponent<RectTransform>();
-        if (_handRect == null) _handRect = handObj.AddComponent<RectTransform>();
-        _handRect.sizeDelta = new Vector2(140f, 140f);
-        _handRect.anchorMin = new Vector2(0.5f, 0.5f);
-        _handRect.anchorMax = new Vector2(0.5f, 0.5f);
-        _handRect.anchoredPosition = new Vector2(0f, -220f);
-        _handImage = handObj.AddComponent<Image>();
-        _handImage.raycastTarget = false;
-        _handImage.enabled = false;
-        // Try load TapHand sprite
-        var tapHand = Resources.Load<Sprite>("TapHand");
-        if (tapHand != null)
-        {
-            _handImage.sprite = tapHand;
-            _handImage.preserveAspect = true;
-            _handRect.sizeDelta = new Vector2(170f, 170f);
-        }
-        else
-        {
-            _handImage.color = new Color(1f, 1f, 1f, 0.9f);
-        }
-
-        // Arrow above hand
-        GameObject arrowObj = new GameObject("Arrow");
-        arrowObj.transform.SetParent(handObj.transform, false);
-        _arrowRect = arrowObj.GetComponent<RectTransform>();
-        if (_arrowRect == null) _arrowRect = arrowObj.AddComponent<RectTransform>();
-        _arrowRect.anchorMin = new Vector2(0.5f, 1f);
-        _arrowRect.anchorMax = new Vector2(0.5f, 1f);
-        _arrowRect.pivot = new Vector2(0.5f, 0f);
-        _arrowRect.anchoredPosition = new Vector2(0f, 18f);
-        _arrowRect.sizeDelta = new Vector2(44f, 44f);
-        var arrowImg = arrowObj.AddComponent<Image>();
-        arrowImg.color = new Color(1f, 0.95f, 0.4f, 1f);
-        arrowImg.raycastTarget = false;
-        // Simple triangle via rotation - use default sprite as placeholder
-        arrowImg.transform.localRotation = Quaternion.Euler(0f, 0f, 180f);
-        arrowObj.SetActive(false);
 
         // Instruction Text - top center, non-blocking (Android friendly)
         GameObject instrObj = new GameObject("InstructionText");
@@ -299,7 +254,6 @@ public class KarindingTutorialOverlay : MonoBehaviour
     public void HideAll(float duration = 0.2f)
     {
         ClearAllHighlights();
-        ShowHand(false);
         HideInstruction(0.15f);
         HideToast();
         SetProgressDotsVisible(false);
@@ -521,62 +475,6 @@ public class KarindingTutorialOverlay : MonoBehaviour
     {
         foreach (LaneSide lane in System.Enum.GetValues(typeof(LaneSide)))
             ClearHighlight(lane);
-    }
-
-    public void ShowHand(LaneSide lane, Vector2 offset = default)
-    {
-        var btn = FindLaneButton(lane);
-        if (btn == null || _handRect == null) return;
-        var btnRect = btn.transform as RectTransform;
-        if (btnRect == null) return;
-
-        // Position hand slightly above button
-        Vector3 worldPos = btnRect.position;
-        Vector3 handWorld = worldPos + new Vector3(offset.x, offset.y + 55f, 0f);
-
-        // Convert world to canvas local
-        var parentRect = _handRect.parent as RectTransform;
-        Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(null, handWorld);
-        // If canvas is ScreenSpaceCamera, use canvas camera
-        Camera cam = null;
-        if (_canvas.renderMode != RenderMode.ScreenSpaceOverlay) cam = _canvas.worldCamera;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPos, cam, out var local);
-        _handRect.anchoredPosition = local;
-        _handImage.enabled = true;
-        _handRect.gameObject.SetActive(true);
-        _arrowRect.gameObject.SetActive(true);
-        _handRect.localScale = Vector3.one * 0.85f;
-        _handRect.DOKill();
-        _handRect.DOScale(Vector3.one, 0.35f).SetEase(Ease.OutBack);
-        // Bobbing
-        _handRect.DOAnchorPosY(local.y + 10f, 0.55f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
-        _arrowRect.DOKill();
-        _arrowRect.localScale = Vector3.one;
-        _arrowRect.DOScale(Vector3.one * 1.15f, 0.4f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
-    }
-
-    public void ShowHand(bool show)
-    {
-        if (_handRect == null) return;
-        _handRect.DOKill();
-        _arrowRect.DOKill();
-        _handRect.gameObject.SetActive(show);
-        if (show) _handImage.enabled = true;
-    }
-
-    public void MoveHandTo(LaneSide lane, float duration = 0.4f)
-    {
-        var btn = FindLaneButton(lane);
-        if (btn == null || _handRect == null) return;
-        var btnRect = btn.transform as RectTransform;
-        Vector3 worldPos = btnRect.position;
-        var parentRect = _handRect.parent as RectTransform;
-        Camera cam = null;
-        if (_canvas.renderMode != RenderMode.ScreenSpaceOverlay) cam = _canvas.worldCamera;
-        Vector2 screenPos = RectTransformUtility.WorldToScreenPoint(cam, worldPos + new Vector3(0f, 55f, 0f));
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPos, cam, out var local);
-        _handRect.DOKill();
-        _handRect.DOAnchorPos(local, duration).SetEase(Ease.InOutQuad);
     }
 
     private LaneButton FindLaneButton(LaneSide lane)
