@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: b4eba8a41eb8de64d9a886f38e7363dd
+  - enabled: 1
+    path: Assets/_Project/_projects_FirstScene/Opening_Scene/Opening_Cutscene.unity
+    guid: aff3674b41159df45adad4c3bccdac4b
+  - enabled: 1
     path: Assets/_Project/Scenes/Game/Ch1_TerasRumahKebun.unity
     guid: 9878806fccae0ab489d007db017f2a09
   - enabled: 1
