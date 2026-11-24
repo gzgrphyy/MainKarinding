@@ -35,9 +35,8 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private FloatingDialogueController floatingShot1;
         [Tooltip("Shot2 statis bawah (Beat7). Drag DialogueBox_Shot2.")]
         [SerializeField] private CutsceneDialogueDisplay displayShot2;
-        [SerializeField] private CutsceneActionButton actionButton;
         [SerializeField] private GameObject blackscreenOverlay;
-        [Tooltip("Tap fullscreen dialog. Auto-find kalau kosong. Dimatikan paksa saat Beat 5 biar tidak menelan tap Lihat.")]
+        [Tooltip("Tap fullscreen dialog. Auto-find kalau kosong. Dimatikan paksa saat Beat 5 biar tap jatuh ke dialog box.")]
         [SerializeField] private GameObject tapDetector;
 
         [Header("Head Anchors (floating bubble follow - USER bisa geser di Scene View)")]
@@ -59,6 +58,7 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private CutsceneAudioManager audioManager;
         [SerializeField] private AudioClip ambientMorning;
         [SerializeField] private AudioClip sfxTransitionBlackscreen;
+        [SerializeField] private AudioClip sfxTapConfirm;
 
         [Header("Exploration Handoff")]
         [SerializeField] private GameObject explorationRoot;
@@ -156,21 +156,8 @@ namespace MainKarinding.Cutscenes
             AutoFindHeadAnchors();
             AutoFindFollowToast();
 
-            // Subscribe Beat 5 sekali di sini (event permanen, anti callback-null)
-            if (actionButton != null)
-            {
-                actionButton.pressed -= ExecuteBeat6;
-                actionButton.pressed += ExecuteBeat6;
-            }
-
             // Start cutscene
             StartCutscene();
-        }
-
-        private void OnDestroy()
-        {
-            if (actionButton != null)
-                actionButton.pressed -= ExecuteBeat6;
         }
 
         private void AutoFindHeadAnchors()
@@ -303,39 +290,45 @@ namespace MainKarinding.Cutscenes
             if (shot1Root != null && shot1Root.activeSelf) shot1Root.SetActive(false);
             if (shot2Root != null && !shot2Root.activeSelf) shot2Root.SetActive(true);
 
-            // Box standby nyala duluan ("..."), dialog asli mulai setelah tombol Lihat (Beat 7).
-            if (displayShot2 != null)
-                displayShot2.ShowStandby("...");
-            else if (dialogueDisplay != null)
-                dialogueDisplay.ShowStandby("...");
-
-            // Auto-advance to Beat 5 (increased delay for breathing room)
-            StartCoroutine(DelayedExecute(1.0f, ExecuteBeat5));
-        }
-
-        /// <summary>
-        /// Beat 5 - Action Button (STRICT tap required).
-        /// </summary>
-        private void ExecuteBeat5()
-        {
-            Debug.Log("[Scene1Cutscene] Beat 5 - Action Button");
-
-            currentBeat = 5;
-
-            // Matikan tap fullscreen biar tidak menelan tap tombol Lihat (lapisan paling atas).
+            // Matikan tap fullscreen: prompt pakai tap area dialog box saja.
             if (tapDetector != null && tapDetector.activeSelf)
                 tapDetector.SetActive(false);
 
-            // Show action button and wait for tap (callback via event di Start)
-            if (actionButton != null)
-            {
-                actionButton.Show();
-                Debug.Log("[Scene1Cutscene] Beat 5 ready - tap tombol Lihat");
-            }
-            else
-            {
-                Debug.LogError("[Scene1Cutscene] actionButton belum di-assign! Assign di Inspector Scene1_Cutscene.");
-            }
+            // Box kosong "..." + continue indicator berdenyut; tap box = lanjut.
+            if (displayShot2 != null)
+                displayShot2.ShowStandby("...", OnShot2BoxTapped);
+            else if (dialogueDisplay != null)
+                dialogueDisplay.ShowStandby("...");
+
+            ExecuteBeat5();
+        }
+
+        /// <summary>
+        /// Beat 5 - Tunggu tap pada dialog box (tanpa tombol/swipe).
+        /// </summary>
+        private void ExecuteBeat5()
+        {
+            if (currentBeat >= 6) return;
+
+            Debug.Log("[Scene1Cutscene] Beat 5 - Tunggu tap dialog box");
+
+            currentBeat = 5;
+
+            if (displayShot2 == null)
+                Debug.LogError("[Scene1Cutscene] displayShot2 belum di-assign! Tap box tidak bisa lanjut.");
+        }
+
+        /// <summary>
+        /// Callback tap dialog box saat standby -> Beat 6.
+        /// </summary>
+        private void OnShot2BoxTapped()
+        {
+            Debug.Log("[Scene1Cutscene] Dialog box tapped -> Beat 6");
+
+            if (audioManager != null && sfxTapConfirm != null)
+                audioManager.PlaySFX(sfxTapConfirm);
+
+            ExecuteBeat6();
         }
 
         /// <summary>

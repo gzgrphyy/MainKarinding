@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using System.Collections;
 
@@ -9,7 +10,7 @@ namespace MainKarinding.Cutscenes
     /// Display dialogue box with typewriter effect for cutscenes (ASFTU style).
     /// Single language (Sunda), compact bottom-right box, animated continue indicator.
     /// </summary>
-    public class CutsceneDialogueDisplay : MonoBehaviour
+    public class CutsceneDialogueDisplay : MonoBehaviour, IPointerClickHandler
     {
     [Header("UI References")]
     [SerializeField] private GameObject dialogueBoxRoot;
@@ -19,6 +20,8 @@ namespace MainKarinding.Cutscenes
     [SerializeField] private Image dialogueBoxImage;
     [SerializeField] private GameObject continueIndicator;
     [SerializeField] private Button fullScreenTapButton;
+    [Tooltip("Button di area dialog box (Background) untuk tap-to-continue saat standby Shot 2. Auto-find kalau kosong.")]
+    [SerializeField] private Button boxTapButton;
 
     [Header("BoxPointer - Layout (atur manual di Inspector/Scene View)")]
     [Tooltip("RectTransform ekor bubble. Geser manual di Scene View, semua tersimpan di scene.")]
@@ -66,6 +69,8 @@ namespace MainKarinding.Cutscenes
         private bool boxPointerBaseCaptured = false;
         private Vector3 continueBaseScale;
         private bool continueBaseCaptured;
+        private System.Action standbyTapCallback;
+        private bool standbyWaiting;
 
         public bool IsActive => dialogueBoxRoot != null && dialogueBoxRoot.activeSelf;
         public bool IsWaitingForInput => waitingForInput;
@@ -87,6 +92,12 @@ namespace MainKarinding.Cutscenes
             fullScreenTapButton.onClick.AddListener(OnTap);
             fullScreenTapButton.gameObject.SetActive(false);
         }
+
+        // Hook tap area dialog box (khusus standby Shot 2).
+        if (boxTapButton == null && dialogueBoxRoot != null)
+            boxTapButton = dialogueBoxRoot.GetComponent<Button>();
+        if (boxTapButton != null)
+            boxTapButton.onClick.AddListener(OnBoxTap);
     }
 
     private void EnsureVoiceSource()
@@ -175,6 +186,7 @@ namespace MainKarinding.Cutscenes
         /// </summary>
         public void ShowDialogue(string text, string speaker, System.Action onComplete, string triggerWord, System.Action onTrigger, AudioClip voice = null)
         {
+            ClearStandby();
             currentSpeaker = speaker ?? "";
 
             // Nyalakan + isi label nama speaker dinamis per baris
@@ -217,6 +229,7 @@ namespace MainKarinding.Cutscenes
         /// </summary>
         public void ShowStandby(string standbyText = "...")
         {
+            ClearStandby();
             currentSpeaker = "";
             currentFullText = standbyText ?? "";
 
@@ -245,6 +258,23 @@ namespace MainKarinding.Cutscenes
 
             isTyping = false;
             waitingForInput = false;
+        }
+
+        /// <summary>
+        /// Standby box + continue indicator berdenyut + tap pada box untuk lanjut.
+        /// Dipakai Shot 2 Scene 1: kotak kosong "..." lalu tap box (tanpa tombol/swipe).
+        /// </summary>
+        public void ShowStandby(string standbyText, System.Action onTap, bool showContinue = true)
+        {
+            ShowStandby(standbyText);
+            standbyTapCallback = onTap;
+            standbyWaiting = onTap != null;
+
+            if (fullScreenTapButton != null && fullScreenTapButton.gameObject.activeSelf)
+                fullScreenTapButton.gameObject.SetActive(false);
+
+            if (standbyWaiting && showContinue)
+                ShowContinueIndicator();
         }
 
         /// <summary>
@@ -305,6 +335,7 @@ namespace MainKarinding.Cutscenes
         /// </summary>
         public void Hide()
         {
+            ClearStandby();
             if (typingCoroutine != null)
             {
                 StopCoroutine(typingCoroutine);
@@ -345,6 +376,36 @@ namespace MainKarinding.Cutscenes
             if (!waitingForInput)
                 return;
             waitingForInput = false;
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            if (!IsActive) return;
+            OnBoxTap();
+        }
+
+        /// <summary>
+        /// Tap pada area dialog box: standby = lanjut (sekali), dialog normal = OnTap().
+        /// </summary>
+        private void OnBoxTap()
+        {
+            if (standbyWaiting)
+            {
+                standbyWaiting = false;
+                System.Action callback = standbyTapCallback;
+                standbyTapCallback = null;
+                HideContinueIndicator();
+                callback?.Invoke();
+                return;
+            }
+
+            OnTap();
+        }
+
+        private void ClearStandby()
+        {
+            standbyWaiting = false;
+            standbyTapCallback = null;
         }
 
         private IEnumerator TypeText(string text, System.Action onComplete, AudioClip voice)
@@ -506,6 +567,8 @@ namespace MainKarinding.Cutscenes
         // Cleanup button listener
         if (fullScreenTapButton != null)
             fullScreenTapButton.onClick.RemoveListener(OnTap);
+        if (boxTapButton != null)
+            boxTapButton.onClick.RemoveListener(OnBoxTap);
     }
     }
 }
