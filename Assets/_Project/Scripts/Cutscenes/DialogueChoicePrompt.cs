@@ -117,9 +117,12 @@ namespace MainKarinding.Cutscenes
 
         private void SetChildrenActive(bool active)
         {
-            if (choiceButtons == null) return;
-            foreach (var b in choiceButtons)
-                if (b != null) b.gameObject.SetActive(active);
+            // Toggle semua child visual root (3 tombol pilihan + elemen lain seperti nametag_done)
+            // biar ikut nyala pas Show dan mati pas Awake/Hide/Pick.
+            Transform host = (root != null) ? root.transform : transform;
+            if (host == null) return;
+            for (int i = 0; i < host.childCount; i++)
+                host.GetChild(i).gameObject.SetActive(active);
         }
 
         private void OnDestroy()
