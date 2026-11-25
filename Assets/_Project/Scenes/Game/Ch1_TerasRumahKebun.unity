@@ -277,7 +277,7 @@ MonoBehaviour:
   walkHeadAnchorAbah: {fileID: 0}
   followToast: {fileID: 938467366}
   audioManager: {fileID: 1675631098}
-  ambienceSore: {fileID: 8300000, guid: f374f018a50e24044bce5c26f24ccd24, type: 3}
+  ambienceSore: {fileID: 8300000, guid: 525c448d015d27e48a0dadc512f3dc6c, type: 3}
   explorationRoot: {fileID: 2124307947}
   walkRimba: {fileID: 255515572}
   walkAbah: {fileID: 1353937089}
@@ -6412,7 +6412,7 @@ MonoBehaviour:
   headAnchorRimba: {fileID: 1509464777}
   headAnchorAbah: {fileID: 1924324142}
   audioManager: {fileID: 1675631098}
-  ambienceSiang: {fileID: 8300000, guid: f374f018a50e24044bce5c26f24ccd24, type: 3}
+  ambienceSiang: {fileID: 8300000, guid: 525c448d015d27e48a0dadc512f3dc6c, type: 3}
   dengungLow: {fileID: 8300000, guid: f9aa595562b43b04ab7a033ecefd549a, type: 3}
   karindingLoopSource: {fileID: 0}
   openingDelay: 1
@@ -8006,7 +8006,7 @@ MonoBehaviour:
   headAnchorRimba: {fileID: 1235034231}
   headAnchorAbah: {fileID: 1321743911}
   audioManager: {fileID: 1675631098}
-  ambienceSiang: {fileID: 8300000, guid: f374f018a50e24044bce5c26f24ccd24, type: 3}
+  ambienceSiang: {fileID: 8300000, guid: 525c448d015d27e48a0dadc512f3dc6c, type: 3}
   openingDelay: 1
   blackscreenDuration: 1
   minigameSceneName: MinigameRhythm
@@ -9892,7 +9892,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &922263279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9922,7 +9922,7 @@ MonoBehaviour:
   headAnchorRimba: {fileID: 528557209}
   headAnchorAbah: {fileID: 1299472369}
   audioManager: {fileID: 1675631098}
-  ambienceSiang: {fileID: 8300000, guid: f374f018a50e24044bce5c26f24ccd24, type: 3}
+  ambienceSiang: {fileID: 8300000, guid: 525c448d015d27e48a0dadc512f3dc6c, type: 3}
   sfxBigBang: {fileID: 8300000, guid: 1e01db9f0cc8c244ead6251ab3b220e3, type: 3}
   openingDelay: 1
   dialogueTimeoutSeconds: 30
@@ -11022,7 +11022,7 @@ MonoBehaviour:
   headAnchorRimba: {fileID: 1255051257}
   headAnchorAbah: {fileID: 2114137166}
   audioManager: {fileID: 1675631098}
-  ambienceSiang: {fileID: 8300000, guid: f374f018a50e24044bce5c26f24ccd24, type: 3}
+  ambienceSiang: {fileID: 8300000, guid: 525c448d015d27e48a0dadc512f3dc6c, type: 3}
   dengungLow: {fileID: 8300000, guid: f9aa595562b43b04ab7a033ecefd549a, type: 3}
   karindingLoopSource: {fileID: 0}
   sfxTapConfirm: {fileID: 8300000, guid: 4e53bf99c31631c4cb9ab6ab58606cc3, type: 3}
@@ -11673,7 +11673,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1096292017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11719,7 +11719,7 @@ MonoBehaviour:
   headAnchorRimba: {fileID: 1839511830}
   headAnchorAbah: {fileID: 1270510621}
   audioManager: {fileID: 1675631098}
-  ambienceSiang: {fileID: 8300000, guid: f374f018a50e24044bce5c26f24ccd24, type: 3}
+  ambienceSiang: {fileID: 8300000, guid: 525c448d015d27e48a0dadc512f3dc6c, type: 3}
   openingDelay: 1
   blackscreenDuration: 0.7
   hutanSceneName: Ch1_Hutan
@@ -11731,9 +11731,9 @@ MonoBehaviour:
   v_S5T_beat1_00: {fileID: 0}
   v_S5T_beat1_01: {fileID: 0}
   v_S5T_beat1_02: {fileID: 0}
-  v_S5T_reactTua: {fileID: 0}
-  v_S5T_reactTipis: {fileID: 0}
-  v_S5T_reactPas: {fileID: 0}
+  v_S5T_reactTua: {fileID: 8300000, guid: c0880214c7faccc4ea303d236ad705be, type: 3}
+  v_S5T_reactTipis: {fileID: 8300000, guid: c0880214c7faccc4ea303d236ad705be, type: 3}
+  v_S5T_reactPas: {fileID: 8300000, guid: c0880214c7faccc4ea303d236ad705be, type: 3}
 --- !u!114 &1096292018
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13695,7 +13695,7 @@ MonoBehaviour:
   headAnchorRimba: {fileID: 0}
   headAnchorAbah: {fileID: 0}
   audioManager: {fileID: 1675631098}
-  ambienceSiang: {fileID: 8300000, guid: f374f018a50e24044bce5c26f24ccd24, type: 3}
+  ambienceSiang: {fileID: 8300000, guid: 525c448d015d27e48a0dadc512f3dc6c, type: 3}
   openingDelay: 1
   blackscreenDuration: 0.7
   craftingSceneName: MinigameCrafting
@@ -17395,7 +17395,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainKarinding.Core.StoryState
   currentBeat: 0
-  entryPoint: 0
+  entryPoint: 4
 --- !u!4 &1734499648
 Transform:
   m_ObjectHideFlags: 0
@@ -18397,7 +18397,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1829835895
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18432,9 +18432,9 @@ MonoBehaviour:
   beat6SwapSprites: []
   beat6SwapTimings: []
   audioManager: {fileID: 1610753468}
-  ambientMorning: {fileID: 8300000, guid: 8b18a9d831ea32d428a9116c36b25c87, type: 3}
+  ambientMorning: {fileID: 8300000, guid: 525c448d015d27e48a0dadc512f3dc6c, type: 3}
   sfxTransitionBlackscreen: {fileID: 8300000, guid: 2149e9fdf14003344b57c9b625ff126b, type: 3}
-  sfxTapConfirm: {fileID: 8300000, guid: 4e53bf99c31631c4cb9ab6ab58606cc3, type: 3}
+  sfxTapConfirm: {fileID: 8300000, guid: 97c8b27ce34473d42baee5da8739c5bf, type: 3}
   explorationRoot: {fileID: 1531973927}
   rimbaWalker: {fileID: 77899697}
   abahWalker: {fileID: 1516054000}

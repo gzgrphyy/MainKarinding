@@ -11,7 +11,7 @@ namespace MainKarinding.Cutscenes
     ///         Gumam "...Moal kataekan." muncul di Shot 1 (bubble anchored ke HeadAnchor Rimba Shot 1).
     /// Beat 3: Cut ke Shot 2 — shot 1 mati, kamera di-set tight di balik hitam, shot 2 terungkap
     ///         tight, zoom out ke wide (ortho 3.4 -> 4.7), lalu fade hitam penutup dan STAY hitam
-    ///         -> freeze End of Chapter 1 (di layar hitam, rendah Chapter 2).
+    ///         -> "Bersambung..." fade-in di layar hitam, freeze End of Chapter 1 sampai Chapter 2.
     /// Framing WAJIB beda dari two-shot hangat mimpi: kamera di-reposition via kode.
     /// Audio SFX whiteout/transisi (sfx_whiteout.wav, sfx_transisi_hutan_nyata.wav) backlog —
     /// sementara visual saja + ambience reuse.
@@ -63,6 +63,14 @@ namespace MainKarinding.Cutscenes
         [SerializeField] private CutsceneDialogueDisplay dialogueDisplay;
         [SerializeField] private FloatingDialogueController floatingDialogue;
         [SerializeField] private GameObject whiteOverlay;
+
+        [Header("End Card - Bersambung...")]
+        [Tooltip("CanvasGroup teks 'Bersambung...' di dalam BlackOverlay. Di-fade-in setelah fade hitam penutup, lalu tetap tampil.")]
+        [SerializeField] private CanvasGroup toBeContinuedGroup;
+        [Tooltip("Jeda setelah fade hitam penutup sebelum teks mulai muncul.")]
+        [SerializeField] private float toBeContinuedDelaySeconds = 0.4f;
+        [Tooltip("Durasi fade-in teks 'Bersambung...'.")]
+        [SerializeField] private float toBeContinuedFadeSeconds = 1.2f;
 
         [Header("Kamera Dingin (beda framing dari mimpi)")]
         [SerializeField] private Camera mainCamera;
@@ -135,6 +143,7 @@ namespace MainKarinding.Cutscenes
                 audioManager.PlayAmbient(ambienceNyata, 0.5f);
             // Bubble tersimpan aktif di scene — sembunyikan sampai dialog pertama.
             if (floatingDialogue != null) floatingDialogue.Hide();
+            SetToBeContinuedAlpha(0f);
             StartCoroutine(DelayedExecute(openingDelay, () => StartCoroutine(ExecuteBeats())));
         }
 
@@ -216,7 +225,36 @@ namespace MainKarinding.Cutscenes
             yield return new WaitForSeconds(shot2BeforeClosingDelay);
             yield return StartCoroutine(FadeBlack(true, shot2ClosingFadeSeconds));
             yield return new WaitForSeconds(1f);
-            Debug.Log("[Scene9RealWorld] End of Chapter 1 — freeze di layar hitam sampai Chapter 2 dibangun.");
+            yield return new WaitForSeconds(toBeContinuedDelaySeconds);
+            yield return StartCoroutine(ShowToBeContinued());
+            Debug.Log("[Scene9RealWorld] End of Chapter 1 — 'Bersambung...' tampil di layar hitam sampai Chapter 2.");
+        }
+
+        private void SetToBeContinuedAlpha(float alpha)
+        {
+            if (toBeContinuedGroup == null) return;
+            toBeContinuedGroup.alpha = alpha;
+            toBeContinuedGroup.interactable = false;
+            toBeContinuedGroup.blocksRaycasts = false;
+        }
+
+        private IEnumerator ShowToBeContinued()
+        {
+            if (toBeContinuedGroup == null)
+            {
+                Debug.LogWarning("[Scene9RealWorld] toBeContinuedGroup belum di-wire — end card dilewati.");
+                yield break;
+            }
+            if (!toBeContinuedGroup.gameObject.activeSelf)
+                toBeContinuedGroup.gameObject.SetActive(true);
+            float t = 0f;
+            while (t < toBeContinuedFadeSeconds)
+            {
+                t += Time.unscaledDeltaTime;
+                SetToBeContinuedAlpha(Mathf.Clamp01(t / Mathf.Max(0.01f, toBeContinuedFadeSeconds)));
+                yield return null;
+            }
+            SetToBeContinuedAlpha(1f);
         }
 
         private IEnumerator ZoomOutShot2()
